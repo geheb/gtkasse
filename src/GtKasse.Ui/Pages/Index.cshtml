@@ -1,0 +1,311 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = Model.GetNode().Title;
+    ViewData["HasFooter"] = true;
+    ViewData["IsHome"] = true;
+    Model.BuildHeaderMenu();
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var urlDeviceToken = Url.PageLink(string.Empty, "devicetoken");
+}
+
+@await Html.PartialAsync("_Header")
+
+<section class="section">
+    <div class="container">
+
+        @if (!isAuthenticated)
+        {
+            <div class="has-text-centered">
+                <h3 class="title is-3">Willkommen !</h3>
+                <h4 class="subtitle is-4">@appSettings.Value.Slogan</h4>
+            </div>
+
+            <figure class="has-centered mt-5">
+                <img src="~/images/intro.png" asp-append-version="true" alt="Paddeln" />
+            </figure>
+        }
+
+
+        @if (Model.HasNodeAccess(
+            typeof(MyTrips.IndexModel),
+            typeof(MyFoods.IndexModel),
+            typeof(MyInvoices.IndexModel),
+            typeof(MyFleet.IndexModel),
+            typeof(MyTryouts.IndexModel),
+            typeof(MyWiki.IndexModel)))
+        {
+            <p class="title">Mein Verein</p>
+            <nav class="bd-links">
+
+            @if (Model.HasNodeAccess(typeof(MyTrips.IndexModel)))
+            {
+                <a href="/MyTrips" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                            <i class="fas fa-location-dot"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Mein Fahrtenplan</h2>
+                        <div class="bd-link-subtitle">
+                            Teilnahme an Fahrten.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(MyFoods.IndexModel)))
+            {
+                <a href="/MyFoods" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fas fa-beer"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Meine Getränke, Speisen und Spenden</h2>
+                        <div class="bd-link-subtitle">
+                            Buchungen gruppiert nach Monaten.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(MyInvoices.IndexModel)))
+            {
+                <a href="/MyInvoices" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fas fa-file-invoice"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Meine Rechnungen</h2>
+                        <div class="bd-link-subtitle">
+                            Rechnungen von Getränken, Speisen und Spenden.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(MyWiki.IndexModel)))
+            {
+                <a href="/MyWiki" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fas fa-lightbulb"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Mein Wiki</h2>
+                        <div class="bd-link-subtitle">
+                            Wissenswerte Artikel
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(MyFleet.IndexModel)))
+            {
+                <a href="/MyFleet" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fas fa-car-side"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Mein Fuhrpark</h2>
+                        <div class="bd-link-subtitle">
+                            Meine Buchungen von Fahrzeugen.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(MyTryouts.IndexModel)))
+            {
+                <a href="/MyTryouts" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fa-solid fa-handshake"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Mein Anfängertraining</h2>
+                        <div class="bd-link-subtitle">
+                            Meine Trainings ansehen und buchen
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(MyBoats.IndexModel)))
+            {
+                <a href="/MyBoats" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fa-solid fa-anchor"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Mein Bootshaus</h2>
+                        <div class="bd-link-subtitle">
+                            Meine Boote und Mieten ansehen
+                        </div>
+                    </div>
+                </a>
+            }
+
+            </nav>
+        }
+
+        @if (Model.HasNodeAccess(
+            typeof(Users.IndexModel),
+            typeof(Tryouts.IndexModel),
+            typeof(Fleet.IndexModel),
+            typeof(Wiki.IndexModel),
+            typeof(Trips.IndexModel),
+            typeof(Foods.KitchenServiceModel),
+            typeof(Invoices.IndexModel),
+            typeof(Boats.IndexModel),
+            typeof(Foods.IndexModel)))
+        {
+            <p class="title">Verwaltung</p>
+            <nav class="bd-links">
+
+            @if (Model.HasNodeAccess(typeof(Trips.IndexModel)))
+            {
+                <a href="/Trips" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                            <i class="fas fa-location-dot"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Fahrtenplan</h2>
+                        <div class="bd-link-subtitle">
+                            Fahrten planen und verwalten.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(Foods.IndexModel)))
+            {
+                <a href="/Foods" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fas fa-beer"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Getränke, Speisen & Spenden</h2>
+                        <div class="bd-link-subtitle">
+                            Buchungen aller Mitglieder, gruppiert nach Monaten
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(Foods.KitchenServiceModel)))
+            {
+                <a href="/Foods/KitchenService" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fas fa-shipping-fast"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Küchendienst</h2>
+                        <div class="bd-link-subtitle">
+                            Tagesübersicht der Buchungen von Getränken und Speisen aller Mitglieder.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(Invoices.IndexModel)))
+            {
+                <a href="/Invoices" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fas fa-file-invoice"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Rechnungen</h2>
+                        <div class="bd-link-subtitle">
+                            Ausgestellte Rechnungen aller Mitglieder.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(Wiki.IndexModel)))
+            {
+                <a href="/Wiki" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fas fa-lightbulb"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Wiki</h2>
+                        <div class="bd-link-subtitle">
+                            Wissenswerte Artikel verwalten
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(Fleet.IndexModel)))
+            {
+                <a href="/Fleet" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fas fa-car-side"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Fuhrpark</h2>
+                        <div class="bd-link-subtitle">
+                            Fahrzeuge und Buchungen verwalten.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(Tryouts.IndexModel)))
+            {
+                <a href="/Tryouts" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fa-solid fa-handshake"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Anfängertraining</h2>
+                        <div class="bd-link-subtitle">
+                            Trainings verwalten.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(Boats.IndexModel)))
+            {
+                <a href="/Boats" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fa-solid fa-anchor"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Bootshaus</h2>
+                        <div class="bd-link-subtitle">
+                            Boote und Mieten verwalten.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(Users.IndexModel)))
+            {
+                <a href="/Users" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fas fa-users"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Mitgliederverwaltung</h2>
+                        <div class="bd-link-subtitle">
+                            Verwaltung der Mitglieder.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            </nav>
+        }
+    </div>
+</section>
+
+@await Html.PartialAsync("_Footer")
+
+@if (isAuthenticated)
+{
+    @section Scripts 
+    {
+        @await Html.PartialAsync("_FcmDeviceToken")
+    }
+}

@@ -1,0 +1,37 @@
+﻿@{
+    var urlDeviceToken = Url.PageLink("Index", "devicetoken");  
+}
+
+@inject IOptions<FirebaseCloudMessagingSettings> fcmSettings;
+
+@if (fcmSettings.Value.HasConfig)
+{
+<script type="module">
+    import { startMessaging } from '/lib/gt-fcm-wrapper/gt-fcm-wrapper-main-1.0.0.min.js';
+    $(function () {
+        const config = {
+            firebaseConfig: {
+                apiKey: '@fcmSettings.Value.ApiKey',
+                projectId: '@fcmSettings.Value.ProjectId',
+                messagingSenderId: '@fcmSettings.Value.MessagingSenderId',
+                appId: '@fcmSettings.Value.AppId'
+            },
+            vapidKey: '@fcmSettings.Value.VapidKey',
+            serviceWorkerPath: '/?handler=fcmworker'
+        };
+        startMessaging(config).then(deviceToken => {
+            if (deviceToken) {
+                const key = 'device-token-sent';
+                const isSent = localStorageGetItem(key);
+                if (!isSent) {
+                    $.post('@urlDeviceToken', {@Html.AjaxCsrfToken(), token: deviceToken}, function(data) {
+                        if (data) {
+                            localStorageSetItem(key, 1, 60 * 1000 * 60);
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+}

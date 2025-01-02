@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GtKasse.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    }
+  }
+}

@@ -1,0 +1,67 @@
+﻿@page "/MyWiki/Show/{id:guid}"
+@model GtKasse.Ui.Pages.MyWiki.ShowArticleModel
+@{
+    ViewData["Title"] = Model.GetNode().Title;
+    ViewData["HasFooter"] = true;
+    Guid.TryParse(Request.RouteValues["id"] as string, out var id);
+    Model.BuildHeaderMenu(new { id });
+
+    var dateConverter = new GermanDateTimeConverter();
+    var showManagementBoard = User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Chairperson);
+}
+
+@await Html.PartialAsync("_Header")
+
+<section class="section">
+    <div class="container">
+
+        @Html.CreateBreadcrumb()
+
+        @if (!ModelState.IsValid)
+        {
+            <div class="notification is-danger">
+                <button class="delete"></button>
+                <div asp-validation-summary="All"></div>
+            </div>
+        }
+
+        @if (Model.Item is not null)
+        {
+            <div class="content">
+                <h1>@Model.Item.Title</h1>
+                <p>
+                    <span class="tag is-rounded is-medium">@Model.Item.Identifier</span>
+                    <span class="tag is-rounded is-medium is-success">
+                        <span class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
+                        &nbsp;
+                        @dateConverter.ToDateTime(Model.Item.LastUpdate)
+                    </span>
+                    @if (Model.Item.UserEmail is not null)
+                    {
+                        <span class="tag is-rounded is-medium is-warning"><a href="mailto:@Model.Item.UserEmail">@Model.Item.User</a></span>
+                    }
+                    else
+                    {
+                        <span class="tag is-rounded is-medium is-warning">@Model.Item.User</span>
+                    }
+                </p>
+                @if (!string.IsNullOrWhiteSpace(Model.Item.DescriptionMember))
+                {
+                    <div>
+                        @Html.Raw(Model.Item.DescriptionMember)
+                    </div>
+                }
+                @if (showManagementBoard && !string.IsNullOrWhiteSpace(Model.Item.DescriptionManagementBoard))
+                {
+                    <hr />
+                    <div>
+                        @Html.Raw(Model.Item.DescriptionManagementBoard)
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</section>
+
+@await Html.PartialAsync("_Footer")
