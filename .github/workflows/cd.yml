@@ -24,10 +24,16 @@ jobs:
     - name: Restore
       run: dotnet restore
 
+    - name: Set Version
+      run: | 
+        TAG=${{ github.ref_name }}
+        echo "TAG=${TAG}" >> $GITHUB_ENV
+        echo "SEMVER=${TAG#v}" >> $GITHUB_ENV
+
     - name: Publish
       run: |
-        dotnet publish ./src/GtKasse.Cli -c Release -o ./dist/cli -r linux-x64 --self-contained true /p:UseAppHost=true
-        dotnet publish ./src/GtKasse.Ui -c Release -o ./dist/ui -r linux-x64 --self-contained true /p:UseAppHost=true
+        dotnet publish ./src/GtKasse.Cli -c Release -o ./dist/cli -r linux-x64 --self-contained true /p:UseAppHost=true /p:Version=${SEMVER}
+        dotnet publish ./src/GtKasse.Ui -c Release -o ./dist/ui -r linux-x64 --self-contained true /p:UseAppHost=true /p:Version=${SEMVER}
 
     - run: |
         cd dist ; zip -r release.zip *
@@ -35,4 +41,4 @@ jobs:
     - name: Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: gh release create ${{ github.ref_name }} ./dist/release.zip --generate-notes --title "${{ github.ref_name }}"
+      run: gh release create ${TAG} ./dist/release.zip --generate-notes --title "${TAG}"
