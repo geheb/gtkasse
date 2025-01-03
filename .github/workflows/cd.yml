@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        include-prerelease: false
+
+    - name: Restore
+      run: dotnet restore
+
+    - name: Publish
+      run: |
+        dotnet publish ./src/GtKasse.Cli -c Release -o ./dist/cli -r linux-x64 --self-contained true /p:UseAppHost=true
+        dotnet publish ./src/GtKasse.Ui -c Release -o ./dist/ui -r linux-x64 --self-contained true /p:UseAppHost=true
+
+    - run: |
+        cd ./dist ; zip -r release.zip *
+
+    - name: Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: gh release create ${{ github.ref_name }} ./dist/release.zip --generate-notes --title "${{ github.ref_name }}"
