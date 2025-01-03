@@ -1,10 +1,11 @@
 name: CI Build
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
 
 jobs:
   build:
@@ -13,11 +14,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Setup .NET 8
+
+    - name: Setup
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+        include-prerelease: false
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
