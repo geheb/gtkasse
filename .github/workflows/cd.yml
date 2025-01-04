@@ -36,9 +36,9 @@ jobs:
         dotnet publish ./src/GtKasse.Ui -c Release -o ./dist/ui -r linux-x64 --self-contained true /p:UseAppHost=true /p:Version=${SEMVER}
 
     - run: |
-        cd dist ; zip -r release.zip *
+        cd dist ; tar cfJ release-linux-x64.tar.xz *
 
     - name: Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: gh release create ${TAG} ./dist/release.zip --generate-notes --title "${TAG}"
+      run: gh release create ${TAG} ./dist/release-linux-x64.tar.xz --generate-notes --title "${TAG}"
