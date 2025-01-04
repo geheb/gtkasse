@@ -16,29 +16,38 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup
+    - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
-    - name: Restore
+    - name: Restore dependencies
       run: dotnet restore
 
-    - name: Set Version
+    - name: Create version
       run: | 
         TAG=${{ github.ref_name }}
         echo "TAG=${TAG}" >> $GITHUB_ENV
         echo "SEMVER=${TAG#v}" >> $GITHUB_ENV
 
-    - name: Publish
+    - name: Publish files
       run: |
         dotnet publish ./src/GtKasse.Cli -c Release -o ./dist/cli -r linux-x64 --self-contained true /p:UseAppHost=true /p:Version=${SEMVER}
         dotnet publish ./src/GtKasse.Ui -c Release -o ./dist/ui -r linux-x64 --self-contained true /p:UseAppHost=true /p:Version=${SEMVER}
 
-    - run: |
+    - name: Download dependency
+      run: |
+        cd dist/ui/wwwroot/lib
+        mkdir gt-fcm-wrapper && cd "$_"
+        wget https://github.com/geheb/gt-fcm-wrapper/releases/download/v1.0.0/release.zip
+        unzip release.zip
+        del release.zip 
+
+    - name: Create archive
+      run: |
         cd dist ; tar cfJ release-linux-x64.tar.xz *
 
-    - name: Release
+    - name: Create release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: gh release create ${TAG} ./dist/release-linux-x64.tar.xz --generate-notes --title "${TAG}"
