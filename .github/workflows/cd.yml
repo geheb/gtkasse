@@ -41,7 +41,7 @@ jobs:
         mkdir gt-fcm-wrapper && cd "$_"
         wget https://github.com/geheb/gt-fcm-wrapper/releases/download/v1.0.0/release.zip
         unzip release.zip
-        del release.zip 
+        rm release.zip 
 
     - name: Create archive
       run: |
