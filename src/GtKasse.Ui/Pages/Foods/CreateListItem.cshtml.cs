@@ -72,7 +72,7 @@ public class CreateListItemModel : PageModel
             return false;
         }
         var datetimeConverter = new GermanDateTimeConverter();
-        ListDetails = foodList.Name + ", gültig ab " + datetimeConverter.ToDateTime(foodList.ValidFrom);
+        ListDetails = foodList.Name + ", gÃ¼ltig ab " + datetimeConverter.ToDateTime(foodList.ValidFrom);
         return true;
     }
 }

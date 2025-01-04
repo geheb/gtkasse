@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace GtKasse.Ui.Pages.MyAccount;
 
-[Node("E-Mail-Adresse ändern", FromPage = typeof(IndexModel))]
+[Node("E-Mail-Adresse Ã¤ndern", FromPage = typeof(IndexModel))]
 [Authorize]
 public class ChangeEmailModel : PageModel
 {

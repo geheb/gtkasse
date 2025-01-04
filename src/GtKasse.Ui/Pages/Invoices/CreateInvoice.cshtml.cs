@@ -52,10 +52,10 @@ namespace GtKasse.Ui.Pages.Invoices
             var count = await _invoices.Create(filterDate.start, filterDate.end, Description!, cancellationToken);
             if (count < 1)
             {
-                ModelState.AddModelError(string.Empty, count < 0 ? "Fehler beim Anlegen der Rechnungen." : "Keine gültigen Buchungen gefunden.");
+                ModelState.AddModelError(string.Empty, count < 0 ? "Fehler beim Anlegen der Rechnungen." : "Keine gÃ¼ltigen Buchungen gefunden.");
                 return Page();
             }
-
+            
             return RedirectToPage("Index");
         }
 
@@ -74,7 +74,7 @@ namespace GtKasse.Ui.Pages.Invoices
             var end = DateTime.FromBinary(long.Parse(filterDates[1]));
 
             var total = await _bookings.CalcTotal(start, end, cancellationToken);
-            CurrentTotal = $"{total:0.00} €";
+            CurrentTotal = $"{total:0.00} â‚¬";
 
             BookingDateTo = end.ToString("g", ci);
 

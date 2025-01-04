@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace GtKasse.Ui.Pages.Foods;
 
-[Node("Einträge verwalten", FromPage = typeof(EditListModel))]
+[Node("EintrÃ¤ge verwalten", FromPage = typeof(EditListModel))]
 [Authorize(Roles = "administrator,treasurer")]
 public class EditListItemsModel : PageModel
 {
@@ -36,6 +36,6 @@ public class EditListItemsModel : PageModel
             return;
         }
         var datetimeConverter = new GermanDateTimeConverter();
-        ListDetails = foodList.Name + ", gültig ab " + datetimeConverter.ToDateTime(foodList.ValidFrom);
+        ListDetails = foodList.Name + ", gÃ¼ltig ab " + datetimeConverter.ToDateTime(foodList.ValidFrom);
     }
 }

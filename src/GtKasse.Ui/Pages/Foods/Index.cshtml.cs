@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GtKasse.Ui.Pages.Foods
 {
-    [Node("Getr‰nke/Speisen/Spenden", FromPage = typeof(Pages.IndexModel))]
+    [Node("Getr√§nke/Speisen/Spenden", FromPage = typeof(Pages.IndexModel))]
     [Authorize(Roles = "administrator,treasurer")]
     public class IndexModel : PageModel
     {

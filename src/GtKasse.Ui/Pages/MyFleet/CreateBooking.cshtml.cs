@@ -37,7 +37,7 @@ public class CreateBookingModel : PageModel
 
         if (dto.Start >= dto.End)
         {
-            ModelState.AddModelError(string.Empty, "Zeitraum-Von darf nicht größer/gleich als Zeitraum-Bis sein.");
+            ModelState.AddModelError(string.Empty, "Zeitraum-Von darf nicht grÃ¶ÃŸer/gleich als Zeitraum-Bis sein.");
             return Page();
         }
 

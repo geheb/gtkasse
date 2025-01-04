@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GtKasse.Ui.Pages.MyAccount
 {
-    [Node("Passwort ‰ndern", FromPage = typeof(IndexModel))]
+    [Node("Passwort √§ndern", FromPage = typeof(IndexModel))]
     [Authorize]
     public class ChangePasswordModel : PageModel
     {
@@ -21,7 +21,7 @@ namespace GtKasse.Ui.Pages.MyAccount
         [RequiredField, PasswordLengthField]
         public string? NewPassword { get; set; }
 
-        [BindProperty, Display(Name = "Neues Passwort best‰tigen")]
+        [BindProperty, Display(Name = "Neues Passwort best√§tigen")]
         [RequiredField, PasswordLengthField]
         [CompareField(nameof(NewPassword))]
         public string? ConfirmNewPassword { get; set; }

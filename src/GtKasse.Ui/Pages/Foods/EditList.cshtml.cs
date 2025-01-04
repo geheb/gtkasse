@@ -16,7 +16,7 @@ public class EditListModel : PageModel
     [BindProperty, RequiredField, TextLengthField]
     public string? Name { get; set; }
 
-    [Display(Name = "Gültig ab")]
+    [Display(Name = "GÃ¼ltig ab")]
     [BindProperty, RequiredField]
     public string? ValidFrom { get; set; }
 

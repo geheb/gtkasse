@@ -7,14 +7,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GtKasse.Ui.Pages.MyFoods;
 
-[Node("Getr‰nk/Speise/Spende buchen", FromPage = typeof(IndexModel))]
+[Node("Getr√§nk/Speise/Spende buchen", FromPage = typeof(IndexModel))]
 [Authorize(Roles = "administrator,member")]
 public class CreateFoodBookingModel : PageModel
 {
     private readonly Core.Repositories.Foods _foods;
     private readonly Core.Repositories.Bookings _bookings;
 
-    [Display(Name = "Getr‰nk/Speise/Spende")]
+    [Display(Name = "Getr√§nk/Speise/Spende")]
     [BindProperty, RequiredField]
     public Guid SelectedFoodId { get; set; }
 
@@ -44,7 +44,7 @@ public class CreateFoodBookingModel : PageModel
         if (Foods.Length < 1)
         {
             IsDisabled = true;
-            ModelState.AddModelError(string.Empty, "Keine g¸ltige Buchungsliste vorhanden.");
+            ModelState.AddModelError(string.Empty, "Keine g√ºltige Buchungsliste vorhanden.");
         }
     }
 

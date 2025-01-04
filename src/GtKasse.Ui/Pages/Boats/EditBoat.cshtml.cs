@@ -52,7 +52,7 @@ public class EditBoatModel : PageModel
         {
             if (status == BoatStatus.Exists)
             {
-                ModelState.AddModelError(string.Empty, "Das Boot mit der Nummer existiert bereits. Bitte eine andere Nummer w‰hlen.");
+                ModelState.AddModelError(string.Empty, "Das Boot mit der Nummer existiert bereits. Bitte eine andere Nummer w√§hlen.");
             }
             else
             {

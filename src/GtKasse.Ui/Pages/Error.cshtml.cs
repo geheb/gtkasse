@@ -31,7 +31,7 @@ public class ErrorModel : PageModel
         Code = code < 1 ? 500 : code;
         Description = code switch
         {
-            400 => "Die Anfrage ist ungültig.",
+            400 => "Die Anfrage ist ungÃ¼ltig.",
             403 => $"Der Zugriff auf die angeforderte Seite '{returnUrl}' wurde verweigert.",
             404 => "Die angeforderte Seite wurde nicht gefunden.",
             _ => "Ein interner Server-Fehler ist aufgetreten."

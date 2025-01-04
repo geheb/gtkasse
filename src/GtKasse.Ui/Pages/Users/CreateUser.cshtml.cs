@@ -28,7 +28,7 @@ public class CreateUserModel : PageModel
 
         if (Input.Roles.All(r => r == false))
         {
-            ModelState.AddModelError(string.Empty, "Keine Rolle ausgew‰hlt.");
+            ModelState.AddModelError(string.Empty, "Keine Rolle ausgew√§hlt.");
             return Page();
         }
 

@@ -22,7 +22,7 @@ public class EditTwoFactorModel : PageModel
     [RequiredField, TextLengthField(6, MinimumLength = 6)]
     public string? Code { get; set; }
 
-    [Display(Name = "Geheimer Schlüssel")]
+    [Display(Name = "Geheimer SchlÃ¼ssel")]
     public string? SecretKey { get; set; }
     public string? AuthUri { get; set; }
     public string? AuthQrCodeEncoded { get; set; }

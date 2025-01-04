@@ -54,7 +54,7 @@ public class CreateRentalModel : PageModel
         {
             if (status == BoatRentalStatus.AlreadyBooked)
             {
-                ModelState.AddModelError(string.Empty, "Das Datum für die Miete ist bereits vergeben.");
+                ModelState.AddModelError(string.Empty, "Das Datum fÃ¼r die Miete ist bereits vergeben.");
             }
             else
             {
@@ -81,7 +81,7 @@ public class CreateRentalModel : PageModel
 
         if (boat.IsLocked)
         {
-            ModelState.AddModelError(string.Empty, "Das Boot ist gesperrt. Das Mieten ist somit nicht möglich.");
+            ModelState.AddModelError(string.Empty, "Das Boot ist gesperrt. Das Mieten ist somit nicht mÃ¶glich.");
             IsDisabled = true;
             return null;
         }

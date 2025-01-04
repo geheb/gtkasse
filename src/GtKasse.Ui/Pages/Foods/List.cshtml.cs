@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace GtKasse.Ui.Pages.Foods
 {
-    [Node("Getr‰nke-/Speisen-/Spendenliste", FromPage = typeof(IndexModel))]
+    [Node("Getr√§nke-/Speisen-/Spendenliste", FromPage = typeof(IndexModel))]
     [Authorize(Roles = "administrator,treasurer")]
     public class ListModel : PageModel
     {

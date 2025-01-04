@@ -35,7 +35,7 @@ public class CreateArticleModel : PageModel
 
         if (Input.IsDescriptionEmpty)
         {
-            ModelState.AddModelError(string.Empty, "Eine Beschreibung wird benötigt.");
+            ModelState.AddModelError(string.Empty, "Eine Beschreibung wird benÃ¶tigt.");
             return Page();
         }
 

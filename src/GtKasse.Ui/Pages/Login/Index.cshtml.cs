@@ -36,11 +36,11 @@ public class IndexModel : PageModel
     {
         if (message == 1)
         {
-            Message = "Das Passwort wurde geändert. Melde dich jetzt mit dem neuen Passwort an.";
+            Message = "Das Passwort wurde geÃ¤ndert. Melde dich jetzt mit dem neuen Passwort an.";
         }
         else if (message == 2)
         {
-            Message = "Eine E-Mail wird an die E-Mail-Adresse versendet, um das Passwort zu ändern.";
+            Message = "Eine E-Mail wird an die E-Mail-Adresse versendet, um das Passwort zu Ã¤ndern.";
         }
     }
 

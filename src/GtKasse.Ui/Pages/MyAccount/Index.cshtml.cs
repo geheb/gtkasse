@@ -36,9 +36,9 @@ public class IndexModel : PageModel
     {
         Info = message switch
         {
-            0 => "Änderungen wurden gespeichert.",
-            1 => "Das Passwort wurde geändert.",
-            2 => "Eine E-Mail wird an die neue E-Mail-Adresse versendet und muss bestätigt werden - erst dann ist die Änderung vollständig.",
+            0 => "Ã„nderungen wurden gespeichert.",
+            1 => "Das Passwort wurde geÃ¤ndert.",
+            2 => "Eine E-Mail wird an die neue E-Mail-Adresse versendet und muss bestÃ¤tigt werden - erst dann ist die Ã„nderung vollstÃ¤ndig.",
             _ => default
         };
 

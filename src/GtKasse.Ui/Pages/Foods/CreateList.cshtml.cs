@@ -14,9 +14,9 @@ public class CreateListModel : PageModel
 
     [Display(Name = "Name")]
     [BindProperty, RequiredField, TextLengthField]
-    public string? Name { get; set; } = $"Speisen, Getränke & Spenden {DateTime.UtcNow.Year}";
+    public string? Name { get; set; } = $"Speisen, GetrÃ¤nke & Spenden {DateTime.UtcNow.Year}";
 
-    [Display(Name = "Gültig ab")]
+    [Display(Name = "GÃ¼ltig ab")]
     [BindProperty, RequiredField]
     public string? ValidFrom { get; set; }
 
