@@ -1,4 +1,4 @@
-﻿using GtKasse.Core.User;
+using GtKasse.Core.User;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +32,7 @@ public class IndexModel : PageModel
                 messagingSenderId: '{{fcmSettings.Value.MessagingSenderId}}',
                 appId: '{{fcmSettings.Value.AppId}}'
             };
-            importScripts('/lib/gt-fcm-wrapper/gt-fcm-wrapper-sw-1.0.0.min.js');
+            importScripts('/lib/gt-fcm-wrapper/gt-fcm-worker-1.1.0.min.js');
             """;
         }
 

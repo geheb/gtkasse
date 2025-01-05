@@ -39,7 +39,7 @@ jobs:
       run: |
         cd dist/ui/wwwroot/lib
         mkdir gt-fcm-wrapper && cd "$_"
-        wget https://github.com/geheb/gt-fcm-wrapper/releases/download/v1.0.0/release.zip
+        wget https://github.com/geheb/gt-fcm-wrapper/releases/download/v1.1.0/release.zip
         unzip release.zip
         rm release.zip 
 
