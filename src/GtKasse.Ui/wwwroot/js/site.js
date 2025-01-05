@@ -175,16 +175,10 @@ $(function () {
     $('.open-modal').click(openModalByEvent);
     $('.close-modal').click(closeModalByEvent);
 
-    $('input[type=password]').on('input', function () {
-        const eye = $(this).parent().find('.toggle-eye');
-        eye?.css('visibility', $(this).val() ? 'visible' : 'hidden');
-    });
-
-    $('.toggle-eye > i').click(function () {
+    $('.is-toggle-password').click(function () {
         const input = $(this).parent().parent().find('input');
         const isPassword = input.attr('type') === 'password';
         input.attr('type', isPassword ? 'text' : 'password');
-        $(this).toggleClass("fa-eye fa-eye-slash");
     });
 
     $(".clickable-row").click(function (e) {

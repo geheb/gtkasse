@@ -67,12 +67,9 @@ html {
     cursor: pointer;
 }
 
-.toggle-eye {
-    position: absolute;
-    height: 2.5em;
-    width: 2.5em;
+.is-toggle-password {
+    pointer-events: all !important;
     cursor: pointer;
-    visibility: hidden;
 }
 
 input::-ms-reveal {

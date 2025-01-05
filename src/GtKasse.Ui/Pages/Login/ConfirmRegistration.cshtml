@@ -50,18 +50,18 @@
                             <fieldset disabled="@Model.IsDisabled">
 
                                 <div class="field">
-                                    <div class="control mr-5">
+                                    <div class="control has-icons-right">
                                         <input class="input is-large" type="password" placeholder="Passwort" asp-for="Password" />
-                                        <span class="icon toggle-eye mt-2">
+                                        <span class="icon is-right is-toggle-password">
                                             <i class="fas fa-eye"></i>
                                         </span>
                                     </div>
                                     <span asp-validation-for="Password"></span>
                                 </div>
                                 <div class="field">
-                                    <div class="control mr-5">
+                                    <div class="control has-icons-right">
                                         <input class="input is-large" type="password" placeholder="Passwort wiederholen" asp-for="RepeatPassword" />
-                                        <span class="icon toggle-eye mt-2">
+                                        <span class="icon is-right is-toggle-password">
                                             <i class="fas fa-eye"></i>
                                         </span>
                                     </div>
