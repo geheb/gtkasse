@@ -1,4 +1,4 @@
-﻿namespace GtKasse.Core.Models;
+namespace GtKasse.Core.Models;
 
 using GtKasse.Core.Converter;
 using GtKasse.Core.Entities;
@@ -26,6 +26,7 @@ public class MyTripListDto
     public DateTimeOffset? BookingBookedOn { get; set; }
     public DateTimeOffset? BookingConfirmedOn { get; set; }
     public DateTimeOffset? BookingCancelledOn { get; set; }
+    public string[] Categories { get; set; } = [];
 
     internal MyTripListDto(Trip trip, TripBooking? booking, int bookingCount, int chatMessageCount, string[] bookingUsers, GermanDateTimeConverter dc)
     {
@@ -56,5 +57,15 @@ public class MyTripListDto
         CanAccept = canBook && bookingCount < trip.MaxBookings;
         CanDelete = booking is not null && booking.ConfirmedOn is null;
         IsExpired = trip.IsExpired;
+
+        var categories = (TripCategory)trip.Categories;
+        if (categories != TripCategory.None)
+        {
+            var tripCategoryConverter = new TripCategoryConverter();
+            Categories = Enum.GetValues<TripCategory>()
+                .Where(v => v != TripCategory.None && categories.HasFlag(v))
+                .Select(v => tripCategoryConverter.CategoryToName(v))
+                .ToArray();
+        }
     }
 }

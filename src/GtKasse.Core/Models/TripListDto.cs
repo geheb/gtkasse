@@ -1,4 +1,4 @@
-﻿using GtKasse.Core.Converter;
+using GtKasse.Core.Converter;
 using GtKasse.Core.Entities;
 
 namespace GtKasse.Core.Models;
@@ -17,7 +17,8 @@ public sealed class TripListDto
     public bool IsExpired { get; }
     public string? Description { get; set; }
     public bool CanAccept { get; }
-    public string[] BookingUsers { get; set; } = Array.Empty<string>();
+    public string[] BookingUsers { get; set; } = [];
+    public string[] Categories { get; set; } = [];
 
     internal TripListDto(Trip trip, int bookingCount, int chatMessageCount, string[] bookingUsers, GermanDateTimeConverter dc)
     {
@@ -40,5 +41,15 @@ public sealed class TripListDto
             DateTimeOffset.UtcNow <= trip.BookingEnd;
 
         CanAccept = canBook && bookingCount < trip.MaxBookings;
+
+        var categories = (TripCategory)trip.Categories;
+        if (categories != TripCategory.None)
+        {
+            var tripCategoryConverter = new TripCategoryConverter();
+            Categories = Enum.GetValues<TripCategory>()
+                .Where(v => v != TripCategory.None && categories.HasFlag(v))
+                .Select(v => tripCategoryConverter.CategoryToName(v))
+                .ToArray();
+        }
     }
 }

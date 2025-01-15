@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace GtKasse.Ui.Pages.MyBoats;
 
 
-[Node("Mein Bootshaus", FromPage = typeof(Pages.IndexModel))]
+[Node("Mein Bootslager", FromPage = typeof(Pages.IndexModel))]
 [Authorize(Roles = "administrator,member")]
 public class IndexModel : PageModel
 {

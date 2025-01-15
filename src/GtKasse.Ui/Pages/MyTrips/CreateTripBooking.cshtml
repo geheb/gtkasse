@@ -43,13 +43,13 @@
                     <div class="list-item-controls">
                         <div class="buttons">
                             <a class="button is-dark is-inverted open-modal" href="#" data-target="#infoModal"
-                               data-info='@Json.Serialize(new { date = dateConverter.Format(i.Start, i.End), target = i.Target, contact = i.ContactName, contactemail = i.ContactEmail, description = i.Description, users = i.BookingUsers })'>
+                               data-info='@Json.Serialize(new { date = dateConverter.Format(i.Start, i.End), target = i.Target, contact = i.ContactName, contactemail = i.ContactEmail, description = i.Description, users = i.BookingUsers, categories = i.Categories })'>
                                 <span class="icon"><i class="fas fa-info"></i></span>
                             </a>
                             @if (i.CanAccept)
                             {
                                 <a class="button is-dark is-inverted open-modal" href="#" data-target="#createModal"
-                                   data-info='@Json.Serialize(new { date = dateConverter.Format(i.Start, i.End), target = i.Target, contact = i.ContactName })'
+                                   data-info='@Json.Serialize(new { date = dateConverter.Format(i.Start, i.End), target = i.Target, contact = i.ContactName, categories = i.Categories })'
                                    data-url="@(Url.PageLink(string.Empty, "create", new { id = i.Id }))">
                                     <span class="icon"><i class="fas fa-check"></i></span>
                                 </a>
@@ -67,6 +67,7 @@
 <div class="content">
     <div>Ziel: <span class="tripTarget"></span></div>
     <div>Zeitpunkt: <span class="tripDate"></span></div>
+    <div>Kategorien: <span class="tripCategories"></span></div>
     <div>Ansprechpartner: <span class="tag is-rounded is-warning tripContact"></span></div>
     <hr />
     <p>Andere Person anmelden (optional):</p>
@@ -78,6 +79,7 @@
 <div class="content">
     <div>Ziel: <span class="tripTarget"></span></div>
     <div>Zeitpunkt: <span class="tripDate"></span></div>
+    <div>Kategorien: <span class="tripCategories"></span></div>
     <div>Ansprechpartner: <span class="tag is-rounded is-warning"><a href="#" class="tripContact"></a></span></div>
     <div>Anmeldungen: <span class="tripUsers"></span></div>
     <hr />
@@ -97,10 +99,12 @@
                 datainfo: 'info',
                 action: function (target, data) {
                     const d = JSON.parse(data);
-                    const tags = $.map(d.users, function (u) { return `<span class="tag is-rounded is-info">${u}</span>`; });
-                    $(target).find('.tripUsers').html(tags.join(' '));
+                    const tagUsers = $.map(d.users, function (u) { return `<span class="tag is-rounded is-info">${u}</span>`; });
+                    $(target).find('.tripUsers').html(tagUsers.join(' '));
                     $(target).find('.tripTarget').text(d.target);
                     $(target).find('.tripDate').text(d.date);
+                        const tagCategories = $.map(d.categories, function (c) { return `<span class="tag is-rounded">${c}</span>`; });
+                    $(target).find('.tripCategories').html(tagCategories.join(' '));
                     $(target).find('.tripContact').attr('href', d.contactemail ? `mailto:${d.contactemail}` : '#').text(d.contact);
                     $(target).find('.tripDescription').html(d.description);
                 }
@@ -117,6 +121,8 @@
                     $(target).find(":text").val('');
                     $(target).find('.tripTarget').text(d.target);
                     $(target).find('.tripDate').text(d.date);
+                    const tagCategories = $.map(d.categories, function (c) { return `<span class="tag is-rounded">${c}</span>`; });
+                    $(target).find('.tripCategories').html(tagCategories.join(' '));
                     $(target).find('.tripContact').text(d.contact);
                 }
             },

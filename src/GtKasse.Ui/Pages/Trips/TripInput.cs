@@ -1,4 +1,4 @@
-﻿using GtKasse.Ui.Annotations;
+using GtKasse.Ui.Annotations;
 using System.ComponentModel.DataAnnotations;
 
 namespace GtKasse.Ui.Pages.Trips;
@@ -37,6 +37,12 @@ public class TripInput
     [TextLengthField(8000)]
     public string? Description { get; set; }
 
+    [Display(Name = "Kategorien")]
+    public bool[] Categories { get; set; } = new bool[4];
+
+    [Display(Name = "Ist öffentlich einsehbar")]
+    public bool IsPublic { get; set; }
+
     public TripInput()
     {
         var dc = new GermanDateTimeConverter();
@@ -51,6 +57,12 @@ public class TripInput
     internal TripDto ToDto()
     {
         var dc = new GermanDateTimeConverter();
+        var categories = TripCategory.None;
+        if (Categories[0]) categories |= TripCategory.Junior;
+        if (Categories[1]) categories |= TripCategory.JuniorAdvanced;
+        if (Categories[2]) categories |= TripCategory.Advanced;
+        if (Categories[3]) categories |= TripCategory.YoungPeople;
+
         return new()
         {
             Start = dc.FromIsoDateTime(Start)!.Value,
@@ -60,7 +72,9 @@ public class TripInput
             MaxBookings = MaxBookings,
             BookingStart = dc.FromIsoDateTime(BookingStart)!.Value,
             BookingEnd = dc.FromIsoDateTime(BookingEnd)!.Value,
-            Description = Description
+            Description = Description,
+            Categories = categories,
+            IsPublic = IsPublic
         };
     }
 
@@ -75,6 +89,14 @@ public class TripInput
         BookingStart = dc.ToIso(dto.BookingStart);
         BookingEnd = dc.ToIso(dto.BookingEnd);
         Description = dto.Description;
+        if (dto.Categories != TripCategory.None)
+        {
+            Categories[0] = dto.Categories.HasFlag(TripCategory.Junior);
+            Categories[1] = dto.Categories.HasFlag(TripCategory.JuniorAdvanced);
+            Categories[2] = dto.Categories.HasFlag(TripCategory.Advanced);
+            Categories[3] = dto.Categories.HasFlag(TripCategory.YoungPeople);
+        }
+        IsPublic = dto.IsPublic;
     }
 
     public string? Validate()

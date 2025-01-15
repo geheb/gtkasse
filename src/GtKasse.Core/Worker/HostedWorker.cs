@@ -1,4 +1,4 @@
-﻿using GtKasse.Core.Database;
+using GtKasse.Core.Database;
 using GtKasse.Core.Email;
 using GtKasse.Core.Entities;
 using GtKasse.Core.Models;
@@ -18,7 +18,6 @@ public sealed class HostedWorker : BackgroundService
     private readonly ILogger _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly AccountEmailTemplateRenderer _accountEmailTemplateRenderer = new();
-    private readonly IEmailSender _emailSender;
 
     private readonly TimeSpan _confirmEmailTimeout, _changeEmailPassTimeout;
 
@@ -26,12 +25,10 @@ public sealed class HostedWorker : BackgroundService
         IOptions<ConfirmEmailDataProtectionTokenProviderOptions> confirmEmailOptions,
         IOptions<DataProtectionTokenProviderOptions> changeEmailPassOptions,
         ILogger<HostedWorker> logger,
-        IServiceScopeFactory serviceScopeFactory,
-        IEmailSender emailSender)
+        IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
-        _emailSender = emailSender;
 
         _confirmEmailTimeout = confirmEmailOptions.Value.TokenLifespan;
         _changeEmailPassTimeout = changeEmailPassOptions.Value.TokenLifespan;
@@ -49,6 +46,8 @@ public sealed class HostedWorker : BackgroundService
         using var scope = _serviceScopeFactory.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+        var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
+
         var dbSet = dbContext.Set<AccountNotification>();
 
         var entities = await dbSet
@@ -63,7 +62,7 @@ public sealed class HostedWorker : BackgroundService
 
         foreach (var entity in entities)
         {
-            if (await HandleUser(entity, cancellationToken))
+            if (await HandleUser(entity, emailSender, cancellationToken))
             {
                 entity.SentOn = DateTimeOffset.UtcNow;
                 count++;
@@ -102,7 +101,7 @@ public sealed class HostedWorker : BackgroundService
         };
     }
 
-    private async Task<bool> HandleUser(AccountNotification entity, CancellationToken cancellationToken)
+    private async Task<bool> HandleUser(AccountNotification entity, IEmailSender emailSender, CancellationToken cancellationToken)
     {
         var template = (AccountEmailTemplate)entity.Type;
         if (entity.User == null) throw new InvalidOperationException("user cant't be null");
@@ -121,7 +120,7 @@ public sealed class HostedWorker : BackgroundService
 
         try
         {
-            await _emailSender.SendEmailAsync(user.Email!, model.title, message);
+            await emailSender.SendEmailAsync(user.Email!, model.title, message);
             return true;
         }
         catch (SmtpException ex)

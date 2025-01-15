@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GtKasse.Core.Entities;
 
@@ -17,6 +17,9 @@ internal class Trip
 
     [NotMapped]
     public bool IsExpired => End < DateTimeOffset.UtcNow;
+
+    public int Categories { get; set; }
+    public bool IsPublic { get; set; }
 
     public ICollection<TripBooking>? TripBookings { get; set; }
     public ICollection<TripChat>? TripChats { get; set; }

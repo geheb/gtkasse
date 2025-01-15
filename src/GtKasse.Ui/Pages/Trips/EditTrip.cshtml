@@ -7,6 +7,7 @@
     Guid.TryParse(Request.RouteValues["id"] as string, out var id);
     Model.BuildHeaderMenu(new { id });
     var indexUrl = Url.PageLink("Index");
+    var tripCategoryConverter = new TripCategoryConverter();
 }
 
 @await Html.PartialAsync("_Header")
@@ -101,11 +102,29 @@
                         <span asp-validation-for="Input.BookingEnd"></span>
                     </div>
                     <div class="field">
-                      <label class="label" asp-for="Input.Description"></label>
-                      <div class="control">
-                        <textarea class="textarea" asp-for="Input.Description" rows="10"></textarea>
-                      </div>
+                        <label class="label">@Html.DisplayNameFor(m => m.Input.Categories)</label>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <label class="checkbox"><input type="checkbox" asp-for="Input.Categories[0]" /> @tripCategoryConverter.CategoryToName(TripCategory.Junior)</label>&nbsp;&nbsp;
+                            <label class="checkbox"><input type="checkbox" asp-for="Input.Categories[1]" /> @tripCategoryConverter.CategoryToName(TripCategory.JuniorAdvanced)</label>&nbsp;&nbsp;
+                            <label class="checkbox"><input type="checkbox" asp-for="Input.Categories[2]" /> @tripCategoryConverter.CategoryToName(TripCategory.Advanced)</label>&nbsp;&nbsp;
+                            <label class="checkbox"><input type="checkbox" asp-for="Input.Categories[3]" /> @tripCategoryConverter.CategoryToName(TripCategory.YoungPeople)</label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label" asp-for="Input.Description"></label>
+                        <div class="control">
+                            <textarea class="textarea" asp-for="Input.Description" rows="10"></textarea>
+                        </div>
                       <span asp-validation-for="Input.Description"></span>
+                    </div>
+
+                    <div class="field">
+                        <div class="control">
+                            <label class="checkbox"><input type="checkbox" asp-for="Input.IsPublic" /> @Html.DisplayNameFor(e => e.Input.IsPublic)</label>
+                        </div>
                     </div>
 
                     <button class="button is-primary" type="submit">Speichern</button>

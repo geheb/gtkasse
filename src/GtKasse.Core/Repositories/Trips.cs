@@ -1,4 +1,4 @@
-﻿namespace GtKasse.Core.Repositories;
+namespace GtKasse.Core.Repositories;
 
 using GtKasse.Core.Converter;
 using GtKasse.Core.Database;
@@ -290,6 +290,8 @@ public sealed class Trips : IDisposable
         if (entity.SetValue(e => e.BookingStart, dto.BookingStart)) count++;
         if (entity.SetValue(e => e.BookingEnd, dto.BookingEnd)) count++;
         if (entity.SetValue(e => e.Description, dto.Description)) count++;
+        if (entity.SetValue(e => e.Categories, (int)dto.Categories)) count++;
+        if (entity.SetValue(e => e.IsPublic, dto.IsPublic)) count++;
 
         if (count < 1) return true;
 
@@ -353,5 +355,24 @@ public sealed class Trips : IDisposable
         _dbContext.Set<Trip>().Remove(trip);
 
         return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+    }
+
+    public async Task<PublicTripDto[]> GetPublicTrips(CancellationToken cancellationToken)
+    {
+        var dbSetTrip = _dbContext.Set<Trip>();
+
+        var now = DateTimeOffset.UtcNow;
+
+        var trips = await dbSetTrip
+            .AsNoTracking()
+            .Where(e => e.Start > now && e.IsPublic)
+            .OrderBy(e => e.Start)
+            .ToArrayAsync(cancellationToken);
+
+        var dc = new GermanDateTimeConverter();
+
+        return trips
+            .Select(e => new PublicTripDto(e, dc))
+            .ToArray();
     }
 }

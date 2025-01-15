@@ -1,4 +1,4 @@
-﻿using GtKasse.Core.Converter;
+using GtKasse.Core.Converter;
 using GtKasse.Core.Entities;
 
 namespace GtKasse.Core.Models;
@@ -14,6 +14,8 @@ public sealed class TripDto
     public DateTimeOffset BookingStart { get; set; }
     public DateTimeOffset BookingEnd { get; set; }
     public string? Description { get; set; }
+    public TripCategory Categories { get; set; }
+    public bool IsPublic {  get; set; }
 
     internal TripDto(Trip entity, GermanDateTimeConverter dc)
     {
@@ -26,6 +28,8 @@ public sealed class TripDto
         BookingStart = dc.ToLocal(entity.BookingStart!.Value);
         BookingEnd = dc.ToLocal(entity.BookingEnd!.Value);
         Description = entity.Description;
+        Categories = (TripCategory)entity.Categories;
+        IsPublic = entity.IsPublic;
     }
 
     public TripDto()
@@ -43,7 +47,9 @@ public sealed class TripDto
             MaxBookings = MaxBookings,
             BookingStart = BookingStart,
             BookingEnd = BookingEnd,
-            Description = Description
+            Description = Description,
+            Categories = (int)Categories,
+            IsPublic = IsPublic
         };
     }
 }
