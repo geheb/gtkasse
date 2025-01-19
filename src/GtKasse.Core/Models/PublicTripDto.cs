@@ -5,6 +5,7 @@ namespace GtKasse.Core.Models;
 
 public sealed class PublicTripDto
 {
+    public Guid Id { get; set; }
     public DateTimeOffset Start { get; set; }
     public DateTimeOffset End { get; set; }
     public string? Target { get; set; }
@@ -12,6 +13,7 @@ public sealed class PublicTripDto
 
     internal PublicTripDto(Trip entity, GermanDateTimeConverter dc)
     {
+        Id = entity.Id;
         Start = dc.ToLocal(entity.Start);
         End = dc.ToLocal(entity.End);
         Target = entity.Target;

@@ -5,6 +5,9 @@ using GtKasse.Core.Database;
 using GtKasse.Core.Entities;
 using GtKasse.Core.Extensions;
 using GtKasse.Core.Models;
+using Ical.Net.CalendarComponents;
+using Ical.Net.DataTypes;
+using Ical.Net.Serialization;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -61,7 +64,7 @@ public sealed class Trips : IDisposable
         var trips = await _dbContext.Set<Trip>()
             .AsNoTracking()
             .Include(e => e.User)
-            .Where(e => (userId == null || e.UserId == userId) && (showExpired ? e.Start < now : e.Start > now))
+            .Where(e => (userId == null || e.UserId == userId) && (showExpired ? e.Start < now : e.End > now))
             .Select(e => new { trip = e, bookingCount = e.TripBookings!.Count, chatMessageCount = e.TripChats!.Count })
             .ToArrayAsync(cancellationToken);
 
@@ -100,7 +103,7 @@ public sealed class Trips : IDisposable
 
     public async Task<TripListDto?> FindTripList(Guid id, CancellationToken cancellationToken)
     {
-        var entity= await _dbContext.Set<Trip>()
+        var entity = await _dbContext.Set<Trip>()
             .AsNoTracking()
             .Include(e => e.User)
             .Where(e => e.Id == id)
@@ -169,7 +172,7 @@ public sealed class Trips : IDisposable
 
             var tripMap = trips.ToDictionary(t => t.trip.Id);
 
-            foreach(var b in batchBookings)
+            foreach (var b in batchBookings)
             {
                 var t = tripMap[b.TripId!.Value];
                 var users = tripBookingUsers.TryGetValue(b.TripId!.Value, out var u) ? u.ToArray() : Array.Empty<string>();
@@ -365,7 +368,7 @@ public sealed class Trips : IDisposable
 
         var trips = await dbSetTrip
             .AsNoTracking()
-            .Where(e => e.Start > now && e.IsPublic)
+            .Where(e => e.End > now && e.IsPublic)
             .OrderBy(e => e.Start)
             .ToArrayAsync(cancellationToken);
 
@@ -374,5 +377,38 @@ public sealed class Trips : IDisposable
         return trips
             .Select(e => new PublicTripDto(e, dc))
             .ToArray();
+    }
+
+    public async Task<string> GetPublicTripsAsIcs(CancellationToken cancellationToken)
+    {
+        var trips = await GetPublicTrips(cancellationToken);
+
+        var calendar = new Ical.Net.Calendar();
+        calendar.AddTimeZone(new VTimeZone("Europe/Berlin"));
+        calendar.ProductId = "-//GT Kasse//NONSGML Fahrtenplan//EN";
+
+        var tripCategoryConverter = new TripCategoryConverter();
+        var dateTimeConverter = new GermanDateTimeConverter();
+
+        foreach (var trip in trips)
+        {
+            var categories = string.Empty;
+            if (trip.Categories != TripCategory.None)
+            {
+                var values = Enum.GetValues<TripCategory>()
+                    .Where(e => e != TripCategory.None && trip.Categories.HasFlag(e))
+                    .Select(e => tripCategoryConverter.CategoryToName(e));
+                categories = string.Join(", ", values);
+            }
+            calendar.Events.Add(new()
+            {
+                Uid = trip.Id.ToString(),
+                Summary = trip.Target,
+                Description = $"Kategorien: {categories}",
+                Start = new CalDateTime(dateTimeConverter.ToLocal(trip.Start).DateTime),
+                End = new CalDateTime(dateTimeConverter.ToLocal(trip.End).DateTime),
+            });
+        }
+        return new ComponentSerializer().SerializeToString(calendar);
     }
 }

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace GtKasse.Ui.Pages.Trips;
@@ -19,5 +19,11 @@ public class PublicModel : PageModel
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
         Items = await _trips.GetPublicTrips(cancellationToken);
+    }
+
+    public async Task<IActionResult> OnGetIcsAsync(CancellationToken cancellationToken)
+    {
+        var ics = await _trips.GetPublicTripsAsIcs(cancellationToken);
+        return Content(ics, "text/calendar");
     }
 }
