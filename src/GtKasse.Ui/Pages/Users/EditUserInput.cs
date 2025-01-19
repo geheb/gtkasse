@@ -1,4 +1,4 @@
-﻿using GtKasse.Ui.Annotations;
+using GtKasse.Ui.Annotations;
 using System.ComponentModel.DataAnnotations;
 
 namespace GtKasse.Ui.Pages.Users;
@@ -23,7 +23,7 @@ public class EditUserInput
 
     [Display(Name = "Rollen")]
     [RequiredField]
-    public bool[] Roles { get; set; } = new bool[10];
+    public bool[] Roles { get; set; } = new bool[11];
 
     [Display(Name = "Debitoren-Nr.")]
     [TextLengthField]
@@ -51,6 +51,7 @@ public class EditUserInput
             if (dto.Roles.Any(r => r == Core.Models.Roles.UserManager)) Roles[7] = true;
             if (dto.Roles.Any(r => r == Core.Models.Roles.FleetManager)) Roles[8] = true;
             if (dto.Roles.Any(r => r == Core.Models.Roles.BoatManager)) Roles[9] = true;
+            if (dto.Roles.Any(r => r == Core.Models.Roles.HouseManager)) Roles[10] = true;
         }
         DebtorNumber = dto.DebtorNumber;
         AddressNumber = dto.AddressNumber;
@@ -73,6 +74,7 @@ public class EditUserInput
         if (Roles[7]) roles.Add(Core.Models.Roles.UserManager);
         if (Roles[8]) roles.Add(Core.Models.Roles.FleetManager);
         if (Roles[9]) roles.Add(Core.Models.Roles.BoatManager);
+        if (Roles[10]) roles.Add(Core.Models.Roles.HouseManager);
         dto.Roles = roles.ToArray();
 
         dto.DebtorNumber = DebtorNumber;

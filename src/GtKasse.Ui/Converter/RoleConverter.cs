@@ -1,4 +1,4 @@
-﻿namespace GtKasse.Ui.Converter;
+namespace GtKasse.Ui.Converter;
 
 public class RoleConverter
 {
@@ -15,6 +15,7 @@ public class RoleConverter
         if (roles.Any(r => r == Roles.Kitchen)) return "has-text-info";
         if (roles.Any(r => r == Roles.TripManager)) return "has-text-info";
         if (roles.Any(r => r == Roles.BoatManager)) return "has-text-info";
+        if (roles.Any(r => r == Roles.HouseManager)) return "has-text-info";
 
         if (roles.Any(r => r == Roles.Member)) return "has-text-success";
         return string.Empty;
@@ -34,6 +35,7 @@ public class RoleConverter
             Roles.UserManager => "Benutzermanager",
             Roles.FleetManager => "Fahrzeugwart",
             Roles.BoatManager => "Bootswart",
+            Roles.HouseManager => "Hauswart",
             _ => string.Empty
         };
     }

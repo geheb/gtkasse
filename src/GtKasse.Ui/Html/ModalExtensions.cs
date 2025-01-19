@@ -1,9 +1,9 @@
 namespace GtKasse.Ui.Html;
 
-using System.Globalization;
-using System.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Globalization;
+
 
 public static class ModalExtensions
 {
@@ -13,7 +13,7 @@ public static class ModalExtensions
     <div class=""modal-card"">
         <header class=""modal-card-head"">
             <p class=""modal-card-title"">{1}</p>
-            <button class=""delete close-modal"" aria-label=""close""></button>
+            <button class=""delete close-modal is-medium"" aria-label=""close""></button>
         </header>
         <section class=""modal-card-body"">
 ";
@@ -36,8 +36,10 @@ public static class ModalExtensions
             </div>
         </section>
         <footer class=""modal-card-foot"">
-            <button class=""button is-danger confirm"" disabled>OK</button>
-            <button class=""button close-modal"" aria-label=""close"">Abbrechen</button>
+            <div class=""buttons"">
+                <button class=""button is-danger confirm"" disabled>OK</button>
+                <button class=""button close-modal"" aria-label=""close"">Abbrechen</button>
+            </div>
         </footer>
     </div>
 </div>

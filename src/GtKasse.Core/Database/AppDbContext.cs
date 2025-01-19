@@ -1,4 +1,4 @@
-﻿using GtKasse.Core.Entities;
+using GtKasse.Core.Entities;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -393,6 +393,15 @@ public sealed class AppDbContext :
                 .HasForeignKey(e => e.BoatId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
+        });
+
+        modelBuilder.Entity<ClubhouseBooking>(eb =>
+        {
+            eb.ToTable("clubhouse_bookings");
+            eb.Property(e => e.Id).HasColumnType(KeyType).ValueGeneratedNever();
+            eb.Property(e => e.Start).IsRequired();
+            eb.Property(e => e.End).IsRequired();
+            eb.Property(e => e.Title).IsRequired().HasMaxLength(128);
         });
     }
 }

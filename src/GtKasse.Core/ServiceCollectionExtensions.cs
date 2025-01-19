@@ -1,4 +1,4 @@
-﻿namespace GtKasse.Core;
+namespace GtKasse.Core;
 
 using GtKasse.Core.Database;
 using GtKasse.Core.Email;
@@ -32,5 +32,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<Vehicles>();
         services.AddScoped<Tryouts>();
         services.AddScoped<Boats>();
+        services.AddScoped<Clubhouse>();
     }
 }

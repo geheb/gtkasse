@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model IndexModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
@@ -33,7 +33,8 @@
             typeof(MyInvoices.IndexModel),
             typeof(MyFleet.IndexModel),
             typeof(MyTryouts.IndexModel),
-            typeof(MyWiki.IndexModel)))
+            typeof(MyWiki.IndexModel),
+            typeof(MyClubhouse.IndexModel)))
         {
             <p class="title">Mein Verein</p>
             <nav class="bd-links">
@@ -143,6 +144,21 @@
                 </a>
             }
 
+            @if (Model.HasNodeAccess(typeof(MyClubhouse.IndexModel)))
+            {
+                <a href="/MyClubhouse" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fa-solid fa-house-flag"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Vereinsheimbelegung</h2>
+                        <div class="bd-link-subtitle">
+                            Belegungsplan des Vereinsheims
+                        </div>
+                    </div>
+                </a>
+            }
+
             </nav>
         }
 
@@ -155,6 +171,7 @@
             typeof(Foods.KitchenServiceModel),
             typeof(Invoices.IndexModel),
             typeof(Boats.IndexModel),
+            typeof(Clubhouse.IndexModel),
             typeof(Foods.IndexModel)))
         {
             <p class="title">Verwaltung</p>
@@ -275,6 +292,21 @@
                         <h2 class="bd-link-title">Bootslager</h2>
                         <div class="bd-link-subtitle">
                             Boote und Mieten verwalten.
+                        </div>
+                    </div>
+                </a>
+            }
+
+            @if (Model.HasNodeAccess(typeof(Clubhouse.IndexModel)))
+            {
+                <a href="/Clubhouse" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fa-solid fa-house-flag"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Vereinsheimbelegung</h2>
+                        <div class="bd-link-subtitle">
+                            Belegung des Vereinsheims verwalten.
                         </div>
                     </div>
                 </a>

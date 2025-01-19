@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GtKasse.Ui.Pages.MyTrips.IndexModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
@@ -147,6 +147,7 @@
                     const tagCategories = $.map(d.categories, function (c) { return `<span class="tag is-rounded">${c}</span>`; });
                     $(target).find('.tripCategories').html(tagCategories.join(' '));
                     $(target).find('.tripContact').attr('href', d.contactemail ? `mailto:${d.contactemail}` : '#').text(d.contact);
+					$(target).find('.tripDescription').html(d.description);
                 }
             }
         });

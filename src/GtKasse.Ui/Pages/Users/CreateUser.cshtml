@@ -1,4 +1,4 @@
-﻿@page "/Users/Create"
+@page "/Users/Create"
 @model GtKasse.Ui.Pages.Users.CreateUserModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
@@ -62,6 +62,7 @@
                         <label class="checkbox"><input type="checkbox" asp-for="Input.Roles[7]" /> @roleConverter.RoleToName(Roles.UserManager)</label>
                         <label class="checkbox"><input type="checkbox" asp-for="Input.Roles[8]" /> @roleConverter.RoleToName(Roles.FleetManager)</label>
                         <label class="checkbox"><input type="checkbox" asp-for="Input.Roles[9]" /> @roleConverter.RoleToName(Roles.BoatManager)</label>
+                        <label class="checkbox"><input type="checkbox" asp-for="Input.Roles[10]" /> @roleConverter.RoleToName(Roles.HouseManager)</label>
                     </div>
                 </div>
                 <div class="field">
