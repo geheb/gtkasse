@@ -1,4 +1,4 @@
-﻿using GtKasse.Core.Converter;
+using GtKasse.Core.Converter;
 using GtKasse.Core.Entities;
 using System.Globalization;
 
@@ -18,6 +18,9 @@ public class UserDto
     public bool IsEmailConfirmed { get; set; }
     public bool IsLocked { get; set; }
     public bool CanBeDeleted { get; set; }
+
+    public bool IsEnabledForBookings => 
+        !(string.IsNullOrWhiteSpace(DebtorNumber) && string.IsNullOrWhiteSpace(AddressNumber));
 
     public UserDto()
     {

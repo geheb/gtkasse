@@ -363,12 +363,14 @@ public sealed class Trips : IDisposable
     public async Task<PublicTripDto[]> GetPublicTrips(CancellationToken cancellationToken)
     {
         var dbSetTrip = _dbContext.Set<Trip>();
-
         var now = DateTimeOffset.UtcNow;
+
+        // Club regulation
+        var start = new DateTimeOffset(new DateOnly(now.Year - 1, 10, 1), TimeOnly.MinValue, now.Offset);
 
         var trips = await dbSetTrip
             .AsNoTracking()
-            .Where(e => e.End > now && e.IsPublic)
+            .Where(e => e.Start >= start && e.IsPublic)
             .OrderBy(e => e.Start)
             .ToArrayAsync(cancellationToken);
 
