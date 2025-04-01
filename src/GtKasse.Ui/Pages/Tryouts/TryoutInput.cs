@@ -1,10 +1,14 @@
-﻿using GtKasse.Ui.Annotations;
+using GtKasse.Ui.Annotations;
 using System.ComponentModel.DataAnnotations;
 
 namespace GtKasse.Ui.Pages.Tryouts;
 
 public sealed class TryoutInput
 {
+    [Display(Name = "Trainingsart")]
+    [RequiredField, TextLengthField(64, MinimumLength = 3)]
+    public string? Type { get; set; }
+
     [Display(Name = "Trainingsdatum")]
     [RequiredField]
     public string? Date { get; set; }
@@ -50,6 +54,7 @@ public sealed class TryoutInput
         var dc = new GermanDateTimeConverter();
         return new()
         {
+            Type = Type,
             Date = dc.FromIsoDateTime(Date)!.Value,
             UserId = Guid.Parse(UserId!),
             MaxBookings = MaxBookings,
@@ -62,6 +67,7 @@ public sealed class TryoutInput
     internal void From(TryoutDto dto)
     {
         var dc = new GermanDateTimeConverter();
+        Type = dto.Type;
         Date = dc.ToIso(dto.Date);
         UserId = dto.UserId.ToString();
         MaxBookings = dto.MaxBookings;

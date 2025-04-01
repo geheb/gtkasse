@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GtKasse.Ui.Pages.MyTryouts.CreateTryoutBookingModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
@@ -27,7 +27,7 @@
                         <i class="fa-solid fa-handshake fa-2x has-text-info"></i>
                     </div>
                     <div class="list-item-content">
-                        <div class="list-item-title">@dateConverter.ToDateTime(i.Date)</div>
+                        <div class="list-item-title">@i.Type (@dateConverter.ToDateTime(i.Date))</div>
                         <div class="list-item-description">
                             @if (i.ContactEmail is not null)
                             {
@@ -42,13 +42,13 @@
                     <div class="list-item-controls">
                         <div class="buttons">
                             <a class="button is-dark is-inverted open-modal" href="#" data-target="#infoModal"
-                               data-info='@Json.Serialize(new { date = dateConverter.ToDateTime(i.Date), contact = i.ContactName, contactemail = i.ContactEmail, description = i.Description })'>
+                               data-info='@Json.Serialize(new { type = i.Type, date = dateConverter.ToDateTime(i.Date), contact = i.ContactName, contactemail = i.ContactEmail, description = i.Description })'>
                                 <span class="icon"><i class="fas fa-info"></i></span>
                             </a>
                             @if (i.CanAccept)
                             {
                                 <a class="button is-dark is-inverted open-modal" href="#" data-target="#createModal"
-                                   data-info='@Json.Serialize(new { date = dateConverter.ToDateTime(i.Date), contact = i.ContactName })'
+                                   data-info='@Json.Serialize(new { type = i.Type, date = dateConverter.ToDateTime(i.Date), contact = i.ContactName })'
                                    data-url="@(Url.PageLink(string.Empty, "create", new { id = i.Id }))">
                                     <span class="icon"><i class="fas fa-check"></i></span>
                                 </a>
@@ -64,6 +64,7 @@
 
 @Html.CreateModalTemplateStart("createModal", "Training buchen")
 <div class="content">
+	<div>Trainingsart: <span class="tryoutType"></span></div>
     <div>Zeitpunkt: <span class="tryoutDate"></span></div>
     <div>Ansprechpartner: <span class="tag is-rounded is-warning tryoutContact"></span></div>
     <hr />
@@ -74,6 +75,7 @@
 
 @Html.CreateModalTemplateStart("infoModal", "Über das Training")
 <div class="content">
+	<div>Trainingsart: <span class="tryoutType"></span></div>
     <div>Zeitpunkt: <span class="tryoutDate"></span></div>
     <div>Ansprechpartner: <span class="tag is-rounded is-warning"><a href="#" class="tryoutContact"></a></span></div>
     <hr />
@@ -93,6 +95,7 @@
                     datainfo: 'info',
                     action: function (target, data) {
                         const d = JSON.parse(data);
+						$(target).find('.tryoutType').text(d.type);
                         $(target).find('.tryoutDate').text(d.date);
                         $(target).find('.tryoutContact').attr('href', d.contactemail ? `mailto:${d.contactemail}` : '#').text(d.contact);
                         $(target).find('.tryoutDescription').html(d.description);
@@ -108,6 +111,7 @@
                     action: function (target, data) {
                         const d = JSON.parse(data);
                         $(target).find(":text").val('');
+						$(target).find('.tryoutType').text(d.type);
                         $(target).find('.tryoutDate').text(d.date);
                         $(target).find('.tryoutContact').text(d.contact);
                     }

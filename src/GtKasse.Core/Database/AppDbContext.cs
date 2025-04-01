@@ -322,6 +322,7 @@ public sealed class AppDbContext :
         {
             eb.ToTable("tryouts");
             eb.Property(e => e.Id).HasColumnType(KeyType).ValueGeneratedNever();
+            eb.Property(e => e.Type).IsRequired().HasDefaultValue("Anfängertraining").HasMaxLength(64);
             eb.Property(e => e.UserId).HasColumnType(KeyType);
             eb.Property(e => e.Date).IsRequired();
             eb.Property(e => e.MaxBookings).IsRequired();

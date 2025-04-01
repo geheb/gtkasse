@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 
-[Node("Anfängertrainings", FromPage = typeof(Pages.IndexModel))]
+[Node("Trainings", FromPage = typeof(Pages.IndexModel))]
 [Authorize(Roles = "administrator,tripmanager")]
 public class IndexModel : PageModel
 {

@@ -45,7 +45,7 @@ void ConfigureApp(WebApplicationBuilder builder)
     services.AddAuthorization();
 
     services.AddHttpContextAccessor();
-    services.AddControllers();
+
     services.AddRazorPages()
         .AddMvcOptions(options =>
         {

@@ -27,7 +27,7 @@ public class TryoutBookingsModel : PageModel
         }
 
         var dc = new GermanDateTimeConverter();
-        TryoutDetails = dc.ToDateTime(tryout.Date) + " @ " + tryout.ContactName;
+        TryoutDetails = $"{tryout.Type} ({dc.ToDateTime(tryout.Date)}) @ {tryout.ContactName}";
 
         Items = await _tryouts.GetBookingList(id, cancellationToken);
     }

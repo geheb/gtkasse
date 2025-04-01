@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 namespace GtKasse.Core.Models;
 
@@ -11,6 +11,7 @@ public sealed class AppSettings
 
     public AppSettings()
     {
-        Version = Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.1";
+        var version = Assembly.GetEntryAssembly()?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.1";
+        Version = version.Substring(0, Math.Min(version.Length, 16));
     }
 }

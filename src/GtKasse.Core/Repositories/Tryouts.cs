@@ -1,4 +1,4 @@
-﻿namespace GtKasse.Core.Repositories;
+namespace GtKasse.Core.Repositories;
 
 using GtKasse.Core.Converter;
 using GtKasse.Core.Database;
@@ -81,6 +81,7 @@ public sealed class Tryouts
         if (entity == null) return false;
 
         var count = 0;
+        if (entity.SetValue(e => e.Type, dto.Type)) count++;
         if (entity.SetValue(e => e.Date, dto.Date)) count++;
         if (entity.SetValue(e => e.UserId, dto.UserId)) count++;
         if (entity.SetValue(e => e.MaxBookings, dto.MaxBookings)) count++;

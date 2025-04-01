@@ -36,14 +36,14 @@ public sealed class HostedWorker : BackgroundService
 
     private async Task HandleSuperUser()
     {
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateAsyncScope();
         var contextInitializer = scope.ServiceProvider.GetRequiredService<AppDbContextInitializer>();
         await contextInitializer.CreateSuperAdmin();
     }
 
     private async Task HandleEmails(CancellationToken cancellationToken)
     {
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = _serviceScopeFactory.CreateAsyncScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
@@ -131,8 +131,22 @@ public sealed class HostedWorker : BackgroundService
         return false;
     }
 
+    private async Task MigrateDatabase(CancellationToken cancellationToken)
+    {
+        using var scope = _serviceScopeFactory.CreateAsyncScope();
+        using var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var migrations = await dbContext.Database.GetPendingMigrationsAsync(cancellationToken);
+        if (migrations.Any())
+        {
+            _logger.LogInformation("apply pending migrations '{Migrations}'", string.Join(",", migrations));
+            await dbContext.Database.MigrateAsync(cancellationToken);
+        }
+    }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        await MigrateDatabase(stoppingToken);
+
         await HandleSuperUser();
 
         while (!stoppingToken.IsCancellationRequested)

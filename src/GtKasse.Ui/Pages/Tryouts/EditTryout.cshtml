@@ -1,4 +1,4 @@
-﻿@page "/Tryouts/Edit/{id:guid}"
+@page "/Tryouts/Edit/{id:guid}"
 @model GtKasse.Ui.Pages.Tryouts.EditTryoutModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
@@ -50,6 +50,13 @@
                 }
 
                 <form method="post">
+                    <div class="field">
+                        <label class="label" asp-for="Input.Type"></label>
+				                <div class="control">
+                           <input class="input" type="text" asp-for="Input.Type" />
+                        </div>
+                        <span asp-validation-for="Input.Type"></span>
+                    </div>
                     <div class="field">
                         <label class="label" asp-for="Input.Date"></label>
                         <div class="control">

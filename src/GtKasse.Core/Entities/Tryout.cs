@@ -1,8 +1,9 @@
-﻿namespace GtKasse.Core.Entities;
+namespace GtKasse.Core.Entities;
 
 internal sealed class Tryout
 {
     public Guid Id { get; set; }
+    public string? Type { get; set; }
     public DateTimeOffset Date { get; set; }
     public Guid? UserId { get; set; }
     public IdentityUserGuid? User { get; set; }

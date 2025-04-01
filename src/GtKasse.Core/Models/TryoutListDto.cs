@@ -1,4 +1,4 @@
-﻿using GtKasse.Core.Converter;
+using GtKasse.Core.Converter;
 using GtKasse.Core.Entities;
 
 namespace GtKasse.Core.Models;
@@ -6,6 +6,7 @@ namespace GtKasse.Core.Models;
 public sealed class TryoutListDto
 {
     public Guid Id { get; set; }
+    public string? Type { get; set; }
     public DateTimeOffset Date { get; set; }
     public string? ContactName { get; set; }
     public string? ContactEmail { get; set; }
@@ -18,6 +19,7 @@ public sealed class TryoutListDto
     internal TryoutListDto(Tryout tryout, int bookingCount, GermanDateTimeConverter dc)
     {
         Id = tryout.Id;
+        Type = tryout.Type;
         Date = dc.ToLocal(tryout.Date);
         ContactName = tryout.User?.Name;
         ContactEmail = tryout.User?.EmailConfirmed == true ? tryout.User.Email : null;
