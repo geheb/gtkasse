@@ -1,9 +1,9 @@
-﻿@page
+@page
 @model GtKasse.Ui.Pages.MyFoods.CreateFoodBookingModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
+
     var foodTypeConverter = new FoodTypeConverter();
 }
 

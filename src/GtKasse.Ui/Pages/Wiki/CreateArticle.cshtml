@@ -1,10 +1,9 @@
-﻿@page "/Wiki/Create"
+@page "/Wiki/Create"
 @model GtKasse.Ui.Pages.Wiki.CreateArticleModel
 @{
     ViewData["include-trumbowyg"] = true;
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
 }
 
 @await Html.PartialAsync("_Header")

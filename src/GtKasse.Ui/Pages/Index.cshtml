@@ -4,7 +4,7 @@
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
     ViewData["IsHome"] = true;
-    Model.BuildHeaderMenu();
+
     var isAuthenticated = User.Identity?.IsAuthenticated == true;
     var urlDeviceToken = Url.PageLink(string.Empty, "devicetoken");
 }

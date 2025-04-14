@@ -1,11 +1,10 @@
-﻿@page "/Boats/{id:guid}/Rentals/Add"
+@page "/Boats/{id:guid}/Rentals/Add"
 @model GtKasse.Ui.Pages.Boats.CreateRentalModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
 
     Guid.TryParse(Request.RouteValues["id"] as string, out var id);
-    Model.BuildHeaderMenu(new { id });
 }
 
 @await Html.PartialAsync("_Header")

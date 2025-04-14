@@ -1,11 +1,10 @@
-﻿@page "/MyBoats/{id:guid}/Rentals"
+@page "/MyBoats/{id:guid}/Rentals"
 @model GtKasse.Ui.Pages.MyBoats.RentalsModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Guid.TryParse(Request.RouteValues["id"] as string, out var id);
-    Model.BuildHeaderMenu(new { id });
 
+    Guid.TryParse(Request.RouteValues["id"] as string, out var id);
     var dateConverter = new GermanDateTimeConverter();
 }
 

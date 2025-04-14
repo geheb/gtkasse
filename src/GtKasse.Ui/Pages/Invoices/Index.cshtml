@@ -1,9 +1,9 @@
-﻿@page
+@page
 @model GtKasse.Ui.Pages.Invoices.IndexModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
+
     var dateTimeConverter = new GermanDateTimeConverter();
     var invoiceStatusConverter = new InvoiceStatusConverter();
 }

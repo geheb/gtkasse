@@ -24,10 +24,23 @@ public sealed class Tryouts
     {
         var entity = dto.ToEntity();
         entity.Id = _pkGenerator.Generate();
+        dto.Id = entity.Id;
 
         await _dbContext.Set<Tryout>().AddAsync(entity, cancellationToken);
 
-        dto.Id = entity.Id;
+        return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+    }
+
+    public async Task<bool> CreateTryout(TryoutDto[] dtos, CancellationToken cancellationToken)
+    {
+        foreach (var dto in dtos)
+        {
+            var entity = dto.ToEntity();
+            entity.Id = _pkGenerator.Generate();
+            dto.Id = entity.Id;
+
+            await _dbContext.Set<Tryout>().AddAsync(entity, cancellationToken);
+        }
 
         return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
     }

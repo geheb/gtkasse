@@ -1,10 +1,10 @@
-﻿@page
+@page
 @using GtKasse.Core.User
 @model GtKasse.Ui.Pages.MyFleet.IndexModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
+
     var dateConverter = new GermanDateTimeConverter();
     var createUrl = Url.PageLink("CreateBooking");
 }

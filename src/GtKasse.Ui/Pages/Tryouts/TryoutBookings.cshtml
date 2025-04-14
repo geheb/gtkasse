@@ -1,10 +1,10 @@
-﻿@page "/Tryouts/Bookings/{id:guid}"
+@page "/Tryouts/Bookings/{id:guid}"
 @model GtKasse.Ui.Pages.Tryouts.TryoutBookingsModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
+
     Guid.TryParse(Request.RouteValues["id"] as string, out var id);
-    Model.BuildHeaderMenu(new { id });
     var dateConverter = new GermanDateTimeConverter();
 }
 

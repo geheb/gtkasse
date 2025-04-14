@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
 
     var dateConverter = new GermanDateTimeConverter();
     var createUrl = Url.PageLink("CreateTryoutBooking");

@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
 }
 
 @await Html.PartialAsync("_Header")

@@ -1,11 +1,10 @@
-﻿@page "/MyWiki/Show/{id:guid}"
+@page "/MyWiki/Show/{id:guid}"
 @model GtKasse.Ui.Pages.MyWiki.ShowArticleModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Guid.TryParse(Request.RouteValues["id"] as string, out var id);
-    Model.BuildHeaderMenu(new { id });
 
+    Guid.TryParse(Request.RouteValues["id"] as string, out var id);
     var dateConverter = new GermanDateTimeConverter();
     var showManagementBoard = User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Chairperson);
 }

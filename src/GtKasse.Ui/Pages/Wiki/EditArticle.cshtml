@@ -1,12 +1,11 @@
-﻿@page "/Wiki/Edit/{id:guid}"
+@page "/Wiki/Edit/{id:guid}"
 @model GtKasse.Ui.Pages.Wiki.EditArticleModel
 @{
     ViewData["include-trumbowyg"] = true;
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Guid.TryParse(Request.RouteValues["id"] as string, out var id);
-    Model.BuildHeaderMenu(new { id });
 
+    Guid.TryParse(Request.RouteValues["id"] as string, out var id);
     var indexUrl = Url.PageLink("Index");
     var deleteUrl = Url.PageLink(string.Empty, "delete", new { id });
 }

@@ -1,5 +1,6 @@
 namespace GtKasse.Core.Converter;
 
+using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
@@ -32,6 +33,12 @@ public sealed class GermanDateTimeConverter
     {
         var dateTime = date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Unspecified);
         var offset = new DateTimeOffset(dateTime, _westEuropeTimeZone.GetUtcOffset(dateTime));
+        return offset.ToUniversalTime();
+    }
+
+    public DateTimeOffset ToUtc(DateTime date)
+    {
+        var offset = new DateTimeOffset(date, _westEuropeTimeZone.GetUtcOffset(date));
         return offset.ToUniversalTime();
     }
 

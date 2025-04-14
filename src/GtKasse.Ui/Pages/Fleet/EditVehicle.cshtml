@@ -1,10 +1,10 @@
-﻿@page "/Fleet/EditVehicle/{id:guid}"
+@page "/Fleet/EditVehicle/{id:guid}"
 @model GtKasse.Ui.Pages.Fleet.EditVehicleModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
+
     Guid.TryParse(Request.RouteValues["id"] as string, out var id);
-    Model.BuildHeaderMenu(new { id });
 }
 
 @await Html.PartialAsync("_Header")

@@ -1,9 +1,8 @@
-﻿@page
+@page
 @model GtKasse.Ui.Pages.Wiki.IndexModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
 
     var createUrl = Url.PageLink("CreateArticle");
     var dateConverter = new GermanDateTimeConverter();

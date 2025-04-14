@@ -1,10 +1,9 @@
-﻿@page
+@page
 @model GtKasse.Ui.Pages.Trips.CreateTripModel
 @{
     ViewData["include-trumbowyg"] = true;
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
 
     var tripCategoryConverter = new TripCategoryConverter();
 }

@@ -1,9 +1,8 @@
-﻿@page
+@page
 @model GtKasse.Ui.Pages.Trips.IndexModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
     var createUrl = Url.PageLink("CreateTrip");
     var dateConverter = new GermanDateTimeConverter();
 }

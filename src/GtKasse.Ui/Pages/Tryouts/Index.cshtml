@@ -3,9 +3,9 @@
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
 
     var createUrl = Url.PageLink("CreateTryout");
+	var createRecurringUrl = Url.PageLink("CreateRecurring");
     var dateConverter = new GermanDateTimeConverter();
 }
 
@@ -30,6 +30,9 @@
                             <a href="@createUrl" class="dropdown-item">
                                 @(Model.GetNode<CreateTryoutModel>().Title)
                             </a>
+							<a href="@createRecurringUrl" class="dropdown-item">
+								@(Model.GetNode<CreateRecurringModel>().Title)
+							</a>
                             <hr class="dropdown-divider" />
                             <a href="@Url.PageLink(string.Empty)" class="dropdown-item">
                                 Geplante anzeigen
@@ -47,6 +50,9 @@
             <a href="@createUrl" class="button is-floating is-link">
                 <i class="fas fa-calendar-plus"></i>
             </a>
+			<a href="@createRecurringUrl" class="button is-floating is-warning" style="right:4em">
+				<i class="fas fa-calendar-days"></i>
+			</a>
         </div>
 
         <div class="list has-hoverable-list-items has-visible-pointer-controls">

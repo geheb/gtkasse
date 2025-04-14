@@ -1,9 +1,9 @@
-﻿@page
+@page
 @model GtKasse.Ui.Pages.Users.IndexModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
+
     var roleConverter = new RoleConverter();
     var dateConverter = new GermanDateTimeConverter();
 }

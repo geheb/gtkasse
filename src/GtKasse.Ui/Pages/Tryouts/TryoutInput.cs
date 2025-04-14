@@ -33,6 +33,14 @@ public sealed class TryoutInput
     [TextLengthField(1000)]
     public string? Description { get; set; }
 
+    public TryoutInput()
+    {
+        var dc = new GermanDateTimeConverter();
+        Date = dc.ToIso(DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)));
+        BookingStart = dc.ToIso(DateTime.UtcNow);
+        BookingEnd = dc.ToIso(DateTime.UtcNow.AddDays(6));
+    }
+
     public string? Validate()
     {
         var dc = new GermanDateTimeConverter();

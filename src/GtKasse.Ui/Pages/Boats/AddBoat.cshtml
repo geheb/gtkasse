@@ -1,9 +1,8 @@
-﻿@page "/Boats/Add"
+@page "/Boats/Add"
 @model GtKasse.Ui.Pages.Boats.AddBoatModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
 }
 
 @await Html.PartialAsync("_Header")

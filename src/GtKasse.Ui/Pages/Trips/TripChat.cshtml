@@ -1,11 +1,10 @@
-﻿@page "/Trips/Chat/{id:guid}"
+@page "/Trips/Chat/{id:guid}"
 @model GtKasse.Ui.Pages.Trips.TripChatModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Guid.TryParse(Request.RouteValues["id"] as string, out var id);
-    Model.BuildHeaderMenu(new { id });
 
+    Guid.TryParse(Request.RouteValues["id"] as string, out var id);
     var dateConverter = new GermanDateTimeConverter();
     var messageUrl = Url.PageLink(string.Empty, "message", new { id = Model.Id });
 }

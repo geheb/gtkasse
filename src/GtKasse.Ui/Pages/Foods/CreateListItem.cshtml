@@ -1,10 +1,10 @@
-﻿@page "/Foods/CreateListItem/{id:guid}"
+@page "/Foods/CreateListItem/{id:guid}"
 @model GtKasse.Ui.Pages.Foods.CreateListItemModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
     Guid.TryParse(Request.RouteValues["id"] as string, out var foodListId);
-    Model.BuildHeaderMenu(new { id = foodListId });
+
     var foodTypeConverter = new FoodTypeConverter();
 }
 

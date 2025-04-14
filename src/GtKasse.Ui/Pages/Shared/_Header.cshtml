@@ -1,5 +1,4 @@
-﻿@{ 
-    var menu = ViewData["HeaderMenu"] as MenuItem;
+@{
 }
 
 <nav class="navbar is-info">
@@ -64,25 +63,9 @@
 </nav>
 
 <section class="hero is-info is-small">
-
     <div class="hero-body">
         <div class="container has-text-centered">
             <p class="title">@appSettings.Value.HeaderTitle</p>
         </div>
     </div>
-
-    @if (menu != null)
-    {
-        <div class="hero-foot">
-            <nav class="tabs is-boxed is-medium">
-                <div class="container">
-                    <ul>
-                        <li class="is-active has-text-info">
-                            <a href="@menu.Path">@menu.Name</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-    }
 </section>

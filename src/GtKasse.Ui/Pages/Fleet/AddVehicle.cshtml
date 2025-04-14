@@ -1,9 +1,8 @@
-﻿@page
+@page
 @model GtKasse.Ui.Pages.Fleet.AddVehicleModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
-    Model.BuildHeaderMenu();
 }
 
 @await Html.PartialAsync("_Header")

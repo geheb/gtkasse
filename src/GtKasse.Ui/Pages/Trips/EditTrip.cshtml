@@ -1,11 +1,11 @@
-﻿@page "/Trips/Edit/{id:guid}"
+@page "/Trips/Edit/{id:guid}"
 @model GtKasse.Ui.Pages.Trips.EditTripModel
 @{
     ViewData["include-trumbowyg"] = true;
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
+
     Guid.TryParse(Request.RouteValues["id"] as string, out var id);
-    Model.BuildHeaderMenu(new { id });
     var indexUrl = Url.PageLink("Index");
     var tripCategoryConverter = new TripCategoryConverter();
 }
