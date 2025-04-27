@@ -19,7 +19,6 @@ public class EditTripModel : PageModel
     [BindProperty]
     public TripInput Input { get; set; } = new TripInput();
 
-    public Guid? Id { get; private set; }
     public string? Details { get; private set; }
     public bool IsDisabled { get; set; }
 
@@ -70,7 +69,6 @@ public class EditTripModel : PageModel
 
     private async Task<TripDto?> UpdateView(Guid id, CancellationToken cancellationToken)
     {
-        Id = id;
         var trip = await _trips.FindTrip(id, cancellationToken);
 
         if (trip == null)

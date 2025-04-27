@@ -16,7 +16,6 @@ public class EditTryoutModel : PageModel
     [BindProperty]
     public TryoutInput Input { get; set; } = new();
 
-    public Guid? Id { get; private set; }
     public string? Details { get; private set; }
 
     public SelectListItem[] Users { get; set; } = Array.Empty<SelectListItem>();
@@ -68,7 +67,6 @@ public class EditTryoutModel : PageModel
 
     private async Task<TryoutDto?> UpdateView(Guid id, CancellationToken cancellationToken)
     {
-        Id = id;
         var tryout = await _tryouts.FindTryout(id, cancellationToken);
 
         if (tryout == null)

@@ -16,7 +16,7 @@ internal class Trip
     public string? Description { get; set; }
 
     [NotMapped]
-    public bool IsExpired => End < DateTimeOffset.UtcNow;
+    public bool IsExpired => DateTimeOffset.UtcNow > End;
 
     public int Categories { get; set; }
     public bool IsPublic { get; set; }

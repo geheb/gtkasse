@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace GtKasse.Core.Entities
 {
@@ -23,5 +23,6 @@ namespace GtKasse.Core.Entities
         internal ICollection<Tryout>? Tryouts { get; set; }
         internal ICollection<TryoutBooking>? TryoutBookings {  get; set; }
         internal ICollection<BoatRental>? BoatRentals { get; set; }
+        internal ICollection<TryoutChat>? TryoutChats { get; set; }
     }
 }

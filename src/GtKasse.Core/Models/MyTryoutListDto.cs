@@ -19,8 +19,9 @@ public sealed class MyTryoutListDto
     public DateTimeOffset? BookingBookedOn { get; set; }
     public DateTimeOffset? BookingConfirmedOn { get; set; }
     public DateTimeOffset? BookingCancelledOn { get; set; }
+    public int ChatMessageCount { get; set; }
 
-    internal MyTryoutListDto(Tryout tryout, TryoutBooking? booking, int bookingCount, GermanDateTimeConverter dc)
+    internal MyTryoutListDto(Tryout tryout, TryoutBooking? booking, int bookingCount, int chatMessageCount, GermanDateTimeConverter dc)
     {
         TryoutId = tryout.Id;
         Type = tryout.Type;
@@ -30,6 +31,7 @@ public sealed class MyTryoutListDto
         ContactEmail = tryout.User?.EmailConfirmed == true ? tryout.User.Email : null;
         Description = tryout.Description;
         BookingName = booking?.Name ?? booking?.User?.Name ?? string.Empty;
+        ChatMessageCount = chatMessageCount;
 
         var canBook =
             DateTimeOffset.UtcNow >= tryout.BookingStart &&

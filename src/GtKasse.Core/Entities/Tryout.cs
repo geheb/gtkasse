@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace GtKasse.Core.Entities;
 
 internal sealed class Tryout
@@ -12,5 +14,9 @@ internal sealed class Tryout
     public DateTimeOffset? BookingEnd { get; set; }
     public string? Description { get; set; }
 
+    [NotMapped]
+    public bool IsExpired => DateTimeOffset.UtcNow > Date;
+
     internal ICollection<TryoutBooking>? TryoutBookings { get; set; }
+    internal ICollection<TryoutChat>? TryoutChats { get; set; }
 }

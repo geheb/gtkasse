@@ -12,7 +12,6 @@ public class TripChatModel : PageModel
 {
     private readonly Trips _trips;
 
-    public Guid? Id { get; set; }
     public string? TripDetails { get; set; }
     public TripChatDto[] Items { get; set; } = Array.Empty<TripChatDto>();
     public bool IsDisabled { get; set; }
@@ -27,7 +26,6 @@ public class TripChatModel : PageModel
 
     public async Task OnGetAsync(Guid id, CancellationToken cancellationToken)
     {
-        Id = id;
         var trip = await _trips.FindTripList(id, cancellationToken);
         if (trip == null)
         {

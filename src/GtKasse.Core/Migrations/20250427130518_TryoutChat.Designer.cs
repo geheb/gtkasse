@@ -4,6 +4,7 @@ using GtKasse.Core.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GtKasse.Core.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250427130518_TryoutChat")]
+    partial class TryoutChat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1076,8 +1079,7 @@ namespace GtKasse.Core.Migrations
                 {
                     b.HasOne("GtKasse.Core.Entities.Trip", "Trip")
                         .WithMany("TripChats")
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("TripId");
 
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
                         .WithMany("TripChats")
@@ -1119,9 +1121,8 @@ namespace GtKasse.Core.Migrations
             modelBuilder.Entity("GtKasse.Core.Entities.TryoutChat", b =>
                 {
                     b.HasOne("GtKasse.Core.Entities.Tryout", "Tryout")
-                        .WithMany("TryoutChats")
-                        .HasForeignKey("TryoutId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("TryoutId");
 
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
                         .WithMany("TryoutChats")
@@ -1229,8 +1230,6 @@ namespace GtKasse.Core.Migrations
             modelBuilder.Entity("GtKasse.Core.Entities.Tryout", b =>
                 {
                     b.Navigation("TryoutBookings");
-
-                    b.Navigation("TryoutChats");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.Vehicle", b =>

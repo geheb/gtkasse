@@ -278,6 +278,12 @@ public sealed class AppDbContext :
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
+
+            eb.HasOne(e => e.Trip)
+                .WithMany(e => e.TripChats)
+                .HasForeignKey(e => e.TripId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
         });
 
         modelBuilder.Entity<Vehicle>(eb =>
@@ -403,6 +409,28 @@ public sealed class AppDbContext :
             eb.Property(e => e.Start).IsRequired();
             eb.Property(e => e.End).IsRequired();
             eb.Property(e => e.Title).IsRequired().HasMaxLength(128);
+        });
+
+        modelBuilder.Entity<TryoutChat>(eb =>
+        {
+            eb.ToTable("tryout_chats");
+            eb.Property(e => e.Id).HasColumnType(KeyType).ValueGeneratedNever();
+            eb.Property(e => e.UserId).HasColumnType(KeyType);
+            eb.Property(e => e.TryoutId).HasColumnType(KeyType);
+            eb.Property(e => e.CreatedOn).IsRequired();
+            eb.Property(e => e.Message).IsRequired().HasMaxLength(256);
+
+            eb.HasOne(e => e.User)
+                .WithMany(e => e.TryoutChats)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+
+            eb.HasOne(e => e.Tryout)
+                .WithMany(e => e.TryoutChats)
+                .HasForeignKey(e => e.TryoutId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
         });
     }
 }

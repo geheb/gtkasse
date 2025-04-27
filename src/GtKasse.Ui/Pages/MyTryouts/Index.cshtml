@@ -90,6 +90,16 @@
                                data-info='@Json.Serialize(new { type = i.Type, date = dateConverter.ToDateTime(i.Date), contact = i.ContactName, contactemail = i.ContactEmail, description = i.Description })'>
                                 <span class="icon"><i class="fas fa-info"></i></span>
                             </a>
+                            <a class="button is-dark is-inverted" href="@Url.PageLink("TryoutChat", null, new { id = i.TryoutId })">
+                                @if (i.ChatMessageCount > 0)
+                                {
+                                    <span class="icon mr-0"><i class="fas fa-comments"></i></span> @i.ChatMessageCount
+                                }
+                                else
+                                {
+                                    <span class="icon"><i class="far fa-comments"></i></span>
+                                }
+                            </a>
                             @if (i.CanDelete)
                             {
                                 <a class="button is-dark is-inverted click-deny" href="#" data-info="@dateConverter.ToDateTime(i.Date)" data-url="@(Url.PageLink(string.Empty, "delete", new { id = i.BookingId }))">
@@ -109,7 +119,7 @@
 
 @Html.CreateModalTemplateStart("infoModal", "Über das Training")
 <div class="content">
-	<div>Trainingsart: <span class="tryoutType"></span></div>
+    <div>Trainingsart: <span class="tryoutType"></span></div>
     <div>Zeitpunkt: <span class="tryoutDate"></span></div>
     <div>Ansprechpartner: <span class="tag is-rounded is-warning"><a href="#" class="tryoutContact"></a></span></div>
     <hr />
@@ -129,7 +139,7 @@
                     datainfo: 'info',
                     action: function (target, data) {
                         const d = JSON.parse(data);
-						$(target).find('.tryoutType').text(d.type);
+                        $(target).find('.tryoutType').text(d.type);
                         $(target).find('.tryoutDate').text(d.date);
                         $(target).find('.tryoutContact').attr('href', d.contactemail ? `mailto:${d.contactemail}` : '#').text(d.contact);
                         $(target).find('.tryoutDescription').html(d.description);

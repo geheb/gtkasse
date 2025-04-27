@@ -75,12 +75,12 @@ public sealed class Tryouts
             .AsNoTracking()
             .Include(e => e.User)
             .Where(e => (userId == null || e.UserId == userId) && (showExpired ? e.Date < now : e.Date > now))
-            .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count })
+            .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count, chatMessageCount = e.TryoutChats!.Count })
             .ToArrayAsync(cancellationToken);
 
         var dc = new GermanDateTimeConverter();
 
-        var result = tryouts.Select(e => new TryoutListDto(e.tryout, e.bookingCount, dc)).ToArray();
+        var result = tryouts.Select(e => new TryoutListDto(e.tryout, e.bookingCount, e.chatMessageCount, dc)).ToArray();
 
         return result.Where(r => r.Date >= now)
             .OrderBy(r => r.Date)
@@ -161,14 +161,14 @@ public sealed class Tryouts
             .AsNoTracking()
             .Include(e => e.User)
             .Where(e => e.Id == id)
-            .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count })
+            .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count, chatMessageCount = e.TryoutChats!.Count })
             .FirstOrDefaultAsync(cancellationToken);
 
         if (entity == null) return null;
 
         var dc = new GermanDateTimeConverter();
 
-        return new TryoutListDto(entity.tryout, entity.bookingCount, dc);
+        return new TryoutListDto(entity.tryout, entity.bookingCount, entity.chatMessageCount, dc);
     }
 
     public async Task<MyTryoutListDto[]> GetMyTryoutList(Guid userId, CancellationToken cancellationToken)
@@ -190,7 +190,7 @@ public sealed class Tryouts
                 .AsNoTracking()
                 .Include(e => e.User)
                 .Where(e => ids.Contains(e.Id))
-                .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count })
+                .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count, chatMessageCount = e.TryoutChats!.Count })
                 .ToArrayAsync(cancellationToken);
 
             var map = tryouts.ToDictionary(t => t.tryout.Id);
@@ -198,7 +198,7 @@ public sealed class Tryouts
             foreach (var b in batchBookings)
             {
                 var t = map[b.TryoutId!.Value];
-                result.Add(new MyTryoutListDto(t.tryout, b, t.bookingCount, dc));
+                result.Add(new MyTryoutListDto(t.tryout, b, t.bookingCount, t.chatMessageCount, dc));
             }
         }
 
@@ -265,6 +265,43 @@ public sealed class Tryouts
         }
 
         _dbContext.Set<Tryout>().Remove(tryout);
+
+        return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
+    }
+
+    public async Task<TryoutChatDto[]> GetChat(Guid tryoutId, Guid userId, CancellationToken cancellationToken)
+    {
+        var entities = await _dbContext.Set<TryoutChat>()
+            .Include(e => e.User)
+            .Where(e => e.TryoutId == tryoutId)
+            .OrderByDescending(e => e.CreatedOn)
+            .ToArrayAsync(cancellationToken);
+
+        if (entities.Length < 1) return [];
+
+        var dc = new GermanDateTimeConverter();
+
+        return [.. entities.Select(e => new TryoutChatDto(e, userId, dc))];
+    }
+
+    public async Task<bool> CreateChatMessage(Guid id, Guid userId, string message, CancellationToken cancellationToken)
+    {
+        var tryout = await _dbContext.Set<Tryout>().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+        if (tryout == null || tryout.IsExpired) return false;
+
+        var count = await _dbContext.Set<TryoutChat>().CountAsync(e => e.TryoutId == id, cancellationToken);
+        if (count >= 10_000) return false;
+
+        var entity = new TryoutChat
+        {
+            Id = _pkGenerator.Generate(),
+            CreatedOn = DateTimeOffset.UtcNow,
+            TryoutId = id,
+            UserId = userId,
+            Message = message
+        };
+
+        await _dbContext.Set<TryoutChat>().AddAsync(entity, cancellationToken);
 
         return await _dbContext.SaveChangesAsync(cancellationToken) > 0;
     }

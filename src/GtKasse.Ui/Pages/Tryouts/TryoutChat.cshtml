@@ -1,5 +1,5 @@
-@page "/Trips/Chat/{id:guid}"
-@model GtKasse.Ui.Pages.Trips.TripChatModel
+@page "/Tryouts/Chat/{id:guid}"
+@model GtKasse.Ui.Pages.Tryouts.TryoutChatModel
 @{
     ViewData["Title"] = Model.GetNode().Title;
     ViewData["HasFooter"] = true;
@@ -9,6 +9,7 @@
     var messageUrl = Url.PageLink(string.Empty, "message", new { id });
 }
 
+
 @await Html.PartialAsync("_Header")
 
 <section class="section">
@@ -16,7 +17,7 @@
 
         @Html.CreateBreadcrumb()
 
-        <h1 class="title is-4">@Model.TripDetails</h1>
+        <h1 class="title is-4">@Model.TryoutDetails</h1>
 
         <div class="columns">
             <div class="column is-two-thirds">
@@ -70,34 +71,34 @@
 @await Html.PartialAsync("_Footer")
 
 @section Scripts {
-<script type="text/javascript">
-    $(function () {
+    <script type="text/javascript">
+        $(function () {
 
-        $("#message").keyup(function (e) {
-            const val = $(this).val();
-            if (val.length < 2 || val.length > 256) {
-                $('#send').prop('disabled', 'disabled');
-            } else {
-                $('#send').removeAttr('disabled');
-                if (e.code === 'Enter') {
-                    e.preventDefault();
-                    $('#send').trigger('click');
-                }
-            }
-        });
-
-        $("#send").click(function (e) {
-            const url = '@messageUrl';
-            const message = $('#message').val();
-            $.post(url, {@Html.AjaxCsrfToken(), message: message}).done(function (data) {
-                if (data) {
-                    $('#message').val('');
+            $("#message").keyup(function (e) {
+                const val = $(this).val();
+                if (val.length < 2 || val.length > 256) {
                     $('#send').prop('disabled', 'disabled');
-                    window.location.reload();
+                } else {
+                    $('#send').removeAttr('disabled');
+                    if (e.code === 'Enter') {
+                        e.preventDefault();
+                        $('#send').trigger('click');
+                    }
                 }
             });
-        });
 
-    });
-</script>
+            $("#send").click(function (e) {
+                const url = '@messageUrl';
+                const message = $('#message').val();
+                $.post(url, {@Html.AjaxCsrfToken(), message: message}).done(function (data) {
+                    if (data) {
+                        $('#message').val('');
+                        $('#send').prop('disabled', 'disabled');
+                        window.location.reload();
+                    }
+                });
+            });
+
+        });
+    </script>
 }

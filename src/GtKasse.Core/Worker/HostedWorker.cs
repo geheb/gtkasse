@@ -44,7 +44,7 @@ public sealed class HostedWorker : BackgroundService
     private async Task HandleEmails(CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateAsyncScope();
-        using var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
 
@@ -134,7 +134,7 @@ public sealed class HostedWorker : BackgroundService
     private async Task MigrateDatabase(CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateAsyncScope();
-        using var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var migrations = await dbContext.Database.GetPendingMigrationsAsync(cancellationToken);
         if (migrations.Any())
         {

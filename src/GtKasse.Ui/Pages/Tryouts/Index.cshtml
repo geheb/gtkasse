@@ -5,7 +5,7 @@
     ViewData["HasFooter"] = true;
 
     var createUrl = Url.PageLink("CreateTryout");
-	var createRecurringUrl = Url.PageLink("CreateRecurring");
+    var createRecurringUrl = Url.PageLink("CreateRecurring");
     var dateConverter = new GermanDateTimeConverter();
 }
 
@@ -30,9 +30,9 @@
                             <a href="@createUrl" class="dropdown-item">
                                 @(Model.GetNode<CreateTryoutModel>().Title)
                             </a>
-							<a href="@createRecurringUrl" class="dropdown-item">
-								@(Model.GetNode<CreateRecurringModel>().Title)
-							</a>
+                            <a href="@createRecurringUrl" class="dropdown-item">
+                                @(Model.GetNode<CreateRecurringModel>().Title)
+                            </a>
                             <hr class="dropdown-divider" />
                             <a href="@Url.PageLink(string.Empty)" class="dropdown-item">
                                 Geplante anzeigen
@@ -50,9 +50,9 @@
             <a href="@createUrl" class="button is-floating is-link">
                 <i class="fas fa-calendar-plus"></i>
             </a>
-			<a href="@createRecurringUrl" class="button is-floating is-warning" style="right:4em">
-				<i class="fas fa-calendar-days"></i>
-			</a>
+            <a href="@createRecurringUrl" class="button is-floating is-warning" style="right:4em">
+                <i class="fas fa-calendar-days"></i>
+            </a>
         </div>
 
         <div class="list has-hoverable-list-items has-visible-pointer-controls">
@@ -83,6 +83,16 @@
                     </div>
                     <div class="list-item-controls">
                         <div class="buttons">
+                            <a class="button is-dark is-inverted" href="@Url.PageLink("TryoutChat", null, new { id = i.Id })">
+                                @if (i.ChatMessageCount > 0)
+                                {
+                                    <span class="icon mr-0"><i class="fas fa-comments"></i></span> @i.ChatMessageCount
+                                }
+                                else
+                                {
+                                    <span class="icon"><i class="far fa-comments"></i></span>
+                                }
+                            </a>
                             @if (i.BookingCount > 0)
                             {
                                 <a class="button is-dark is-inverted" href="@(Url.PageLink("TryoutBookings", null, new { id = i.Id }))">
