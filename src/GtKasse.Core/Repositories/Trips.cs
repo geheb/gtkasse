@@ -58,13 +58,13 @@ public sealed class Trips : IDisposable
         return entities.Select(e => new TripBookingDto(e, dc)).ToArray();
     }
 
-    public async Task<TripListDto[]> GetTripList(bool showExpired, Guid? userId, CancellationToken cancellationToken)
+    public async Task<TripListDto[]> GetTripList(bool showExpired, CancellationToken cancellationToken)
     {
         var now = DateTimeOffset.UtcNow;
         var trips = await _dbContext.Set<Trip>()
             .AsNoTracking()
             .Include(e => e.User)
-            .Where(e => (userId == null || e.UserId == userId) && (showExpired ? e.Start < now : e.End > now))
+            .Where(e => (showExpired ? e.Start < now : e.End > now))
             .Select(e => new { trip = e, bookingCount = e.TripBookings!.Count, chatMessageCount = e.TripChats!.Count })
             .ToArrayAsync(cancellationToken);
 

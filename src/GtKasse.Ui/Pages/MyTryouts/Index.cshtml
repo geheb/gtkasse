@@ -87,7 +87,7 @@
                     <div class="list-item-controls">
                         <div class="buttons">
                             <a class="button is-dark is-inverted click-info open-modal" href="#" data-target="#infoModal"
-                               data-info='@Json.Serialize(new { type = i.Type, date = dateConverter.ToDateTime(i.Date), contact = i.ContactName, contactemail = i.ContactEmail, description = i.Description })'>
+                               data-info='@Json.Serialize(new { type = i.Type, date = dateConverter.ToDateTime(i.Date), contact = i.ContactName, contactemail = i.ContactEmail, description = i.Description, users = i.BookingUsers })'>
                                 <span class="icon"><i class="fas fa-info"></i></span>
                             </a>
                             <a class="button is-dark is-inverted" href="@Url.PageLink("TryoutChat", null, new { id = i.TryoutId })">
@@ -122,6 +122,7 @@
     <div>Trainingsart: <span class="tryoutType"></span></div>
     <div>Zeitpunkt: <span class="tryoutDate"></span></div>
     <div>Ansprechpartner: <span class="tag is-rounded is-warning"><a href="#" class="tryoutContact"></a></span></div>
+    <div>Anmeldungen: <span class="tryoutUsers"></span></div>
     <hr />
     <p class="tryoutDescription"></p>
 </div>
@@ -142,6 +143,8 @@
                         $(target).find('.tryoutType').text(d.type);
                         $(target).find('.tryoutDate').text(d.date);
                         $(target).find('.tryoutContact').attr('href', d.contactemail ? `mailto:${d.contactemail}` : '#').text(d.contact);
+                        const tagUsers = $.map(d.users, function (u) { return `<span class="tag is-rounded is-info">${u}</span>`; });
+                        $(target).find('.tryoutUsers').html(tagUsers.join(' '));
                         $(target).find('.tryoutDescription').html(d.description);
                     }
                 }

@@ -6,6 +6,8 @@ using GtKasse.Core.Entities;
 using GtKasse.Core.Extensions;
 using GtKasse.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 
 public sealed class Tryouts
 {
@@ -67,20 +69,51 @@ public sealed class Tryouts
         return entities.Select(e => new TryoutBookingDto(e, dc)).ToArray();
     }
 
-    public async Task<TryoutListDto[]> GetTryoutList(bool showExpired, Guid? userId, CancellationToken cancellationToken)
+    public async Task<TryoutListDto[]> GetTryoutList(bool showExpired, bool includeUserList, CancellationToken cancellationToken)
     {
         var now = DateTimeOffset.UtcNow;
 
         var tryouts = await _dbContext.Set<Tryout>()
             .AsNoTracking()
             .Include(e => e.User)
-            .Where(e => (userId == null || e.UserId == userId) && (showExpired ? e.Date < now : e.Date > now))
+            .Where(e => (showExpired ? e.Date < now : e.Date > now))
             .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count, chatMessageCount = e.TryoutChats!.Count })
             .ToArrayAsync(cancellationToken);
 
+        if (tryouts.Length == 0)
+        {
+            return [];
+        }
+
+        Dictionary<Guid, string[]> usersByTryoutId;
+        {
+            var tryoutIds = tryouts.Select(t => t.tryout.Id).Distinct().ToArray();
+            var bookingUsers = await _dbContext.Set<TryoutBooking>()
+                .AsNoTracking()
+                .Include(e => e.User)
+                .Where(e => tryoutIds.Contains(e.TryoutId!.Value) && e.CancelledOn == null)
+                .Select(e => new { tryoutId = e.TryoutId!.Value, e.Name, User = e.User!.Name })
+                .ToArrayAsync(cancellationToken);
+
+            usersByTryoutId = bookingUsers
+                .GroupBy(e => e.tryoutId)
+                .ToDictionary(e => e.Key, e => e.Select(i => i.Name ?? i.User!).ToArray());
+        }
+
         var dc = new GermanDateTimeConverter();
 
-        var result = tryouts.Select(e => new TryoutListDto(e.tryout, e.bookingCount, e.chatMessageCount, dc)).ToArray();
+        var result = tryouts
+            .Select(e =>
+            {
+                if (!usersByTryoutId.TryGetValue(e.tryout.Id, out var users))
+                {
+                    users = [];
+                }
+
+                var bookingUsers = includeUserList ? users : [$"{users.Length}"];
+                return new TryoutListDto(e.tryout, e.bookingCount, e.chatMessageCount, bookingUsers, dc);
+            })
+            .ToArray();
 
         return result.Where(r => r.Date >= now)
             .OrderBy(r => r.Date)
@@ -167,11 +200,11 @@ public sealed class Tryouts
         if (entity == null) return null;
 
         var dc = new GermanDateTimeConverter();
-
-        return new TryoutListDto(entity.tryout, entity.bookingCount, entity.chatMessageCount, dc);
+        
+        return new TryoutListDto(entity.tryout, entity.bookingCount, entity.chatMessageCount, [], dc);
     }
 
-    public async Task<MyTryoutListDto[]> GetMyTryoutList(Guid userId, CancellationToken cancellationToken)
+    public async Task<MyTryoutListDto[]> GetMyTryoutList(Guid userId, bool includeUserList, CancellationToken cancellationToken)
     {
         var bookings = await _dbContext.Set<TryoutBooking>()
             .AsNoTracking()
@@ -193,12 +226,33 @@ public sealed class Tryouts
                 .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count, chatMessageCount = e.TryoutChats!.Count })
                 .ToArrayAsync(cancellationToken);
 
+            Dictionary<Guid, string[]> usersByTryoutId;
+            {
+                var bookingUsers = await _dbContext.Set<TryoutBooking>()
+                    .AsNoTracking()
+                    .Include(e => e.User)
+                    .Where(e => ids.Contains(e.TryoutId!.Value) && e.CancelledOn == null)
+                    .Select(e => new { tryoutId = e.TryoutId!.Value, e.Name, User = e.User!.Name })
+                    .ToArrayAsync(cancellationToken);
+
+                usersByTryoutId = bookingUsers
+                    .GroupBy(e => e.tryoutId)
+                    .ToDictionary(e => e.Key, e => e.Select(i => i.Name ?? i.User!).ToArray());
+            }
+
             var map = tryouts.ToDictionary(t => t.tryout.Id);
 
             foreach (var b in batchBookings)
             {
+                if (!usersByTryoutId.TryGetValue(b.TryoutId!.Value, out var users))
+                {
+                    users = [];
+                }
+
+                var bookingUsers = includeUserList ? users : [$"{users.Length}"];
+
                 var t = map[b.TryoutId!.Value];
-                result.Add(new MyTryoutListDto(t.tryout, b, t.bookingCount, t.chatMessageCount, dc));
+                result.Add(new MyTryoutListDto(t.tryout, b, t.bookingCount, t.chatMessageCount, bookingUsers, dc));
             }
         }
 

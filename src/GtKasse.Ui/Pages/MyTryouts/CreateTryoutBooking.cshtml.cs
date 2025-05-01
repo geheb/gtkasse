@@ -20,7 +20,7 @@ public class CreateTryoutBookingModel : PageModel
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
-        Items = await _tryouts.GetTryoutList(false, null, cancellationToken);
+        Items = await _tryouts.GetTryoutList(false, User.IsInRole(Roles.Member), cancellationToken);
     }
 
     public async Task<IActionResult> OnPostCreateAsync(Guid id, string? name, CancellationToken cancellationToken)

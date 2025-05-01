@@ -21,7 +21,7 @@ public class IndexModel : PageModel
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
-        Items = await _tryouts.GetMyTryoutList(User.GetId(), cancellationToken);
+        Items = await _tryouts.GetMyTryoutList(User.GetId(), User.IsInRole(Roles.Member), cancellationToken);
     }
 
     public async Task<IActionResult> OnPostDeleteAsync(Guid id, CancellationToken cancellationToken)

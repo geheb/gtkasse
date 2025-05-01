@@ -16,8 +16,9 @@ public sealed class TryoutListDto
     public string? Description { get; set; }
     public bool CanAccept { get; }
     public int ChatMessageCount { get; }
+    public string[] BookingUsers { get; }
 
-    internal TryoutListDto(Tryout tryout, int bookingCount, int chatMessageCount, GermanDateTimeConverter dc)
+    internal TryoutListDto(Tryout tryout, int bookingCount, int chatMessageCount, string[] bookingUsers, GermanDateTimeConverter dc)
     {
         Id = tryout.Id;
         Type = tryout.Type;
@@ -26,6 +27,7 @@ public sealed class TryoutListDto
         ContactEmail = tryout.User?.EmailConfirmed == true ? tryout.User.Email : null;
         BookingCount = bookingCount;
         ChatMessageCount = chatMessageCount;
+        BookingUsers = bookingUsers;
 
         MaxBookings = tryout.MaxBookings;
         IsExpired = tryout.IsExpired;

@@ -1,11 +1,11 @@
 @page
 @model GtKasse.Ui.Pages.MyTryouts.CreateTryoutBookingModel
 @{
-    ViewData["Title"] = Model.GetNode().Title;
-    ViewData["HasFooter"] = true;
+	ViewData["Title"] = Model.GetNode().Title;
+	ViewData["HasFooter"] = true;
 
-    var dateConverter = new GermanDateTimeConverter();
-    var indexUrl = Url.PageLink("Index");
+	var dateConverter = new GermanDateTimeConverter();
+	var indexUrl = Url.PageLink("Index");
 }
 
 @await Html.PartialAsync("_Header")
@@ -42,7 +42,7 @@
                     <div class="list-item-controls">
                         <div class="buttons">
                             <a class="button is-dark is-inverted open-modal" href="#" data-target="#infoModal"
-                               data-info='@Json.Serialize(new { type = i.Type, date = dateConverter.ToDateTime(i.Date), contact = i.ContactName, contactemail = i.ContactEmail, description = i.Description })'>
+                               data-info='@Json.Serialize(new { type = i.Type, date = dateConverter.ToDateTime(i.Date), contact = i.ContactName, contactemail = i.ContactEmail, description = i.Description, users = i.BookingUsers })'>
                                 <span class="icon"><i class="fas fa-info"></i></span>
                             </a>
                             @if (i.CanAccept)
@@ -78,6 +78,7 @@
 	<div>Trainingsart: <span class="tryoutType"></span></div>
     <div>Zeitpunkt: <span class="tryoutDate"></span></div>
     <div>Ansprechpartner: <span class="tag is-rounded is-warning"><a href="#" class="tryoutContact"></a></span></div>
+    <div>Anmeldungen: <span class="tryoutUsers"></span></div>
     <hr />
     <p class="tryoutDescription"></p>
 </div>
@@ -98,6 +99,8 @@
 						$(target).find('.tryoutType').text(d.type);
                         $(target).find('.tryoutDate').text(d.date);
                         $(target).find('.tryoutContact').attr('href', d.contactemail ? `mailto:${d.contactemail}` : '#').text(d.contact);
+                        const tagUsers = $.map(d.users, function (u) { return `<span class="tag is-rounded is-info">${u}</span>`; });
+                        $(target).find('.tryoutUsers').html(tagUsers.join(' '));
                         $(target).find('.tryoutDescription').html(d.description);
                     }
                 }

@@ -21,7 +21,7 @@ public class CreateTripBookingModel : PageModel
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
-        Items = await _trips.GetTripList(false, null, cancellationToken);
+        Items = await _trips.GetTripList(false, cancellationToken);
     }
 
     public async Task<IActionResult> OnPostCreateAsync(Guid id, string? name, CancellationToken cancellationToken)

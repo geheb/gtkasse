@@ -21,6 +21,6 @@ public class IndexModel : PageModel
     public async Task OnGetAsync(int filter, CancellationToken cancellationToken)
     {
         var showExpired = filter == 1;
-        Items = await _tryouts.GetTryoutList(showExpired, null, cancellationToken);
+        Items = await _tryouts.GetTryoutList(showExpired, false, cancellationToken);
     }
 }
