@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using GtKasse.Core.Converter;
 using GtKasse.Core.Database;
 using GtKasse.Core.Email;
@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
 using System.Globalization;
 using System.Security.Claims;
 using System.Text;
@@ -22,8 +21,7 @@ namespace GtKasse.Core.Repositories;
 
 public sealed class Users
 {
-    private readonly ILogger<Users> _logger;
-    private readonly AppDbContext _dbContext;
+    private readonly ILogger _logger;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly UserManager<IdentityUserGuid> _userManager;
     private readonly IHttpContextAccessor _httpContext;
@@ -31,12 +29,12 @@ public sealed class Users
     private readonly LinkGenerator _linkGenerator;
     private readonly EmailValidatorService _emailValidator;
     private readonly SignInManager<IdentityUserGuid> _signInManager;
+    private readonly EmailService _emailService;
     private readonly double _defaultLockoutMinutes;
     private readonly UuidPkGenerator _pkGenerator = new();
 
     public Users(
         ILogger<Users> logger,
-        AppDbContext dbContext,
         IDataProtectionProvider dataProtectionProvider,
         UserManager<IdentityUserGuid> userManager,
         IHttpContextAccessor httpContext,
@@ -44,10 +42,10 @@ public sealed class Users
         LinkGenerator linkGenerator,
         EmailValidatorService emailValidator,
         SignInManager<IdentityUserGuid> signInManager,
+        EmailService emailService,
         IOptions<IdentityOptions> identityOptions)
     {
         _logger = logger;
-        _dbContext = dbContext;
         _dataProtectionProvider = dataProtectionProvider;
         _userManager = userManager;
         _httpContext = httpContext;
@@ -55,6 +53,7 @@ public sealed class Users
         _linkGenerator = linkGenerator;
         _emailValidator = emailValidator;
         _signInManager = signInManager;
+        _emailService = emailService;
         _defaultLockoutMinutes = (identityOptions.Value ?? new IdentityOptions()).Lockout.DefaultLockoutTimeSpan.TotalMinutes;
     }
 
@@ -125,15 +124,6 @@ public sealed class Users
         var user = await _userManager.FindByIdAsync(id.ToString());
         if (user == null) return false;
 
-        var dbSet = _dbContext.Set<AccountNotification>();
-
-        var notifications = await dbSet.Where(e => e.UserId == id).ToArrayAsync(cancellationToken);
-        if (notifications.Any())
-        {
-            dbSet.RemoveRange(notifications);
-            if (await _dbContext.SaveChangesAsync(cancellationToken) < 1) return false;
-        }
-
         var result = await _userManager.RemovePasswordAsync(user);
         if (!result.Succeeded)
         {
@@ -173,15 +163,6 @@ public sealed class Users
         var user = await _userManager.FindByIdAsync(id.ToString());
         if (user == null) return false;
 
-        var dbSet = _dbContext.Set<AccountNotification>();
-
-        var notifications = await dbSet.Where(e => e.UserId == id).ToArrayAsync(cancellationToken);
-        if (notifications.Any())
-        {
-            dbSet.RemoveRange(notifications);
-            if (await _dbContext.SaveChangesAsync(cancellationToken) < 1) return false;
-        }
-
         var result = await _userManager.DeleteAsync(user);
         if (!result.Succeeded)
         {
@@ -203,16 +184,16 @@ public sealed class Users
         _logger.LogInformation($"user {userId} logged out");
     }
 
-    public async Task<bool> NotifyPasswordForgotten(string email, CancellationToken cancellationToken)
+    public async Task NotifyPasswordForgotten(string email, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
             _logger.LogWarning($"user {email} not found");
-            return false;
+            return;
         }
 
-        return await NotifyConfirmPasswordForgotten(user, cancellationToken);
+        await NotifyConfirmPasswordForgotten(user, cancellationToken);
     }
 
     public async Task<string[]?> Update(UserDto dto, string? password, CancellationToken cancellationToken)
@@ -639,8 +620,6 @@ public sealed class Users
             return new[] { "Die E-Mail-Adresse ist ungültig." };
         }
 
-        using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
         user = new IdentityUserGuid
         {
             Id = _pkGenerator.Generate(),
@@ -667,8 +646,6 @@ public sealed class Users
         {
             return new[] { "Fehler beim Speichern" };
         }
-
-        await transaction.CommitAsync(cancellationToken);
 
         return null;
     }
@@ -755,42 +732,17 @@ public sealed class Users
             return false;
         }
 
-        var dbSet = _dbContext.Set<AccountNotification>();
-
-        var type = registerExtended ? AccountEmailTemplate.ConfirmRegistrationExtended : AccountEmailTemplate.ConfirmRegistration;
-
-        var entity = await dbSet
-            .AsNoTracking()
-            .OrderByDescending(e => e.CreatedOn)
-            .FirstOrDefaultAsync(e => e.UserId == user.Id && e.Type == (int)type, cancellationToken);
-
-        if (entity != null && !entity.SentOn.HasValue)
-        {
-            _logger.LogInformation($"notification for user {user.Id} is pending");
-            return true;
-        }
-
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         token = HttpUtility.UrlEncode(token);
 
         var callbackUrl = _linkGenerator.GetUriByPage(_httpContext.HttpContext, "/Login/ConfirmRegistration", null, new { id = user.Id, token });
 
-        entity = new AccountNotification
+        if (!await _emailService.EnqueueConfirmRegistration(user, callbackUrl!, registerExtended, cancellationToken))
         {
-            Id = _pkGenerator.Generate(),
-            UserId = user.Id,
-            Type = (int)type,
-            CreatedOn = DateTimeOffset.UtcNow,
-            CallbackUrl = callbackUrl
-        };
-
-        await dbSet.AddAsync(entity, cancellationToken);
-
-        if (await _dbContext.SaveChangesAsync(cancellationToken) < 1)
-        {
-            _logger.LogInformation($"save for user {user.Id} failed");
+            _logger.LogWarning($"enqueue registration email for user {user.Id} failed");
             return false;
         }
+
         return true;
     }
 
@@ -801,42 +753,17 @@ public sealed class Users
             return false;
         }
 
-        var dbSet = _dbContext.Set<AccountNotification>();
-
-        var type = AccountEmailTemplate.ConfirmPasswordForgotten;
-
-        var entity = await dbSet
-            .AsNoTracking()
-            .OrderByDescending(e => e.CreatedOn)
-            .FirstOrDefaultAsync(e => e.UserId == user.Id && e.Type == (int)type, cancellationToken);
-
-        if (entity != null && !entity.SentOn.HasValue)
-        {
-            _logger.LogInformation($"notification for user {user.Id} is pending");
-            return true;
-        }
-
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         token = HttpUtility.UrlEncode(token);
 
         var callbackUrl = _linkGenerator.GetUriByPage(_httpContext.HttpContext, "/Login/ConfirmChangePassword", null, new { id = user.Id, token });
 
-        entity = new AccountNotification
+        if (!await _emailService.EnqueueChangePassword(user, callbackUrl!, cancellationToken))
         {
-            Id = _pkGenerator.Generate(),
-            UserId = user.Id,
-            Type = (int)type,
-            CreatedOn = DateTimeOffset.UtcNow,
-            CallbackUrl = callbackUrl
-        };
-
-        await dbSet.AddAsync(entity, cancellationToken);
-
-        if (await _dbContext.SaveChangesAsync(cancellationToken) < 1)
-        {
-            _logger.LogInformation($"save for user {user.Id} failed");
+            _logger.LogWarning($"enqueue change password email for user {user.Id} failed");
             return false;
         }
+
         return true;
     }
 
@@ -847,51 +774,18 @@ public sealed class Users
             return false;
         }
 
-        var dbSet = _dbContext.Set<AccountNotification>();
-
-        var type = AccountEmailTemplate.ConfirmChangeEmail;
-
-        var pendingNotifications = await dbSet
-            .Where(e => e.UserId == user.Id && e.Type == (int)type && e.SentOn == null)
-            .ToArrayAsync(cancellationToken);
-
-        // disable pending notifications
-        if (pendingNotifications != null && pendingNotifications.Any())
-        {
-            foreach (var e in pendingNotifications)
-            {
-                e.SentOn = DateTimeOffset.MinValue;
-            }
-            if (await _dbContext.SaveChangesAsync(cancellationToken) < 1)
-            {
-                _logger.LogInformation($"save pending notifications for {user.Id} failed");
-                return false;
-            }
-        }
-
         var token = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
         token = HttpUtility.UrlEncode(token);
 
         var protector = _dataProtectionProvider.CreateProtector(user.SecurityStamp!);
         var newEmailProtected = Convert.ToBase64String(protector.Protect(Encoding.UTF8.GetBytes(newEmail)));
 
-        var callbackUrl = _linkGenerator.GetUriByPage(_httpContext.HttpContext, "/Login/ConfirmChangeEmail", null, 
+        var callbackUrl = _linkGenerator.GetUriByPage(_httpContext.HttpContext, "/Login/ConfirmChangeEmail", null,
             new { id = user.Id, token, email = newEmailProtected });
 
-        var newNotify = new AccountNotification
+        if (!await _emailService.EnqueueChangeEmail(user, callbackUrl!, cancellationToken))
         {
-            Id = _pkGenerator.Generate(),
-            UserId = user.Id,
-            Type = (int)type,
-            CreatedOn = DateTimeOffset.UtcNow,
-            CallbackUrl = callbackUrl
-        };
-
-        await dbSet.AddAsync(newNotify, cancellationToken);
-
-        if (await _dbContext.SaveChangesAsync(cancellationToken) < 1)
-        {
-            _logger.LogInformation($"save notification for user {user.Id} failed");
+            _logger.LogWarning($"enqueue change address email for user {user.Id} failed");
             return false;
         }
 

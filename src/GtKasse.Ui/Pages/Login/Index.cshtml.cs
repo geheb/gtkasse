@@ -40,7 +40,7 @@ public class IndexModel : PageModel
         }
         else if (message == 2)
         {
-            Message = "Eine E-Mail wird an die E-Mail-Adresse versendet, um das Passwort zu ändern.";
+            Message = "Falls deine E-Mail-Adresse existiert, wird eine E-Mail an diese versendet. Mit Hilfe der E-Mail kannst du das Passwort ändern.";
         }
     }
 

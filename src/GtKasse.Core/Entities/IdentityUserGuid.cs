@@ -10,9 +10,7 @@ namespace GtKasse.Core.Entities
         public string? DebtorNumber { get; set; }
         public string? AddressNumber { get; set; }
         public string? AuthenticatorKey { get; set; }
-
         internal ICollection<IdentityUserRoleGuid>? UserRoles { get; set; }
-        internal ICollection<AccountNotification>? AccountNotifications { get; set; }
         internal ICollection<Booking>? Bookings { get; set; }
         internal ICollection<Invoice>? Invoices { get; set; }
         internal ICollection<Trip>? Trips { get; set; }

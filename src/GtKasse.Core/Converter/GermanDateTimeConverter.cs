@@ -97,4 +97,6 @@ public sealed class GermanDateTimeConverter
 
         return ToDateTime(start) + " - " + ToDateTime(end);
     }
+
+    public string Format(TimeSpan span) => span.TotalDays > 1 ? $"{span.TotalDays} Tage" : $"{span.TotalHours} Stunden";
 }

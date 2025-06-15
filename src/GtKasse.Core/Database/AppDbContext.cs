@@ -93,23 +93,16 @@ public sealed class AppDbContext :
 
         modelBuilder.ApplyConfiguration(new RoleSeeder());
 
-        modelBuilder.Entity<AccountNotification>(eb =>
+        modelBuilder.Entity<EmailQueue>(eb =>
         {
-            eb.ToTable("account_notifications");
+            eb.ToTable("email_queue");
             eb.Property(e => e.Id).HasColumnType(KeyType).ValueGeneratedNever();
-            eb.Property(e => e.UserId).HasColumnType(KeyType);
-            eb.Property(e => e.Type).IsRequired();
-            eb.Property(e => e.ReferenceId).HasColumnType(KeyType);
+            eb.Property(e => e.Created).IsRequired();
+            eb.Property(e => e.Recipient).IsRequired();
+            eb.Property(e => e.Subject).IsRequired();
+            eb.Property(e => e.HtmlBody).IsRequired();
 
-            eb.HasOne(e => e.User)
-                .WithMany(e => e.AccountNotifications)
-                .HasForeignKey(e => e.UserId)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired(false);
-
-            eb.HasIndex(e => new { e.UserId, e.Type, e.CreatedOn });
-
-            eb.HasIndex(e => new { e.ReferenceId, e.Type });
+            eb.HasIndex(e => new { e.Sent, e.Created, e.IsPrio });
         });
 
         modelBuilder.Entity<Food>(eb =>

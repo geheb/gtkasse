@@ -57,11 +57,7 @@ public class PasswordForgottenModel : PageModel
             return Page();
         }
 
-        if (!await _users.NotifyPasswordForgotten(Email!, cancellationToken))
-        {
-            ModelState.AddModelError(string.Empty, LocalizedMessages.SaveFailed);
-            return Page();
-        }
+        await _users.NotifyPasswordForgotten(Email!, cancellationToken);
 
         return RedirectToPage("Index", new { message = 2 });
     }

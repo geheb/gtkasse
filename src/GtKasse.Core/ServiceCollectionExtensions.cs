@@ -14,15 +14,9 @@ public static class ServiceCollectionExtensions
 {
     public static void AddCore(this IServiceCollection services, IConfiguration config)
     {
-        services.Configure<SmtpConnectionOptions>(config.GetSection("Smtp"));
-
-        services.AddHostedService<HostedWorker>();
-
-        services.AddSingleton<EmailValidatorService>();
-        services.AddSingleton<IEmailSender, SmtpDispatcher>();
-
         services.AddScoped<IdentityErrorDescriber, GermanyIdentityErrorDescriber>();
         services.AddScoped<AppDbContextInitializer>();
+
         services.AddScoped<Users>();
         services.AddScoped<Foods>();
         services.AddScoped<Bookings>();
@@ -33,5 +27,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<Tryouts>();
         services.AddScoped<Boats>();
         services.AddScoped<Clubhouse>();
+        services.AddScoped<EmailQueueRepository>();
+
+        services.Configure<SmtpConnectionOptions>(config.GetSection("Smtp"));
+        services.AddSingleton<EmailValidatorService>();
+        services.AddSingleton<IEmailSender, SmtpDispatcher>();
+        services.AddScoped<EmailService>();
+
+        services.AddHostedService<HostedWorker>();
     }
 }
