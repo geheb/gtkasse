@@ -133,7 +133,7 @@
     <value>Die Anfrage ist ungültig.</value>
   </data>
   <data name="ItemCreateFailed" xml:space="preserve">
-    <value>Fehler beim Erstellen des Eintrags.</value>
+    <value>Fehler beim Anlegen des Eintrags.</value>
   </data>
   <data name="ItemExists" xml:space="preserve">
     <value>Der Eintrag existiert bereits.</value>

@@ -12,7 +12,8 @@ namespace GtKasse.Ui.Pages.MyAccount;
 [Authorize]
 public class ChangeEmailModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.Email.EmailValidatorService _emailValidatorService;
+    private readonly Core.User.UserService _userService;
 
     [Display(Name = "Aktuelle E-Mail-Adresse")]
     public string? CurrentEmail { get; private set; }
@@ -27,9 +28,12 @@ public class ChangeEmailModel : PageModel
 
     public bool IsDisabled { get; set; }
 
-    public ChangeEmailModel(Core.Repositories.Users users)
+    public ChangeEmailModel(
+        Core.Email.EmailValidatorService emailValidatorService,
+        Core.User.UserService userService)
     {
-        _users = users;
+        _emailValidatorService = emailValidatorService;
+        _userService = userService;
     }
 
     public void OnGet()
@@ -43,11 +47,25 @@ public class ChangeEmailModel : PageModel
 
         if (!ModelState.IsValid) return Page();
 
-        var result = await _users.NotifyConfirmChangeEmail(User.GetId(), NewEmail!, CurrentPassword!, cancellationToken);
-        if (!string.IsNullOrEmpty(result.Error))
+        var result = await _userService.VerifyPassword(User.GetId(), CurrentPassword!);
+        if (result.IsFailed)
         {
-            ModelState.AddModelError(string.Empty, result.Error);
-            IsDisabled = result.IsFatal;
+            result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
+            return Page();
+        }
+
+        if (!await _emailValidatorService.Validate(NewEmail!, cancellationToken))
+        {
+            ModelState.AddModelError(string.Empty, "Die neue E-Mail-Adresse ist ungültig.");
+            return Page();
+        }
+
+        var callbackUrl = Url.PageLink("/Login/ConfirmChangeEmail", values: new { id = Guid.Empty, token = string.Empty, email = string.Empty });
+
+        result = await _userService.NotifyChangeEmail(User.GetId(), NewEmail!, callbackUrl!, cancellationToken);
+        if (result.IsFailed)
+        {
+            result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
             return Page();
         }
 

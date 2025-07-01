@@ -1,4 +1,7 @@
+using GtKasse.Core.Converter;
+using GtKasse.Core.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Globalization;
 
 namespace GtKasse.Core.Entities
 {
@@ -10,6 +13,7 @@ namespace GtKasse.Core.Entities
         public string? DebtorNumber { get; set; }
         public string? AddressNumber { get; set; }
         public string? AuthenticatorKey { get; set; }
+
         internal ICollection<IdentityUserRoleGuid>? UserRoles { get; set; }
         internal ICollection<Booking>? Bookings { get; set; }
         internal ICollection<Invoice>? Invoices { get; set; }
@@ -22,5 +26,22 @@ namespace GtKasse.Core.Entities
         internal ICollection<TryoutBooking>? TryoutBookings {  get; set; }
         internal ICollection<BoatRental>? BoatRentals { get; set; }
         internal ICollection<TryoutChat>? TryoutChats { get; set; }
+
+        public IdentityDto ToDto(GermanDateTimeConverter dc)
+        {
+            return new()
+            {
+                Id = Id,
+                Name = Name,
+                Email = Email,
+                PhoneNumber = PhoneNumber,
+                IsEmailConfirmed = EmailConfirmed,
+                LastLogin = LastLogin.HasValue ? dc.ToLocal(LastLogin.Value) : null,
+                Roles = UserRoles?.Where(e => e.Role?.Name != null).Select(e => e.Role!.Name!).ToArray(),
+                DebtorNumber = DebtorNumber,
+                AddressNumber = AddressNumber,
+                IsLocked = LockoutEnabled && LockoutEnd.HasValue && LockoutEnd.Value > DateTimeOffset.UtcNow
+            };
+        }
     }
 }

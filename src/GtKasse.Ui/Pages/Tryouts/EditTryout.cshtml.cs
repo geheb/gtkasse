@@ -10,7 +10,7 @@ namespace GtKasse.Ui.Pages.Tryouts;
 [Authorize(Roles = "administrator,tripmanager")]
 public class EditTryoutModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.Repositories.IdentityRepository _identityRepository;
     private readonly Core.Repositories.Tryouts _tryouts;
 
     [BindProperty]
@@ -22,9 +22,11 @@ public class EditTryoutModel : PageModel
 
     public bool IsDisabled { get; set; }
 
-    public EditTryoutModel(Core.Repositories.Users users, Core.Repositories.Tryouts tryouts)
+    public EditTryoutModel(
+        Core.Repositories.IdentityRepository identityRepository, 
+        Core.Repositories.Tryouts tryouts)
     {
-        _users = users;
+        _identityRepository = identityRepository;
         _tryouts = tryouts;
     }
 
@@ -46,8 +48,7 @@ public class EditTryoutModel : PageModel
             return Page();
         }
 
-        var dto = Input.ToDto();
-        dto.Id = id;
+        var dto = Input.ToDto(id);
 
         var result = await _tryouts.UpdateTryout(dto, cancellationToken);
         if (!result)
@@ -78,7 +79,7 @@ public class EditTryoutModel : PageModel
 
         Details = new GermanDateTimeConverter().ToDateTime(tryout.Date);
 
-        var users = await _users.GetAll(cancellationToken);
+        var users = await _identityRepository.GetAll(cancellationToken);
 
         var contactId = Guid.TryParse(Input.UserId, out var cid) ? cid : User.GetId();
 

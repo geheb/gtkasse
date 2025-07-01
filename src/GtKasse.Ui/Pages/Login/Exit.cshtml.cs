@@ -7,16 +7,16 @@ namespace GtKasse.Ui.Pages.Login;
 [Authorize]
 public class ExitModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.User.LoginService _loginService;
 
-    public ExitModel(Core.Repositories.Users users)
+    public ExitModel(Core.User.LoginService loginService)
     {
-        _users = users;
+        _loginService = loginService;
     }
 
     public async Task<IActionResult> OnGetAsync()
     {
-        await _users.SignOutCurrentUser();
+        await _loginService.SignOutCurrentUser();
         return Redirect("/");
     }
 }

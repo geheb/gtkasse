@@ -10,7 +10,7 @@ namespace GtKasse.Ui.Pages.Tryouts;
 [Authorize(Roles = "administrator,tripmanager")]
 public class CreateRecurringModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.Repositories.IdentityRepository _identityRepository;
     private readonly Core.Repositories.Tryouts _tryouts;
 
     [BindProperty]
@@ -19,10 +19,10 @@ public class CreateRecurringModel : PageModel
     public SelectListItem[] Users { get; private set; } = Array.Empty<SelectListItem>();
 
     public CreateRecurringModel(
-        Core.Repositories.Users users, 
+        Core.Repositories.IdentityRepository identityRepository, 
         Core.Repositories.Tryouts tryouts)
     {
-        _users = users;
+        _identityRepository = identityRepository;
         _tryouts = tryouts;
     }
 
@@ -52,7 +52,7 @@ public class CreateRecurringModel : PageModel
 
     private async Task<bool> UpdateView(CancellationToken cancellationToken)
     {
-        var users = await _users.GetAll(cancellationToken);
+        var users = await _identityRepository.GetAll(cancellationToken);
 
         var contactId = Guid.TryParse(Input.UserId, out var id) ? id : User.GetId();
 

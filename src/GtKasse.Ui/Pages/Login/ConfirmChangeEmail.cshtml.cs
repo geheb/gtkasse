@@ -8,33 +8,32 @@ namespace GtKasse.Ui.Pages.Login;
 [AllowAnonymous]
 public class ConfirmChangeEmailModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
-    private readonly ILogger<ConfirmChangeEmailModel> _logger;
+    private readonly Core.User.UserService _userService;
 
     public string? ConfirmedEmail { get; set; }
 
-    public ConfirmChangeEmailModel(Core.Repositories.Users users, ILogger<ConfirmChangeEmailModel> logger)
+    public ConfirmChangeEmailModel(Core.User.UserService userService)
     {
-        _users = users;
-        _logger = logger;
+        _userService = userService;
     }
 
     public async Task OnGetAsync(Guid id, string token, string email)
     {
-        if (id == Guid.Empty || string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
+        if (id == Guid.Empty || 
+            string.IsNullOrWhiteSpace(token) || 
+            string.IsNullOrWhiteSpace(email))
         {
-            _logger.LogWarning($"suspicious activity: {HttpContext.Connection.RemoteIpAddress} ({id}, {token}, {email})");
             ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidRequest);
             return;
         }
 
-        var newEmail = await _users.ConfirmChangeEmail(id, token, email);
-        if (string.IsNullOrEmpty(newEmail))
+        var result = await _userService.ConfirmChangeEmail(id, token, email);
+        if (result.IsFailed)
         {
             ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidNewEmailConfirmationLink);
             return;
         }
 
-        ConfirmedEmail = new EmailConverter().Anonymize(newEmail);
+        ConfirmedEmail = new EmailConverter().Anonymize(email);
     }
 }

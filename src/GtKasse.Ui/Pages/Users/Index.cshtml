@@ -64,7 +64,7 @@
                     {
                         <tr class="clickable-row" data-url="@(Url.PageLink("EditUser", null, new { id = u.Id }))">
                             <td class=""><span class="icon is-small @roleConverter.RoleToClass(u.Roles)"><i class="fas fa-user-circle"></i></span> @u.Name</td>
-                            <td>@(u.EmailConfirmed ? "Ja" : "Nein")</td>
+                            <td>@(u.IsEmailConfirmed ? "Ja" : "Nein")</td>
                             <td>@(u.LastLogin.HasValue ? dateConverter.ToDateTime(u.LastLogin.Value) : "n.v.")</td>
                             <td>@(u.DebtorNumber ?? "n.v.") / @(u.AddressNumber ?? "n.v.")</td>
                             <td>

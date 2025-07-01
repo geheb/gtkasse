@@ -12,17 +12,19 @@ using System.Linq;
 public class EditArticleModel : PageModel
 {
     private readonly WikiArticles _wikiArticles;
-    private readonly Users _users;
+    private readonly IdentityRepository _identityRepository;
 
     [BindProperty]
-    public WIkiArticleInput Input { get; set; } = new WIkiArticleInput();
+    public WIkiArticleInput Input { get; set; } = new();
     public SelectListItem[] Users { get; set; } = Array.Empty<SelectListItem>();
     public bool IsDisabled { get; set; }
 
-    public EditArticleModel(WikiArticles wikiArticles, Users users)
+    public EditArticleModel(
+        WikiArticles wikiArticles, 
+        IdentityRepository identityRepository)
     {
         _wikiArticles = wikiArticles;
-        _users = users;
+        _identityRepository = identityRepository;
     }
 
     public async Task OnGetAsync(Guid id, CancellationToken cancellationToken)
@@ -82,7 +84,7 @@ public class EditArticleModel : PageModel
             return null;
         }
 
-        var users = await _users.GetAll(cancellationToken);
+        var users = await _identityRepository.GetAll(cancellationToken);
 
         var items = new List<SelectListItem> { new() };
 

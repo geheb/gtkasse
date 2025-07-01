@@ -18,6 +18,7 @@ sealed class RoleSeeder : IEntityTypeConfiguration<IdentityRoleGuid>
     private readonly Guid _fleetManager = Guid.Parse("F9493060-30B8-4BF3-A4BE-74630B0FA423");
     private readonly Guid _boatManager = Guid.Parse("668EF80A-9F57-4961-BEAC-540AD8003241");
     private readonly Guid _houseManager = Guid.Parse("AFD40E75-DCFE-4C46-9D4C-FF701F225179");
+    private readonly Guid _mailingManager = Guid.Parse("6DC9442B-3279-46CC-95C0-1D4F8C3D31F0");
 
     public void Configure(EntityTypeBuilder<IdentityRoleGuid> builder)
     {
@@ -97,6 +98,13 @@ sealed class RoleSeeder : IEntityTypeConfiguration<IdentityRoleGuid>
                 Id = _houseManager,
                 Name = Roles.HouseManager,
                 NormalizedName = Roles.HouseManager.ToUpperInvariant(),
+                ConcurrencyStamp = "4B04648D-DE82-4B0B-B014-3CE0BE5454FD"
+            },
+            new IdentityRoleGuid
+            {
+                Id = _mailingManager,
+                Name = Roles.MailingManager,
+                NormalizedName = Roles.MailingManager.ToUpperInvariant(),
                 ConcurrencyStamp = "4B04648D-DE82-4B0B-B014-3CE0BE5454FD"
             }
         );

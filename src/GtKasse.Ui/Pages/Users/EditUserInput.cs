@@ -23,7 +23,7 @@ public class EditUserInput
 
     [Display(Name = "Rollen")]
     [RequiredField]
-    public bool[] Roles { get; set; } = new bool[11];
+    public bool[] Roles { get; set; } = new bool[12];
 
     [Display(Name = "Debitoren-Nr.")]
     [TextLengthField]
@@ -33,7 +33,7 @@ public class EditUserInput
     [TextLengthField]
     public string? AddressNumber { get; set; }
 
-    public void From(UserDto dto)
+    public void From(IdentityDto dto)
     {
         Name = dto.Name;
         Email = dto.Email;
@@ -52,17 +52,14 @@ public class EditUserInput
             if (dto.Roles.Any(r => r == Core.Models.Roles.FleetManager)) Roles[8] = true;
             if (dto.Roles.Any(r => r == Core.Models.Roles.BoatManager)) Roles[9] = true;
             if (dto.Roles.Any(r => r == Core.Models.Roles.HouseManager)) Roles[10] = true;
+            if (dto.Roles.Any(r => r == Core.Models.Roles.MailingManager)) Roles[11] = true;
         }
         DebtorNumber = dto.DebtorNumber;
         AddressNumber = dto.AddressNumber;
     }
 
-    public void To(UserDto dto)
+    public IdentityDto ToDto(Guid id)
     {
-        dto.Name = Name;
-        dto.Email = Email;
-        dto.PhoneNumber = PhoneNumber;
-
         var roles = new List<string>();
         if (Roles[0]) roles.Add(Core.Models.Roles.Admin);
         if (Roles[1]) roles.Add(Core.Models.Roles.Treasurer);
@@ -75,9 +72,17 @@ public class EditUserInput
         if (Roles[8]) roles.Add(Core.Models.Roles.FleetManager);
         if (Roles[9]) roles.Add(Core.Models.Roles.BoatManager);
         if (Roles[10]) roles.Add(Core.Models.Roles.HouseManager);
-        dto.Roles = roles.ToArray();
+        if (Roles[11]) roles.Add(Core.Models.Roles.MailingManager);
 
-        dto.DebtorNumber = DebtorNumber;
-        dto.AddressNumber = AddressNumber;
+        return new()
+        {
+            Id = id,
+            Name = Name,
+            Email = Email,
+            PhoneNumber = PhoneNumber,
+            Roles = roles.ToArray(),
+            DebtorNumber = DebtorNumber,
+            AddressNumber = AddressNumber
+        };
     }
 }

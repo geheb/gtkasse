@@ -34,24 +34,12 @@
                                 data-url="@(Url.PageLink(string.Empty, "confirmemail", new { id }))">
                                 Bestätigung anfordern
                             </a>
-                            @if (Model.CanBeDeleted)
-                            {
-                                <a class="dropdown-item open-modal" href="#"
-                                    data-target="#deleteUserModal"
-                                    data-user="@Model.Name"
-                                    data-url="@(Url.PageLink(string.Empty, "deleteuser", new { id }))">
-                                    Benutzer löschen
-                                </a>
-                            }
-                            else
-                            {
-                                <a class="dropdown-item open-modal" href="#"
-                                    data-target="#removeUserModal"
-                                    data-user="@Model.Name"
-                                    data-url="@(Url.PageLink(string.Empty, "removeuser", new { id }))">
-                                    Benutzer entfernen
-                                </a>
-                            }
+                            <a class="dropdown-item open-modal" href="#"
+                                data-target="#removeUserModal"
+                                data-user="@Model.Name"
+                                data-url="@(Url.PageLink(string.Empty, "removeuser", new { id }))">
+                                Benutzer entfernen
+                            </a>
                             <a class="dropdown-item open-modal" href="#"
                                 data-target="#resetTwoFactorModal"
                                 data-url="@(Url.PageLink(string.Empty, "resettwofactor", new { id }))">
@@ -124,6 +112,7 @@
                                 <label class="checkbox"><input type="checkbox" asp-for="Input.Roles[8]" /> @roleConverter.RoleToName(Roles.FleetManager)</label>
                                 <label class="checkbox"><input type="checkbox" asp-for="Input.Roles[9]" /> @roleConverter.RoleToName(Roles.BoatManager)</label>
                                 <label class="checkbox"><input type="checkbox" asp-for="Input.Roles[10]" /> @roleConverter.RoleToName(Roles.HouseManager)</label>
+								<label class="checkbox"><input type="checkbox" asp-for="Input.Roles[11]" /> @roleConverter.RoleToName(Roles.MailingManager)</label>
                             </div>
                         </div>
                         <div class="field">
@@ -159,11 +148,6 @@
     "removeUserModal",
     "Benutzer entfernen",
     @"Möchtest du wirklich den Benutzer ""<span class=""modal-item""></span>"" entfernen? <b>WICHTIG:</b><br/>Dieser Schritt is nicht umkehrbar! Der Benutzer wird unkenntlich gemacht, damit Buchungen und Rechnungen bestehen bleiben.")
-
-@Html.CreateModalTemplateWithOkCancel(
-    "deleteUserModal",
-    "Benutzer löschen",
-    @"Möchtest du wirklich den Benutzer ""<span class=""modal-item""></span>"" löschen? <b>WICHTIG:</b><br/>Dieser Schritt is nicht umkehrbar!")
 
 @Html.CreateModalTemplateWithOkCancel(
     "resetTwoFactorModal",
@@ -206,28 +190,6 @@
                 toast: {
                     success: 'Benutzer wurde entfernt.',
                     failed: 'Benutzer konnte nicht entfernt werden.'
-                }
-            }
-        });
-
-        handleModal({
-            id: '#deleteUserModal',
-            token: {@Html.AjaxCsrfToken()},
-            init: {
-                datainfo: 'user',
-                action: function(target, data) {
-                    $(target).find('.modal-item').text(data);
-                }
-            },
-            confirm: {
-                dataurl: 'url',
-                post: function () {
-                    sleep(1000).then(() => window.location.replace('@usersUrl'));
-                    return true;
-                },
-                toast: {
-                    success: 'Benutzer wurde gelöscht.',
-                    failed: 'Benutzer konnte nicht gelöscht werden.'
                 }
             }
         });

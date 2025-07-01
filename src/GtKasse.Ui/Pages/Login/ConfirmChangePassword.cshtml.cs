@@ -11,8 +11,8 @@ namespace GtKasse.Ui.Pages.Login;
 [AllowAnonymous]
 public class ConfirmChangePasswordModel : PageModel
 {
-    private readonly ILogger<ConfirmChangePasswordModel> _logger;
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.Repositories.IdentityRepository _identityRepository;
+    private readonly Core.User.UserService _userService;
 
     [BindProperty]
     public string? UserName { get; set; } // just for bots
@@ -30,39 +30,48 @@ public class ConfirmChangePasswordModel : PageModel
     public string? ChangePasswordEmail { get; set; } = "n.v.";
 
     public ConfirmChangePasswordModel(
-        ILogger<ConfirmChangePasswordModel> logger,
-        Core.Repositories.Users users)
+        Core.Repositories.IdentityRepository identityRepository,
+        Core.User.UserService userService)
     {
-        _logger = logger;
-        _users = users;
+        _identityRepository = identityRepository;
+        _userService = userService;
     }
 
-    public async Task OnGetAsync(Guid id, string token)
+    public async Task OnGetAsync(Guid id, string token, CancellationToken cancellationToken)
     {
-        if (id == Guid.Empty || string.IsNullOrWhiteSpace(token))
+        if (id == Guid.Empty || 
+            string.IsNullOrWhiteSpace(token))
         {
-            _logger.LogWarning($"suspicious activity: {HttpContext.Connection.RemoteIpAddress} ({id}, {token})");
             IsDisabled = true;
             ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidRequest);
             return;
         }
 
-        var email = await _users.VerfiyChangePassword(id, token);
-        if (string.IsNullOrEmpty(email))
+        var result = await _userService.VerifyChangePassword(id, token);
+        if (result.IsFailed)
         {
             IsDisabled = true;
             ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidPasswordResetLink);
             return;
         }
 
-        ChangePasswordEmail = new EmailConverter().Anonymize(email);
+        var user = await _identityRepository.Find(id, cancellationToken);
+        if (user is null)
+        {
+            IsDisabled = true;
+            ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidPasswordResetLink);
+            return;
+        }
+
+        ChangePasswordEmail = new EmailConverter().Anonymize(user.Value.Email!);
     }
 
-    public async Task<IActionResult> OnPostAsync(Guid id, string token)
+    public async Task<IActionResult> OnPostAsync(Guid id, string token, CancellationToken cancellationToken)
     {
-        if (id == Guid.Empty || string.IsNullOrWhiteSpace(token) || !string.IsNullOrEmpty(UserName))
+        if (id == Guid.Empty || 
+            string.IsNullOrWhiteSpace(token) || 
+            !string.IsNullOrEmpty(UserName))
         {
-            _logger.LogWarning($"suspicious activity: {HttpContext.Connection.RemoteIpAddress} ({id}, {token}, {UserName})");
             IsDisabled = true;
             ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidRequest);
             return Page();
@@ -70,21 +79,20 @@ public class ConfirmChangePasswordModel : PageModel
 
         if (!ModelState.IsValid) return Page();
 
-        var result = await _users.ChangePassword(id, token, Password!);
-        if (string.IsNullOrEmpty(result.Email))
+        var user = await _identityRepository.Find(id, cancellationToken);
+        if (user is null)
         {
             IsDisabled = true;
             ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidPasswordResetLink);
             return Page();
         }
-        else
-        {
-            ChangePasswordEmail = new EmailConverter().Anonymize(result.Email);
-        }
 
-        if (result.Error != null)
+        ChangePasswordEmail = new EmailConverter().Anonymize(user.Value.Email!);
+
+        var result = await _userService.ConfirmChangePassword(id, token, Password!);
+        if (result.IsFailed)
         {
-            result.Error.ToList().ForEach(e => ModelState.AddModelError(string.Empty, e));
+            result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
             return Page();
         }
 

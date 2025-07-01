@@ -11,7 +11,7 @@ namespace GtKasse.Ui.Pages.MyAccount;
 [Authorize]
 public class IndexModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.Repositories.IdentityRepository _identityRepository;
 
     [BindProperty, Display(Name = "E-Mail-Adresse")]
     public string? Email { get; set; }
@@ -27,51 +27,54 @@ public class IndexModel : PageModel
     public bool IsDisabled { get; set; }
     public string? Info { get; set; }
 
-    public IndexModel(Core.Repositories.Users users)
+    public IndexModel(Core.Repositories.IdentityRepository identityRepository)
     {
-        _users = users;
+        _identityRepository = identityRepository;
     }
 
     public async Task OnGetAsync(int? message, CancellationToken cancellationToken)
     {
         Info = message switch
         {
-            0 => "Änderungen wurden gespeichert.",
             1 => "Das Passwort wurde geändert.",
             2 => "Eine E-Mail wird an die neue E-Mail-Adresse versendet und muss bestätigt werden - erst dann ist die Änderung vollständig.",
+            3 => "2FA wurde aktiviert. Bitte erneut anmelden!",
+            4 => "2FA wurde deaktiviert.",
             _ => default
         };
 
-        var user = await _users.Find(User.GetId(), cancellationToken);
-        if (user == null)
+        var user = await _identityRepository.Find(User.GetId(), cancellationToken);
+        if (user is null)
         {
             IsDisabled = true;
             return;
         }
 
-        Name = user.Name;
-        Email = user.Email;
-        PhoneNumber = user.PhoneNumber;
+        Name = user.Value.Name;
+        Email = user.Value.Email;
+        PhoneNumber = user.Value.PhoneNumber;
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid) return Page();
 
-        var errors = await _users.UpdateName(User.GetId(), Name);
-        if (errors != null)
+        var dto = new IdentityDto
         {
-            errors.ToList().ForEach(e => ModelState.AddModelError(string.Empty, e));
+            Id = User.GetId(),
+            Name = Name,
+            PhoneNumber = PhoneNumber,
+        };
+
+        var result = await _identityRepository.Update(dto, cancellationToken);
+        if (result.IsFailed)
+        {
+            result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
             return Page();
         }
 
-        errors = await _users.UpdatePhoneNumber(User.GetId(), PhoneNumber);
-        if (errors != null)
-        {
-            errors.ToList().ForEach(e => ModelState.AddModelError(string.Empty, e));
-            return Page();
-        }
+        Info = "Änderungen wurden gespeichert.";
 
-        return RedirectToPage(new { message = 0 });
+        return Page();
     }
 }

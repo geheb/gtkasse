@@ -74,14 +74,14 @@
                         <div class="field">
                             <label class="label" asp-for="Input.DescriptionMember"></label>
                             <div class="control">
-                                <textarea class="textarea" asp-for="Input.DescriptionMember" rows="10"></textarea>
+                                <textarea class="textarea" asp-for="Input.DescriptionMember" rows="10" disabled="@Model.IsDisabled"></textarea>
                             </div>
                             <span asp-validation-for="Input.DescriptionMember"></span>
                         </div>
                         <div class="field">
                             <label class="label" asp-for="Input.DescriptionManagementBoard"></label>
                             <div class="control">
-                                <textarea class="textarea" asp-for="Input.DescriptionManagementBoard" rows="10"></textarea>
+                                <textarea class="textarea" asp-for="Input.DescriptionManagementBoard" rows="10" disabled="@Model.IsDisabled"></textarea>
                             </div>
                             <span asp-validation-for="Input.DescriptionManagementBoard"></span>
                         </div>

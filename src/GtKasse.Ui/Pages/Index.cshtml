@@ -6,7 +6,6 @@
     ViewData["IsHome"] = true;
 
     var isAuthenticated = User.Identity?.IsAuthenticated == true;
-    var urlDeviceToken = Url.PageLink(string.Empty, "devicetoken");
 }
 
 @await Html.PartialAsync("_Header")
@@ -172,6 +171,7 @@
             typeof(Invoices.IndexModel),
             typeof(Boats.IndexModel),
             typeof(Clubhouse.IndexModel),
+			typeof(Mailings.IndexModel),
             typeof(Foods.IndexModel)))
         {
             <p class="title">Verwaltung</p>
@@ -312,6 +312,21 @@
                 </a>
             }
 
+			@if (Model.HasNodeAccess(typeof(Mailings.IndexModel)))
+            {
+                <a href="/Mailings" class="bd-link has-text-grey">
+                    <span class="icon bd-link-icon has-text-info">
+                        <i class="fa-solid fa-envelope"></i>
+                    </span>
+                    <div>
+                        <h2 class="bd-link-title">Mailings</h2>
+                        <div class="bd-link-subtitle">
+                            Mailings verwalten.
+                        </div>
+                    </div>
+                </a>
+            }
+
             @if (Model.HasNodeAccess(typeof(Users.IndexModel)))
             {
                 <a href="/Users" class="bd-link has-text-grey">
@@ -333,11 +348,3 @@
 </section>
 
 @await Html.PartialAsync("_Footer")
-
-@if (isAuthenticated)
-{
-    @section Scripts 
-    {
-        @await Html.PartialAsync("_FcmDeviceToken")
-    }
-}

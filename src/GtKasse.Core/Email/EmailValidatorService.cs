@@ -67,6 +67,10 @@ public sealed class EmailValidatorService
         }
 
         var domain = emailParts[1];
+        if (domain.Equals("localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
 
         if (_knownProviderList.Any(e => e.Equals(domain, StringComparison.OrdinalIgnoreCase)))
         {

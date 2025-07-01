@@ -10,11 +10,10 @@ namespace GtKasse.Ui.Pages.Login;
 [AllowAnonymous]
 public class IndexModel : PageModel
 {
-    private readonly ILogger<IndexModel> _logger;
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.User.LoginService _loginService;
 
     [BindProperty]
-    public string? UserName { get; set; }
+    public string? UserName { get; set; } // just for bots
 
     [BindProperty, Display(Name = "E-Mail-Adresse")]
     [RequiredField, EmailLengthField, EmailField]
@@ -26,10 +25,10 @@ public class IndexModel : PageModel
 
     public string? Message { get; set; }
 
-    public IndexModel(ILogger<IndexModel> logger, Core.Repositories.Users users)
+    public IndexModel(
+        Core.User.LoginService loginService)
     {
-        _logger = logger;
-        _users = users;
+        _loginService = loginService;
     }
 
     public void OnGet(int message = 0)
@@ -44,25 +43,24 @@ public class IndexModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
+    public async Task<IActionResult> OnPostAsync(string? returnUrl, CancellationToken cancellationToken)
     {
         if (!string.IsNullOrEmpty(UserName))
         {
-            _logger.LogWarning($"suspicious activity: {HttpContext.Connection.RemoteIpAddress} ({UserName})");
             ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidRequest);
             return Page();
         }
 
         if (!ModelState.IsValid) return Page();
 
-        var result = await _users.SignIn(Email!, Password!);
-        if (!string.IsNullOrEmpty(result.Error))
+        var result = await _loginService.SignIn(Email!, Password!, cancellationToken);
+        if (result.IsFailed)
         {
-            ModelState.AddModelError(string.Empty, result.Error);
+            result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
             return Page();
         }
 
-        if (result.RequiresTwoFactor)
+        if (result.Value)
         {
             return RedirectToPage("ConfirmTwoFactor", new { returnUrl });
         }

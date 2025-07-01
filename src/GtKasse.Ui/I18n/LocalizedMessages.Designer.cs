@@ -124,7 +124,7 @@ namespace GtKasse.Ui.I18n {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Fehler beim Erstellen des Eintrags..
+        ///   Looks up a localized string similar to Fehler beim Anlegen des Eintrags..
         /// </summary>
         internal static string ItemCreateFailed {
             get {

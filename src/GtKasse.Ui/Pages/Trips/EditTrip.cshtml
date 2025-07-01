@@ -116,7 +116,7 @@
                     <div class="field">
                         <label class="label" asp-for="Input.Description"></label>
                         <div class="control">
-                            <textarea class="textarea" asp-for="Input.Description" rows="10"></textarea>
+                            <textarea class="textarea" asp-for="Input.Description" rows="10" disabled="@Model.IsDisabled"></textarea>
                         </div>
                       <span asp-validation-for="Input.Description"></span>
                     </div>

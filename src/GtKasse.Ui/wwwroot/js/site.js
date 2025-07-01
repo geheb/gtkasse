@@ -145,7 +145,7 @@ const trumbowygConfig = {
     resetCss: true,
     lang: 'de',
     semantic: { 'del': 's' },
-    removeformatPasted: true,
+    autogrowOnEnter: true,
     tagsToRemove: ['script', 'style', 'link', 'iframe', 'input', 'embed', 'img', 'table'],
     btns: [
         ['undo', 'redo'],
@@ -155,6 +155,7 @@ const trumbowygConfig = {
         ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
         ['emoji'],
         ['unorderedList', 'orderedList'],
+        ['horizontalRule'],
         ['removeformat'],
         ['fullscreen']
     ]

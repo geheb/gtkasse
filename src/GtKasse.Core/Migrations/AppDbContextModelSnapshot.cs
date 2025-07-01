@@ -178,6 +178,9 @@ namespace GtKasse.Core.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<DateTimeOffset?>("Updated")
+                        .HasColumnType("datetime(6)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Sent", "Created", "IsPrio");
@@ -359,6 +362,13 @@ namespace GtKasse.Core.Migrations
                             ConcurrencyStamp = "4B04648D-DE82-4B0B-B014-3CE0BE5454FD",
                             Name = "housemanager",
                             NormalizedName = "HOUSEMANAGER"
+                        },
+                        new
+                        {
+                            Id = new byte[] { 43, 68, 201, 109, 121, 50, 204, 70, 149, 192, 29, 79, 140, 61, 49, 240 },
+                            ConcurrencyStamp = "4B04648D-DE82-4B0B-B014-3CE0BE5454FD",
+                            Name = "mailingmanager",
+                            NormalizedName = "MAILINGMANAGER"
                         });
                 });
 
@@ -581,6 +591,45 @@ namespace GtKasse.Core.Migrations
                     b.HasIndex("To");
 
                     b.ToTable("invoice_periods", (string)null);
+                });
+
+            modelBuilder.Entity("GtKasse.Core.Entities.Mailing", b =>
+                {
+                    b.Property<byte[]>("Id")
+                        .HasColumnType("binary(16)");
+
+                    b.Property<bool>("CanSendToAllMembers")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("EmailCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HtmlBody")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("OtherRecipients")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ReplyAddress")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("Updated")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("mailings", (string)null);
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.Trip", b =>

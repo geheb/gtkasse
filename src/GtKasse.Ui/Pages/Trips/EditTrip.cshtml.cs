@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 [Authorize(Roles = "administrator,tripmanager")]
 public class EditTripModel : PageModel
 {
-    private readonly Users _users;
+    private readonly IdentityRepository _identityRepository;
     private readonly Trips _trips;
 
     [BindProperty]
@@ -24,9 +24,11 @@ public class EditTripModel : PageModel
 
     public SelectListItem[] Users { get; set; } = Array.Empty<SelectListItem>();
 
-    public EditTripModel(Users users, Trips trips)
+    public EditTripModel(
+        IdentityRepository identityRepository, 
+        Trips trips)
     {
-        _users = users;
+        _identityRepository = identityRepository;
         _trips = trips;
     }
 
@@ -48,8 +50,7 @@ public class EditTripModel : PageModel
             return Page();
         }
 
-        var dto = Input.ToDto();
-        dto.Id = id;
+        var dto = Input.ToDto(id);
 
         var result = await _trips.UpdateTrip(dto, cancellationToken);
         if (!result)
@@ -81,7 +82,7 @@ public class EditTripModel : PageModel
         var dc = new GermanDateTimeConverter();
         Details = dc.Format(trip.Start, trip.End) + " - " + trip.Target;
 
-        var users = await _users.GetAll(cancellationToken);
+        var users = await _identityRepository.GetAll(cancellationToken);
 
         var contactId = Guid.TryParse(Input.UserId, out var cid) ? cid : User.GetId();
 

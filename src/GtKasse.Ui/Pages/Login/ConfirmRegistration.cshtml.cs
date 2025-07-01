@@ -11,8 +11,8 @@ namespace GtKasse.Ui.Pages.Login;
 [AllowAnonymous]
 public class ConfirmRegistrationModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
-    private readonly ILogger<ConfirmRegistrationModel> _logger;
+    private readonly Core.Repositories.IdentityRepository _identityRepository;
+    private readonly Core.User.UserService _userService;
 
     public string ConfirmedEmail { get; set; } = "n.v.";
     public bool IsDisabled { get; set; }
@@ -27,54 +27,79 @@ public class ConfirmRegistrationModel : PageModel
     public string? RepeatPassword { get; set; }
 
     public ConfirmRegistrationModel(
-        Core.Repositories.Users users, 
-        ILogger<ConfirmRegistrationModel> logger)
+        Core.Repositories.IdentityRepository identityRepository,
+        Core.User.UserService userService)
     {
-        _users = users;
-        _logger = logger;
+        _identityRepository = identityRepository;
+        _userService = userService;
     }
 
-    public async Task OnGetAsync(Guid id, string token)
+    public async Task OnGetAsync(Guid id, string token, CancellationToken cancellationToken)
     {
-        await Verify(id, token);
-    }
-
-    public async Task<IActionResult> OnPostAsync(Guid id, string token)
-    {
-        if (!await Verify(id, token) || !ModelState.IsValid)
+        if (id == Guid.Empty || 
+            string.IsNullOrWhiteSpace(token))
         {
+            IsDisabled = true;
+            ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidRequest);
+            return;
+        }
+
+        var result = await _userService.VerifyConfirmRegistration(id, token);
+        if (result.IsFailed)
+        {
+            IsDisabled = true;
+            ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidRegisterConfirmationLink);
+            return;
+        }
+
+        var user = await _identityRepository.Find(id, cancellationToken);
+        if (user is null)
+        {
+            IsDisabled = true;
+            ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidPasswordResetLink);
+            return;
+        }
+
+        ConfirmedEmail = new EmailConverter().Anonymize(user.Value.Email!);
+    }
+
+    public async Task<IActionResult> OnPostAsync(Guid id, string token, CancellationToken cancellationToken)
+    {
+        if (id == Guid.Empty ||
+            string.IsNullOrWhiteSpace(token))
+        {
+            IsDisabled = true;
+            ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidRequest);
             return Page();
         }
 
-        var error = await _users.ConfirmRegistrationAndSetPassword(id, token, Password!);
-        if (error != null)
+        if (!ModelState.IsValid) return Page();
+
+        var user = await _identityRepository.Find(id, cancellationToken);
+        if (user is null)
         {
-            error.ToList().ForEach(e => ModelState.AddModelError(string.Empty, e));
+            IsDisabled = true;
+            ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidPasswordResetLink);
+            return Page();
+        }
+
+        ConfirmedEmail = new EmailConverter().Anonymize(user.Value.Email!);
+
+        var result = await _userService.ConfirmRegistration(id, token);
+        if (result.IsFailed)
+        {
+            IsDisabled = true;
+            ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidPasswordResetLink);
+            return Page();
+        }
+
+        result = await _userService.UpdatePassword(id, Password!);
+        if (result.IsFailed)
+        {
+            result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
             return Page();
         }
 
         return RedirectToPage("Index", new { message = 1 });
-    }
-
-    private async Task<bool> Verify(Guid id, string token)
-    {
-        if (id == Guid.Empty || string.IsNullOrEmpty(token))
-        {
-            IsDisabled = true;
-            _logger.LogWarning($"suspicious activity: {HttpContext.Connection.RemoteIpAddress} ({id}, {token})");
-            ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidRequest);
-            return false;
-        }
-
-        var email = await _users.VerifyConfirmRegistration(id, token);
-        if (string.IsNullOrEmpty(email))
-        {
-            IsDisabled = true;
-            ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidRegisterConfirmationLink);
-            return false;
-        }
-
-        ConfirmedEmail = new EmailConverter().Anonymize(email);
-        return true;
     }
 }

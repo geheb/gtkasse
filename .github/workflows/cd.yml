@@ -35,14 +35,6 @@ jobs:
         dotnet publish ./src/GtKasse.Cli -c Release -o ./dist/cli -r linux-x64 --self-contained true /p:UseAppHost=true /p:Version=${SEMVER}
         dotnet publish ./src/GtKasse.Ui -c Release -o ./dist/ui -r linux-x64 --self-contained true /p:UseAppHost=true /p:Version=${SEMVER}
 
-    - name: Download dependency
-      run: |
-        cd dist/ui/wwwroot/lib
-        mkdir gt-fcm-wrapper && cd "$_"
-        wget https://github.com/geheb/gt-fcm-wrapper/releases/download/v1.1.0/release.zip
-        unzip release.zip
-        rm release.zip 
-
     - name: Create archive
       run: |
         cd dist ; tar cfJ release-linux-x64.tar.xz *

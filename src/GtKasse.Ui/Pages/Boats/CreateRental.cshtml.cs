@@ -11,7 +11,7 @@ namespace GtKasse.Ui.Pages.Boats;
 public class CreateRentalModel : PageModel
 {
     private readonly Core.Repositories.Boats _boats;
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.Repositories.IdentityRepository _identityRepository;
 
     [BindProperty]
     public RentalInput Input { get; set; } = new();
@@ -24,10 +24,10 @@ public class CreateRentalModel : PageModel
 
     public CreateRentalModel(
         Core.Repositories.Boats boats, 
-        Core.Repositories.Users users)
+        Core.Repositories.IdentityRepository identityRepository)
     {
         _boats = boats;
-        _users = users;
+        _identityRepository = identityRepository;
     }
 
     public Task OnGetAsync(Guid id, CancellationToken cancellationToken) => UpdateView(id, cancellationToken);
@@ -103,7 +103,7 @@ public class CreateRentalModel : PageModel
             }
         }
 
-        var users = await _users.GetAll(cancellationToken);
+        var users = await _identityRepository.GetAll(cancellationToken);
         var contactId = Guid.TryParse(Input.UserId, out var id) ? id : User.GetId();
         
         var items = new List<SelectListItem> { new() };

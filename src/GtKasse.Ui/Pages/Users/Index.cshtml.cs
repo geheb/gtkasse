@@ -7,28 +7,30 @@ namespace GtKasse.Ui.Pages.Users;
 [Authorize(Roles = "administrator,usermanager")]
 public class IndexModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
-    public UserDto[] Users { get; private set; } = Array.Empty<UserDto>();
+    private readonly Core.Repositories.IdentityRepository _identityRepository;
+
+    public IdentityDto[] Users { get; private set; } = [];
     public int UsersConfirmed { get; set; }
     public int UsersNotConfirmed { get; set; }
     public int UsersLocked { get; set; }
 
-    public IndexModel(Core.Repositories.Users users)
+    public IndexModel(Core.Repositories.IdentityRepository identityRepository)
     {
-        _users = users;
+        _identityRepository = identityRepository;
     }
 
     public async Task OnGetAsync(int filter, CancellationToken cancellationToken)
     {
-        var users = await _users.GetAll(cancellationToken);
+        var users = await _identityRepository.GetAll(cancellationToken);
         if (filter == 1)
         {
-            Users = users.Where(u => u.Roles!.Contains(Roles.Interested)).ToArray();
+            Users = [.. users.Where(u => u.Roles!.Contains(Roles.Interested))];
         }
         else
         {
             Users = users;
         }
+
         UsersConfirmed = Users.Count(u => u.IsEmailConfirmed);
         UsersNotConfirmed = Users.Count(u => !u.IsEmailConfirmed);
         UsersLocked = Users.Count(u => u.IsLocked);

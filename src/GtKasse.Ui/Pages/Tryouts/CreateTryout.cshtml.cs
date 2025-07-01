@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 [Authorize(Roles = "administrator,tripmanager")]
 public class CreateTryoutModel : PageModel
 {
-    private readonly Users _users;
+    private readonly IdentityRepository _identityRepository;
     private readonly Tryouts _tryouts;
 
     [BindProperty]
@@ -20,9 +20,11 @@ public class CreateTryoutModel : PageModel
 
     public SelectListItem[] Users { get; private set; } = Array.Empty<SelectListItem>();
 
-    public CreateTryoutModel(Users users, Tryouts tryouts)
+    public CreateTryoutModel(
+        IdentityRepository identityRepository, 
+        Tryouts tryouts)
     {
-        _users = users;
+        _identityRepository = identityRepository;
         _tryouts = tryouts;
     }
 
@@ -55,7 +57,7 @@ public class CreateTryoutModel : PageModel
 
     private async Task<bool> UpdateView(CancellationToken cancellationToken)
     {
-        var users = await _users.GetAll(cancellationToken);
+        var users = await _identityRepository.GetAll(cancellationToken);
 
         var contactId = Guid.TryParse(Input.UserId, out var id) ? id : User.GetId();
 

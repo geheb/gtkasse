@@ -11,8 +11,7 @@ namespace GtKasse.Ui.Pages.Login;
 [AllowAnonymous]
 public class PasswordForgottenModel : PageModel
 {
-    private readonly ILogger<PasswordForgottenModel> _logger;
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.User.UserService _userService;
     private readonly EmailValidatorService _emailValidator;
 
     [BindProperty]
@@ -26,17 +25,11 @@ public class PasswordForgottenModel : PageModel
     public bool IsDisabled { get; set; }
 
     public PasswordForgottenModel(
-        ILogger<PasswordForgottenModel> logger,
-        Core.Repositories.Users users,
-        EmailValidatorService emailValidator)
+        EmailValidatorService emailValidator,
+        Core.User.UserService userService)
     {
-        _logger = logger;
-        _users = users;
         _emailValidator = emailValidator;
-    }
-
-    public void OnGet()
-    {
+        _userService = userService;
     }
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
@@ -44,7 +37,6 @@ public class PasswordForgottenModel : PageModel
         if (!string.IsNullOrEmpty(UserName))
         {
             IsDisabled = true;
-            _logger.LogWarning($"suspicious activity: {HttpContext.Connection.RemoteIpAddress}");
             ModelState.AddModelError(string.Empty, LocalizedMessages.InvalidRequest);
             return Page();
         }
@@ -57,7 +49,9 @@ public class PasswordForgottenModel : PageModel
             return Page();
         }
 
-        await _users.NotifyPasswordForgotten(Email!, cancellationToken);
+        var callbackUrl = Url.PageLink("/Login/ConfirmChangePassword", values: new { id = Guid.Empty, token = string.Empty });
+
+        await _userService.NotifyChangePassword(Email!, callbackUrl!, cancellationToken);
 
         return RedirectToPage("Index", new { message = 2 });
     }

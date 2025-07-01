@@ -12,16 +12,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 public class CreateArticleModel : PageModel
 {
     private readonly WikiArticles _wikiArticles;
-    private readonly Users _users;
+    private readonly IdentityRepository _identityRepository;
 
     [BindProperty]
-    public WIkiArticleInput Input { get; set; } = new WIkiArticleInput();
+    public WIkiArticleInput Input { get; set; } = new();
     public SelectListItem[] Users { get; set; } = Array.Empty<SelectListItem>();
 
-    public CreateArticleModel(WikiArticles wikiArticles, Users users)
+    public CreateArticleModel(
+        WikiArticles wikiArticles, 
+        IdentityRepository identityRepository)
     {
         _wikiArticles = wikiArticles;
-        _users = users;
+        _identityRepository = identityRepository;
     }
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
@@ -50,7 +52,7 @@ public class CreateArticleModel : PageModel
         var result = await _wikiArticles.Create(dto, cancellationToken);
         if (!result)
         {
-            ModelState.AddModelError(string.Empty, "Fehler beim Erstellen des Artikels.");
+            ModelState.AddModelError(string.Empty, "Fehler beim Anlegen des Artikels.");
             return Page();
         }
 
@@ -59,7 +61,7 @@ public class CreateArticleModel : PageModel
 
     private async Task<bool> UpdateView(CancellationToken cancellationToken)
     {
-        var users = await _users.GetAll(cancellationToken);
+        var users = await _identityRepository.GetAll(cancellationToken);
 
         var contactId = Guid.TryParse(Input.UserId, out var id) ? id : User.GetId();
 

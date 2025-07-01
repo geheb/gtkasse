@@ -21,7 +21,7 @@
       ]
     },
     {
-      "library": "bulma@1.0.3",
+      "library": "bulma@1.0.4",
       "destination": "wwwroot/lib/bulma/",
       "files": [
         "css/bulma.min.css",
@@ -45,23 +45,24 @@
       ]
     },
     {
-      "provider": "cdnjs",
-      "library": "Trumbowyg@2.27.3",
+      "provider": "jsdelivr",
+      "library": "trumbowyg@2.31.0",
       "destination": "wwwroot/lib/trumbowyg/",
-      "files": [
-        "trumbowyg.min.js",
-        "langs/de.min.js",
-        "ui/trumbowyg.min.css",
-        "ui/icons.svg",
-        "plugins/colors/trumbowyg.colors.min.js",
-        "plugins/colors/ui/trumbowyg.colors.min.css",
-        "plugins/emoji/trumbowyg.emoji.min.js",
-        "plugins/emoji/ui/trumbowyg.emoji.min.css"
-      ]
+        "files": [
+            "dist/trumbowyg.min.js",
+            "dist/langs/de.min.js",
+            "dist/ui/trumbowyg.min.css",
+            "dist/ui/icons.svg",
+            "dist/plugins/colors/ui/trumbowyg.colors.min.css",
+            "dist/plugins/colors/trumbowyg.colors.min.js",
+            "dist/plugins/emoji/ui/trumbowyg.emoji.min.css",
+            "dist/plugins/emoji/trumbowyg.emoji.min.js",
+            "dist/plugins/cleanpaste/trumbowyg.cleanpaste.min.js"
+        ]
     },
     {
       "provider": "jsdelivr",
-      "library": "bulma-list@2.1.0",
+      "library": "bulma-list@3.0.0",
       "destination": "wwwroot/lib/bulma-list/",
       "files": [
         "css/bulma-list.min.css",

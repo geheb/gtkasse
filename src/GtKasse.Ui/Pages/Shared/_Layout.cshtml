@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="utf-8"/>
@@ -20,9 +20,9 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     @if (ViewData["include-trumbowyg"] is not null)
     {
-    <link rel="stylesheet" href="~/lib/trumbowyg/ui/trumbowyg.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/lib/trumbowyg/plugins/colors/ui/trumbowyg.colors.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/lib/trumbowyg/plugins/emoji/ui/trumbowyg.emoji.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/trumbowyg/dist/ui/trumbowyg.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/trumbowyg/dist/plugins/colors/ui/trumbowyg.colors.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/trumbowyg/dist/plugins/emoji/ui/trumbowyg.emoji.min.css" asp-append-version="true" />
     }
 </head>
 <body class="@(ViewData["HasFooter"] != null ? "has-footer" : string.Empty)">
@@ -35,10 +35,11 @@
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js" asp-append-version="true"></script>
     @if (ViewData["include-trumbowyg"] is not null)
     {
-    <script src="~/lib/trumbowyg/trumbowyg.min.js" asp-append-version="true"></script>
-    <script src="~/lib/trumbowyg/langs/de.min.js" asp-append-version="true"></script>
-    <script src="~/lib/trumbowyg/plugins/colors/trumbowyg.colors.min.js" asp-append-version="true"></script>
-    <script src="~/lib/trumbowyg/plugins/emoji/trumbowyg.emoji.min.js" asp-append-version="true"></script>
+    <script src="~/lib/trumbowyg/dist/trumbowyg.min.js" asp-append-version="true"></script>
+    <script src="~/lib/trumbowyg/dist/langs/de.min.js" asp-append-version="true"></script>
+    <script src="~/lib/trumbowyg/dist/plugins/colors/trumbowyg.colors.min.js" asp-append-version="true"></script>
+    <script src="~/lib/trumbowyg/dist/plugins/emoji/trumbowyg.emoji.min.js" asp-append-version="true"></script>
+	<script src="~/lib/trumbowyg/dist/plugins/cleanpaste/trumbowyg.cleanpaste.min.js" asp-append-version="true"></script>
     }
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

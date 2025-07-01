@@ -35,7 +35,7 @@ internal sealed class CspMiddleware
         value.Append(GetDirective("img-src", "'self'", "data:"));
         value.Append(GetDirective("font-src", "'self'"));
         value.Append(GetDirective("media-src", "'self'"));
-        value.Append(GetDirective("connect-src", "'self'", "*.googleapis.com")); // gt-fcm wrapper requires googleapis
+        value.Append(GetDirective("connect-src", "'self'"));
         value.Append(GetDirective("worker-src", "'self'"));
         return value.ToString();
     }

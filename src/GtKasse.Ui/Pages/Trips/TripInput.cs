@@ -54,7 +54,7 @@ public class TripInput
         BookingEnd = dc.ToIso(now.AddDays(13));
     }
 
-    internal TripDto ToDto()
+    internal TripDto ToDto(Guid id = default)
     {
         var dc = new GermanDateTimeConverter();
         var categories = TripCategory.None;
@@ -65,6 +65,7 @@ public class TripInput
 
         return new()
         {
+            Id = id,
             Start = dc.FromIsoDateTime(Start)!.Value,
             End = dc.FromIsoDateTime(End)!.Value,
             Target = Target,

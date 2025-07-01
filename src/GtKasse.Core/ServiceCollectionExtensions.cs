@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IdentityErrorDescriber, GermanyIdentityErrorDescriber>();
         services.AddScoped<AppDbContextInitializer>();
 
-        services.AddScoped<Users>();
+        services.AddScoped<UnitOfWork>();
         services.AddScoped<Foods>();
         services.AddScoped<Bookings>();
         services.AddScoped<Invoices>();
@@ -27,12 +27,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<Tryouts>();
         services.AddScoped<Boats>();
         services.AddScoped<Clubhouse>();
-        services.AddScoped<EmailQueueRepository>();
 
         services.Configure<SmtpConnectionOptions>(config.GetSection("Smtp"));
         services.AddSingleton<EmailValidatorService>();
-        services.AddSingleton<IEmailSender, SmtpDispatcher>();
+        services.AddSingleton<SmtpDispatcher>();
         services.AddScoped<EmailService>();
+        services.AddScoped<UserService>();
+        services.AddScoped<LoginService>();
+        services.AddScoped<IdentityRepository>();
 
         services.AddHostedService<HostedWorker>();
     }

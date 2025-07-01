@@ -30,11 +30,12 @@ public class ClubhouseBookingInput
         Description = dto.Description;
     }
 
-    internal ClubhouseBookingDto ToDto()
+    internal ClubhouseBookingDto ToDto(Guid id = default)
     {
         var dc = new GermanDateTimeConverter();
         return new()
         {
+            Id = id,
             Start = dc.FromIsoDateTime(Start)!.Value,
             End = dc.FromIsoDateTime(End)!.Value,
             Title = Title,

@@ -57,11 +57,12 @@ public sealed class TryoutInput
         return null;
     }
 
-    internal TryoutDto ToDto()
+    internal TryoutDto ToDto(Guid id = default)
     {
         var dc = new GermanDateTimeConverter();
         return new()
         {
+            Id = id,
             Type = Type,
             Date = dc.FromIsoDateTime(Date)!.Value,
             UserId = Guid.Parse(UserId!),

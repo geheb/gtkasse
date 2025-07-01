@@ -11,17 +11,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 [Authorize(Roles = "administrator,tripmanager")]
 public class CreateTripModel : PageModel
 {
-    private readonly Users _users;
+    private readonly IdentityRepository _identityRepository;
     private readonly Trips _trips;
 
     [BindProperty]
-    public TripInput Input { get; set; } = new TripInput();
+    public TripInput Input { get; set; } = new();
 
     public SelectListItem[] Users { get; set; } = Array.Empty<SelectListItem>();
 
-    public CreateTripModel(Users users, Trips trips)
+    public CreateTripModel(
+        IdentityRepository identityRepository, 
+        Trips trips)
     {
-        _users = users;
+        _identityRepository = identityRepository;
         _trips = trips;
     }
 
@@ -55,7 +57,7 @@ public class CreateTripModel : PageModel
 
     private async Task<bool> UpdateView(CancellationToken cancellationToken)
     {
-        var users = await _users.GetAll(cancellationToken);
+        var users = await _identityRepository.GetAll(cancellationToken);
 
         var contactId = Guid.TryParse(Input.UserId, out var id) ? id : User.GetId();
 

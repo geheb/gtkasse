@@ -1,10 +1,15 @@
+using GtKasse.Core.Converter;
+using GtKasse.Core.Models;
+
 namespace GtKasse.Core.Entities;
 
-internal sealed class EmailQueue
+public sealed class EmailQueue : IEntity, IDtoMapper<EmailQueueDto>
 {
     public Guid Id { get; set; }
 
     public DateTimeOffset Created { get; set; }
+
+    public DateTimeOffset? Updated { get; set; }
 
     public DateTimeOffset? Sent { get; set; }
 
@@ -15,4 +20,22 @@ internal sealed class EmailQueue
     public string? HtmlBody { get; set; }
 
     public bool IsPrio { get; set; }
+
+    public void FromDto(EmailQueueDto model)
+    {
+        Id = model.Id;
+        Recipient = model.Recipient;
+        Subject = model.Subject;
+        HtmlBody = model.HtmlBody;
+        IsPrio = model.IsPrio;
+    }
+
+    public EmailQueueDto ToDto(GermanDateTimeConverter dc) => new()
+    {
+        Id = Id,
+        Recipient = Recipient,
+        Subject = Subject,
+        HtmlBody = HtmlBody,
+        IsPrio = IsPrio
+    };
 }

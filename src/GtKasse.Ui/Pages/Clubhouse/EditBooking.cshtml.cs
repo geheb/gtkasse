@@ -41,8 +41,7 @@ public class EditBookingModel : PageModel
             return Page();
         }
 
-        var dto = Input.ToDto();
-        dto.Id = id;
+        var dto = Input.ToDto(id);
 
         var status = await _clubhouse.UpdateBooking(dto, cancellationToken);
         if (status != ClubhouseBookingStatus.Success)

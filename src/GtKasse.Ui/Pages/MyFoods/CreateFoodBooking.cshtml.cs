@@ -2,7 +2,6 @@ using GtKasse.Core.User;
 using GtKasse.Ui.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,7 +11,7 @@ namespace GtKasse.Ui.Pages.MyFoods;
 [Authorize(Roles = "administrator,member")]
 public class CreateFoodBookingModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.Repositories.IdentityRepository _identityRepository;
     private readonly Core.Repositories.Foods _foods;
     private readonly Core.Repositories.Bookings _bookings;
 
@@ -33,11 +32,11 @@ public class CreateFoodBookingModel : PageModel
     public bool IsDisabled { get; set; }
 
     public CreateFoodBookingModel(
-        Core.Repositories.Users users,
+        Core.Repositories.IdentityRepository identityRepository,
         Core.Repositories.Foods foods, 
         Core.Repositories.Bookings bookings)
     {
-        _users = users;
+        _identityRepository = identityRepository;
         _foods = foods;
         _bookings = bookings;
     }
@@ -52,8 +51,8 @@ public class CreateFoodBookingModel : PageModel
             return;
         }
 
-        var user = await _users.Find(User.GetId(), cancellationToken);
-        IsDisabled = user is null || !user.IsEnabledForBookings;
+        var user = await _identityRepository.Find(User.GetId(), cancellationToken);
+        IsDisabled = user is null || !user.Value.IsEnabledForBookings;
         if (IsDisabled)
         {
             ModelState.AddModelError(string.Empty, "Aufgrund fehlender Daten für die Rechnungsstellung ist eine Buchung nicht möglich.");

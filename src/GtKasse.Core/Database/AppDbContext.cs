@@ -425,5 +425,14 @@ public sealed class AppDbContext :
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
         });
+
+        modelBuilder.Entity<Mailing>(eb =>
+        {
+            eb.ToTable("mailings");
+            eb.Property(e => e.Id).HasColumnType(KeyType).ValueGeneratedNever();
+            eb.Property(e => e.Created).IsRequired();
+            eb.Property(e => e.Subject).IsRequired();
+            eb.Property(e => e.HtmlBody).IsRequired();
+        });
     }
 }

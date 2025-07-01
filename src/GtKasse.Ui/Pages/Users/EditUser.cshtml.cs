@@ -8,87 +8,92 @@ namespace GtKasse.Ui.Pages.Users;
 [Authorize(Roles = "administrator,usermanager")]
 public class EditUserModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.User.UserService _userService;
+    private readonly Core.Repositories.IdentityRepository _identityRepository;
 
     [BindProperty]
-    public EditUserInput Input { get; set; } = new EditUserInput();
+    public EditUserInput Input { get; set; } = new();
+
     public bool IsDisabled { get; set; }
     public string? Name { get; set; }
-    public bool CanBeDeleted { get; set; }
 
-    public EditUserModel(Core.Repositories.Users users)
+    public EditUserModel(
+        Core.User.UserService userService,
+        Core.Repositories.IdentityRepository identityRepository)
     {
-        _users = users;
+        _userService = userService;
+        _identityRepository = identityRepository;
     }
 
     public async Task OnGetAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await UpdateView(id, cancellationToken);
-        if (user == null) return;
-        Input.From(user);
+        var user = await _identityRepository.Find(id, cancellationToken);
+        if (user is null)
+        {
+            IsDisabled = true;
+            ModelState.AddModelError(string.Empty, "Benutzer wurde nicht gefunden.");
+            return;
+        }
+
+        Input.From(user.Value);
     }
 
     public async Task<IActionResult> OnPostAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await UpdateView(id, cancellationToken);
-        if (user == null) return Page();
+        var user = await _identityRepository.Find(id, cancellationToken);
+        if (user is null)
+        {
+            IsDisabled = true;
+            ModelState.AddModelError(string.Empty, "Benutzer wurde nicht gefunden.");
+            return Page();
+        }
 
         if (Input.Roles.All(r => r == false))
         {
             ModelState.AddModelError(string.Empty, "Keine Rolle ausgewählt.");
             return Page();
         }
-        
-        Input.To(user);
 
-        var errors = await _users.Update(user, Input.Password, cancellationToken);
-        if (errors != null)
+        if (!ModelState.IsValid) return Page();
+
+        var dto = Input.ToDto(user.Value.Id);
+
+        var result = await _identityRepository.Update(dto, cancellationToken);
+        if (result.IsFailed)
         {
-            errors.ToList().ForEach(e => ModelState.AddModelError(string.Empty, e));
+            result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
             return Page();
+        }
+
+        if (!string.IsNullOrEmpty(Input.Password))
+        {
+            result = await _userService.UpdatePassword(user.Value.Id, Input.Password);
+            if (result.IsFailed)
+            {
+                result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
+                return Page();
+            }
         }
 
         return RedirectToPage("Index");
     }
 
-    private async Task<UserDto?> UpdateView(Guid id, CancellationToken cancellationToken)
-    {
-        if (!ModelState.IsValid) return default;
-
-        var user = await _users.Find(id, cancellationToken);
-        if (user == null)
-        {
-            IsDisabled = true;
-            ModelState.AddModelError(string.Empty, "Benutzer wurde nicht gefunden.");
-            return default;
-        }
-
-        Name = user.Name ?? user.Email;
-        CanBeDeleted = user.CanBeDeleted;
-        return user;
-    }
-
     public async Task<IActionResult> OnPostConfirmEmailAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _users.NotifyConfirmRegistration(id, false, cancellationToken);
-        return new JsonResult(result);
+        var callbackUrl = Url.PageLink("/Login/ConfirmRegistration", values: new { id = Guid.Empty, token = string.Empty });
+        var result = await _userService.ReNotifyConfirmRegistration(id, callbackUrl!, cancellationToken);
+        return new JsonResult(result.IsSuccess);
     }
 
     public async Task<IActionResult> OnPostRemoveUserAsync(Guid id, CancellationToken cancellationToken)
     {
-        var result = await _users.RemoveUser(id, cancellationToken);
-        return new JsonResult(result);
-    }
-
-    public async Task<IActionResult> OnPostDeleteUserAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var result = await _users.DeleteUser(id, cancellationToken);
-        return new JsonResult(result);
+        var result = await _identityRepository.Remove(id, cancellationToken);
+        return new JsonResult(result.IsSuccess);
     }
 
     public async Task<IActionResult> OnPostResetTwoFactorAsync(Guid id)
     {
-        var result = await _users.ResetTwoFactor(id);
+        var result = await _userService.ResetTwoFactor(id);
         return new JsonResult(result.IsSuccess);
     }
 }

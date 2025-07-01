@@ -133,7 +133,6 @@ void ConfigureApp(WebApplicationBuilder builder)
     });
 
     services.Configure<AppSettings>(config.GetSection("App"));
-    services.Configure<FirebaseCloudMessagingSettings>(config.GetSection("FirebaseCloudMessaging"));
     services.AddSingleton<NodeGeneratorService>();
     services.AddCore(config);
 }

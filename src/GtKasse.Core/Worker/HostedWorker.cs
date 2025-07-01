@@ -32,7 +32,14 @@ public sealed class HostedWorker : BackgroundService
         using var scope = _serviceScopeFactory.CreateAsyncScope();
         var emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
 
-        await emailService.HandleEmails(cancellationToken);
+        try
+        {
+            await emailService.HandleEmails(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error on send emails");
+        }
     }
 
     private async Task MigrateDatabase(CancellationToken cancellationToken)
@@ -53,11 +60,15 @@ public sealed class HostedWorker : BackgroundService
 
         await HandleSuperUser();
 
+        var rand = new Random(Environment.TickCount);
+
         while (!stoppingToken.IsCancellationRequested)
         {
             await HandleEmails(stoppingToken);
 
-            await Task.Delay(30000, stoppingToken);
+            var waitMs = rand.Next(20, 30) * 1000;
+
+            await Task.Delay(waitMs, stoppingToken);
         }
     }
 }

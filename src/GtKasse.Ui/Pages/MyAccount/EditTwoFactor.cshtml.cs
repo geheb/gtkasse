@@ -15,7 +15,7 @@ namespace GtKasse.Ui.Pages.MyAccount;
 public class EditTwoFactorModel : PageModel
 {
     private readonly string _appName;
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.User.UserService _userService;
     private readonly NodeGeneratorService _nodeGeneratorService;
 
     [BindProperty, Display(Name = "6-stelliger Code aus der Authenticator-App")]
@@ -31,12 +31,12 @@ public class EditTwoFactorModel : PageModel
     public bool IsDisabled { get; set; }
 
     public EditTwoFactorModel(
-        Core.Repositories.Users users,
+        Core.User.UserService userService,
         NodeGeneratorService nodeGeneratorService,
         IOptions<AppSettings> appOptions)
     {
         _appName = appOptions.Value.HeaderTitle;
-        _users = users;
+        _userService = userService;
         _nodeGeneratorService = nodeGeneratorService;
     }
 
@@ -51,7 +51,7 @@ public class EditTwoFactorModel : PageModel
 
         var enable = !IsTwoFactorEnabled;
 
-        var result = await _users.EnableTwoFactor(User.GetId(), enable, Code!);
+        var result = await _userService.EnableTwoFactor(User.GetId(), enable, Code!);
         if (result.IsFailed)
         {
             result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
@@ -68,7 +68,7 @@ public class EditTwoFactorModel : PageModel
 
     private async Task<bool> UpdateView(CancellationToken cancellationToken)
     {
-        var result = await _users.CreateTwoFactor(User.GetId(), _appName);
+        var result = await _userService.CreateTwoFactor(User.GetId(), _appName);
 
         if (result.IsFailed)
         {

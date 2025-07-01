@@ -1,6 +1,11 @@
+using GtKasse.Core.Email;
+using GtKasse.Core.Migrations;
+using GtKasse.Core.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Routing;
+using Scriban.Parsing;
 
 namespace GtKasse.Ui.Pages.Users;
 
@@ -8,18 +13,21 @@ namespace GtKasse.Ui.Pages.Users;
 [Authorize(Roles = "administrator,usermanager")]
 public class CreateUserModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
+    private readonly UserService _userService;
+    private readonly EmailValidatorService _emailValidatorService;
+    private readonly Core.Repositories.IdentityRepository _identityRepository;
 
     [BindProperty]
-    public CreateUserInput Input { get; set; } = new CreateUserInput();
+    public CreateUserInput Input { get; set; } = new();
 
-    public CreateUserModel(Core.Repositories.Users users)
+    public CreateUserModel(
+        UserService userService,
+        EmailValidatorService emailValidatorService,
+        Core.Repositories.IdentityRepository identityRepository)
     {
-        _users = users;
-    }
-
-    public void OnGet()
-    {
+        _userService = userService;
+        _emailValidatorService = emailValidatorService;
+        _identityRepository = identityRepository;
     }
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
@@ -32,13 +40,28 @@ public class CreateUserModel : PageModel
             return Page();
         }
 
-        var user = new UserDto();
-        Input.To(user);
-
-        var errors = await _users.Create(user, false, cancellationToken);
-        if (errors != null)
+        if (!await _emailValidatorService.Validate(Input.Email!, cancellationToken))
         {
-            errors.ToList().ForEach(e => ModelState.AddModelError(string.Empty, e));
+            ModelState.AddModelError(string.Empty, "Die E-Mail-Adresse ist ungültig.");
+            return Page();
+        }
+
+        var dto = Input.ToDto();
+
+        var result = await _identityRepository.Create(dto, cancellationToken);
+
+        if (result.IsFailed)
+        {
+            result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
+            return Page();
+        }
+
+        var callbackUrl = Url.PageLink("/Login/ConfirmRegistration", values: new { id = Guid.Empty, token = string.Empty });
+
+        result = await _userService.NotifyConfirmRegistration(dto.Email!, callbackUrl!, cancellationToken);
+        if (result.IsFailed)
+        {
+            result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
             return Page();
         }
 

@@ -9,7 +9,7 @@ namespace GtKasse.Ui.Pages.Login;
 [AllowAnonymous]
 public sealed class ConfirmTwoFactorModel : PageModel
 {
-    private readonly Core.Repositories.Users _users;
+    private readonly Core.User.LoginService _loginService;
 
     [BindProperty, Display(Name = "6-stelliger Code aus der Authenticator-App")]
     [RequiredField, TextLengthField(6, MinimumLength = 6)]
@@ -22,16 +22,19 @@ public sealed class ConfirmTwoFactorModel : PageModel
 
     public bool IsDisabled { get; set; }
 
-    public ConfirmTwoFactorModel(Core.Repositories.Users users)
+    public ConfirmTwoFactorModel(
+        Core.User.LoginService loginService)
     {
-        _users = users;
+        _loginService = loginService;
     }
 
     public void OnGet(string? returnUrl) => ReturnUrl = returnUrl;
 
     public async Task<IActionResult> OnPostAsync(string? returnUrl, CancellationToken cancellationToken)
     {
-        var result = await _users.SignInTwoFactor(Code!, IsTrustBrowser, cancellationToken);
+        if (!ModelState.IsValid) return Page();
+
+        var result = await _loginService.SignInTwoFactor(Code!, IsTrustBrowser, cancellationToken);
         if (result.IsFailed)
         {
             result.Errors.ForEach(e => ModelState.AddModelError(string.Empty, e.Message));
