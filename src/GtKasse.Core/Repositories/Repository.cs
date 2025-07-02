@@ -16,6 +16,8 @@ public class Repository<TEntity, TModel>
 
     protected Result NotFound => Result.Fail("Datensatz nicht gefunden.");
 
+    protected virtual IQueryable<TEntity> GetBaseQuery() => _dbSet.AsNoTracking();
+
     public Repository(TimeProvider timeProvider, DbSet<TEntity> dbSet)
     {
         _timeProvider = timeProvider;
@@ -34,7 +36,7 @@ public class Repository<TEntity, TModel>
     public async Task<TModel[]> GetAll(CancellationToken cancellationToken)
     {
         var dc = new GermanDateTimeConverter();
-        return [.. (await _dbSet.AsNoTracking().ToArrayAsync(cancellationToken)).Select(e => e.ToDto(dc))] ;
+        return [.. (await GetBaseQuery().ToArrayAsync(cancellationToken)).Select(e => e.ToDto(dc))] ;
     }
 
     public async Task<TModel[]> Get(Guid[] ids, CancellationToken cancellationToken)
@@ -43,8 +45,7 @@ public class Repository<TEntity, TModel>
         var result = new List<TModel>(ids.Length);
         foreach (var chunk in ids.Chunk(100))
         {
-            var entities = await _dbSet
-                .AsNoTracking()
+            var entities = await GetBaseQuery()
                 .Where(e => chunk.Contains(e.Id))
                 .ToArrayAsync(cancellationToken);
 
@@ -55,7 +56,7 @@ public class Repository<TEntity, TModel>
     }
 
     public async Task<TModel?> Find(Guid id, CancellationToken cancellationToken) =>
-        (await _dbSet.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id, cancellationToken))?.ToDto(new());
+        (await GetBaseQuery().FirstOrDefaultAsync(e => e.Id == id, cancellationToken))?.ToDto(new());
 
     public async Task<Result> Update(TModel model, CancellationToken cancellationToken)
     {

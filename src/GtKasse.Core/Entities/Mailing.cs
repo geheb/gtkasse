@@ -15,6 +15,7 @@ public sealed class Mailing : IEntity, IDtoMapper<MailingDto>
     public string? HtmlBody { get; set; }
     public bool IsClosed { get; set; }
     public int EmailCount { get; set; }
+    internal ICollection<MyMailing>? MyMailings { get; set; }
 
     public void FromDto(MailingDto model)
     {

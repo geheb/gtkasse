@@ -3,10 +3,8 @@ using GtKasse.Core.Entities;
 using GtKasse.Core.Models;
 using GtKasse.Core.Repositories;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Net.Mail;
 
 namespace GtKasse.Core.Email;
 
@@ -123,36 +121,45 @@ public sealed class EmailService
             return false;
         }
 
-        var recipients = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var users = (await _identityRepository.GetAll(cancellationToken))
+            .Where(u => u.IsEmailConfirmed && u.Roles!.Any(r => r == Roles.Member))
+            .ToArray();
+
+        var recipients = new Dictionary<string, IdentityDto?>(StringComparer.OrdinalIgnoreCase);
         if (mailing.Value.CanSendToAllMembers)
         {
-            var users = await _identityRepository.GetAll(cancellationToken);
-            recipients = new(users
-                .Where(u => u.IsEmailConfirmed && u.Roles!.Any(r => r == Roles.Member))
-                .Select(u => u.Email!), 
-                StringComparer.OrdinalIgnoreCase);
+            Array.ForEach(users, u => recipients.Add(u.Email!, u));
         }
 
         if (mailing.Value.OtherRecipients?.Length > 0)
         {
-            foreach(var recipient in mailing.Value.OtherRecipients)
+            foreach (var recipient in mailing.Value.OtherRecipients)
             {
-                recipients.Add(recipient);
+                var user = users.FirstOrDefault(u => u.Email!.Equals(recipient, StringComparison.OrdinalIgnoreCase));
+                recipients.TryAdd(recipient, user);
             }
         }
 
-        await using var trans = await _unitOfWork.BeginTran(cancellationToken);
-
-        foreach (var email in recipients)
+        foreach (var (email, user) in recipients)
         {
-            var dto = new EmailQueueDto
+            var emailQueue = new EmailQueueDto
             {
                 Recipient = email,
                 ReplyAddress = mailing.Value.ReplyAddress,
                 Subject = mailing.Value.Subject,
                 HtmlBody = mailing.Value.Body,
             };
-            await _unitOfWork.EmailQueue.Create(dto, cancellationToken);
+            await _unitOfWork.EmailQueue.Create(emailQueue, cancellationToken);
+
+            if (user is not null)
+            {
+                var myMailing = new MyMailingDto
+                {
+                    MailingId = mailing.Value.Id,
+                    UserId = user.Value.Id,
+                };
+                await _unitOfWork.MyMailings.Create(myMailing, cancellationToken);
+            }
         }
 
         var result = await _unitOfWork.Mailings.UpdateClosed(mailing.Value.Id, recipients.Count, cancellationToken);
@@ -165,8 +172,6 @@ public sealed class EmailService
         {
             return false;
         }
-
-        await trans.CommitAsync(cancellationToken);
 
         return true;
     }

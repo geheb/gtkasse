@@ -33,6 +33,7 @@
             typeof(MyFleet.IndexModel),
             typeof(MyTryouts.IndexModel),
             typeof(MyWiki.IndexModel),
+            typeof(MyMailings.IndexModel),
             typeof(MyClubhouse.IndexModel)))
         {
             <p class="title">Mein Verein</p>
@@ -157,6 +158,21 @@
                     </div>
                 </a>
             }
+
+					  @if (Model.HasNodeAccess(typeof(MyMailings.IndexModel)))
+					  {
+						  <a href="/MyMailings" class="bd-link has-text-grey">
+							  <span class="icon bd-link-icon has-text-info">
+								  <i class="fa-solid fa-envelope"></i>
+							  </span>
+							  <div>
+								  <h2 class="bd-link-title">Meine Mailings</h2>
+								  <div class="bd-link-subtitle">
+									  Mailings des Vereinsheims
+								  </div>
+							  </div>
+						  </a>
+					  }
 
             </nav>
         }

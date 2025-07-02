@@ -434,5 +434,24 @@ public sealed class AppDbContext :
             eb.Property(e => e.Subject).IsRequired();
             eb.Property(e => e.HtmlBody).IsRequired();
         });
+
+        modelBuilder.Entity<MyMailing>(eb =>
+        {
+            eb.ToTable("my_mailings");
+            eb.Property(e => e.Id).HasColumnType(KeyType).ValueGeneratedNever();
+            eb.Property(e => e.Created).IsRequired();
+
+            eb.HasOne(e => e.Mailing)
+                .WithMany(e => e.MyMailings)
+                .HasForeignKey(e => e.MailingId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+
+            eb.HasOne(e => e.User)
+                .WithMany(e => e.MyMailings)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+        });
     }
 }

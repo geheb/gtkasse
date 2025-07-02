@@ -6,14 +6,14 @@ namespace GtKasse.Ui.Pages.Mailings;
 
 public sealed class MailingInput
 {
-    [Display(Name = "Antwortadresse")]
+    [Display(Name = "Antwort-Adresse")]
     [EmailField, EmailLengthField]
     public string? ReplyAddress { get; set; }
 
     [Display(Name = "An alle Mitglieder")]
     public bool CanSendToAllMembers { get; set; }
 
-    [Display(Name = "Weitere Empfänger (Komma getrennt)")]
+    [Display(Name = "Weitere Empfänger E-Mail-Adressen (Komma getrennt)")]
     [TextLengthField(MinimumLength = 6)]
     public string? OtherRecipients { get; set; }
 
@@ -74,13 +74,13 @@ public sealed class MailingInput
             {
                 if (!emailAttr.IsValid(recipient))
                 {
-                    result.Add($"Die Empfänger-Adresse {recipient} ist fehlerhaft.");
+                    result.Add($"Die Empfänger E-Mail-Adresse {recipient} ist fehlerhaft.");
                     continue;
                 }
 
                 if (!await emailValidator.Validate(recipient, cancellationToken))
                 {
-                    result.Add($"Die Empfänger-Adresse {recipient} ist ungültig.");
+                    result.Add($"Die Empfänger E-Mail-Adresse {recipient} ist ungültig.");
                 }
             }
         }

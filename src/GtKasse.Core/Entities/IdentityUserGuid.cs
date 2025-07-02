@@ -26,6 +26,7 @@ namespace GtKasse.Core.Entities
         internal ICollection<TryoutBooking>? TryoutBookings {  get; set; }
         internal ICollection<BoatRental>? BoatRentals { get; set; }
         internal ICollection<TryoutChat>? TryoutChats { get; set; }
+        internal ICollection<MyMailing>? MyMailings { get; set; }
 
         public IdentityDto ToDto(GermanDateTimeConverter dc)
         {

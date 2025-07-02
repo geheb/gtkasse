@@ -1,8 +1,5 @@
 using GtKasse.Core.Database;
 using GtKasse.Core.Entities;
-using GtKasse.Core.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace GtKasse.Core.Repositories;
 
@@ -12,12 +9,16 @@ public sealed class UnitOfWork
     private readonly AppDbContext _dbContext;
     private MailingRepository? _mailings;
     private EmailQueueRepository? _emailQueue;
+    private MyMailingsRepository? _myMailings;
 
     public MailingRepository Mailings =>
         _mailings ??= new(_timeProvider, _dbContext.Set<Mailing>());
 
     public EmailQueueRepository EmailQueue =>
         _emailQueue ??= new(_timeProvider, _dbContext.Set<EmailQueue>());
+
+    public MyMailingsRepository MyMailings =>
+        _myMailings ??= new(_timeProvider, _dbContext.Set<MyMailing>());
 
     public UnitOfWork(
         TimeProvider timeProvider,
@@ -26,8 +27,6 @@ public sealed class UnitOfWork
         _timeProvider = timeProvider;
         _dbContext = dbContext;
     }
-
-    public Task<IDbContextTransaction> BeginTran(CancellationToken cancellationToken) => _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
     public Task<int> Save(CancellationToken cancellationToken) => _dbContext.SaveChangesAsync(cancellationToken);
 }
