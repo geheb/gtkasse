@@ -123,20 +123,20 @@ public sealed class EmailService
 
         var users = (await _identityRepository.GetAll(cancellationToken))
             .Where(u => u.IsEmailConfirmed && u.Roles!.Any(r => r == Roles.Member))
-            .ToArray();
+            .ToList();
 
         var recipients = new Dictionary<string, IdentityDto?>(StringComparer.OrdinalIgnoreCase);
         if (mailing.Value.CanSendToAllMembers)
         {
-            Array.ForEach(users, u => recipients.Add(u.Email!, u));
+            users.ForEach(u => recipients.Add(u.Email!, u));
         }
 
         if (mailing.Value.OtherRecipients?.Length > 0)
         {
             foreach (var recipient in mailing.Value.OtherRecipients)
             {
-                var user = users.FirstOrDefault(u => u.Email!.Equals(recipient, StringComparison.OrdinalIgnoreCase));
-                recipients.TryAdd(recipient, user);
+                var index = users.FindIndex(u => recipient.Equals(u.Email, StringComparison.OrdinalIgnoreCase));
+                recipients.TryAdd(recipient, index < 0 ? null : users[index]);
             }
         }
 
@@ -156,7 +156,7 @@ public sealed class EmailService
                 var myMailing = new MyMailingDto
                 {
                     MailingId = mailing.Value.Id,
-                    UserId = user.Value.Id,
+                    UserId = user.Value.Id
                 };
                 await _unitOfWork.MyMailings.Create(myMailing, cancellationToken);
             }
