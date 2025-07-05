@@ -16,6 +16,7 @@ public class RoleConverter
         if (roles.Any(r => r == Roles.TripManager)) return "has-text-info";
         if (roles.Any(r => r == Roles.BoatManager)) return "has-text-info";
         if (roles.Any(r => r == Roles.HouseManager)) return "has-text-info";
+        if (roles.Any(r => r == Roles.MailingManager)) return "has-text-info";
 
         if (roles.Any(r => r == Roles.Member)) return "has-text-success";
         return string.Empty;
@@ -36,6 +37,7 @@ public class RoleConverter
             Roles.FleetManager => "Fahrzeugwart",
             Roles.BoatManager => "Bootswart",
             Roles.HouseManager => "Hauswart",
+            Roles.MailingManager => "Mailingmanager",
             _ => string.Empty
         };
     }
