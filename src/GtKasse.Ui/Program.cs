@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
-using System.Xml.Linq;
 
 void ConfigureApp(WebApplicationBuilder builder)
 {

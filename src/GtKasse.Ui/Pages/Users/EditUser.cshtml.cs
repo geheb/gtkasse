@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace GtKasse.Ui.Pages.Users;
 
 [Node("Benutzer bearbeiten", FromPage = typeof(IndexModel))]
-[Authorize(Roles = "administrator,usermanager")]
+[Authorize(Roles = "administrator,usermanager", Policy = Policies.TwoFactorAuth)]
 public class EditUserModel : PageModel
 {
     private readonly Core.User.UserService _userService;

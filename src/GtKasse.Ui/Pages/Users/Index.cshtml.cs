@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace GtKasse.Ui.Pages.Users;
 
 [Node("Benutzer", FromPage = typeof(Pages.IndexModel))]
-[Authorize(Roles = "administrator,usermanager")]
+[Authorize(Roles = "administrator,usermanager", Policy = Policies.TwoFactorAuth)]
 public class IndexModel : PageModel
 {
     private readonly Core.Repositories.IdentityRepository _identityRepository;

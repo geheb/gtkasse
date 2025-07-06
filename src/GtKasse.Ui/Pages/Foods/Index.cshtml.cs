@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace GtKasse.Ui.Pages.Foods
 {
     [Node("Getränke/Speisen/Spenden", FromPage = typeof(Pages.IndexModel))]
-    [Authorize(Roles = "administrator,treasurer")]
+    [Authorize(Roles = "administrator,treasurer", Policy = Policies.TwoFactorAuth)]
     public class IndexModel : PageModel
     {
         private readonly Bookings _bookings;

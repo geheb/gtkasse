@@ -63,13 +63,12 @@ public sealed class IdentityRepository
         var entities = await _userManager.Users
             .AsNoTracking()
             .Include(e => e.UserRoles!).ThenInclude(e => e.Role)
-            .OrderBy(e => e.Name)
             .Where(e => e.LeftOn == null)
             .ToArrayAsync(cancellationToken);
 
         var dc = new GermanDateTimeConverter();
 
-        return [.. entities.Select(e => e.ToDto(dc))];
+        return [.. entities.Select(e => e.ToDto(dc)).OrderBy(e => e.Surname).ThenBy(e => e.FirstName)];
     }
 
     public async Task<IdentityDto?> Find(Guid id, CancellationToken cancellationToken)

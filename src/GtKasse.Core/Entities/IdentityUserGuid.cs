@@ -1,7 +1,6 @@
 using GtKasse.Core.Converter;
 using GtKasse.Core.Models;
 using Microsoft.AspNetCore.Identity;
-using System.Globalization;
 
 namespace GtKasse.Core.Entities
 {
@@ -30,10 +29,17 @@ namespace GtKasse.Core.Entities
 
         public IdentityDto ToDto(GermanDateTimeConverter dc)
         {
-            return new()
+            var name = Name?.Trim() ?? string.Empty;
+            var index = name.IndexOf(' ');
+            var surname = index > 0 ? name[(index + 1)..].TrimStart() : name;
+            var firstName = index > 0 ? name[..index] : name;
+        
+            return new ()
             {
                 Id = Id,
                 Name = Name,
+                Surname = surname,
+                FirstName = firstName,
                 Email = Email,
                 PhoneNumber = PhoneNumber,
                 IsEmailConfirmed = EmailConfirmed,
