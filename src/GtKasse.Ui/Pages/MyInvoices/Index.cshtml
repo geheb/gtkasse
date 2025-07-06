@@ -64,7 +64,7 @@
                             <td>@i.Total.ToString("0.00") €</td>
                             <td>@invoiceStatusConverter.StatusToString(i)</td>
                             <td>
-                                <a target="_blank" rel="noopener noreferrer" href="@(Url.PageLink("Details", null, new { id = i.Id }))">Details</a>
+                                <a href="@(Url.PageLink("Details", null, new { id = i.Id }))">Details</a>
                             </td>
                         </tr>
                     }

@@ -23,7 +23,7 @@ public class EditUserInput
 
     [Display(Name = "Rollen")]
     [RequiredField]
-    public bool[] Roles { get; set; } = new bool[12];
+    public bool[] Roles { get; set; } = new bool[13];
 
     [Display(Name = "Debitoren-Nr.")]
     [TextLengthField]
@@ -53,6 +53,7 @@ public class EditUserInput
             if (dto.Roles.Any(r => r == Core.Models.Roles.BoatManager)) Roles[9] = true;
             if (dto.Roles.Any(r => r == Core.Models.Roles.HouseManager)) Roles[10] = true;
             if (dto.Roles.Any(r => r == Core.Models.Roles.MailingManager)) Roles[11] = true;
+            if (dto.Roles.Any(r => r == Core.Models.Roles.WikiManager)) Roles[12] = true;
         }
         DebtorNumber = dto.DebtorNumber;
         AddressNumber = dto.AddressNumber;
@@ -73,6 +74,7 @@ public class EditUserInput
         if (Roles[9]) roles.Add(Core.Models.Roles.BoatManager);
         if (Roles[10]) roles.Add(Core.Models.Roles.HouseManager);
         if (Roles[11]) roles.Add(Core.Models.Roles.MailingManager);
+        if (Roles[12]) roles.Add(Core.Models.Roles.WikiManager);
 
         return new()
         {

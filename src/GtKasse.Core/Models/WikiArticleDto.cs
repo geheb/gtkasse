@@ -1,35 +1,16 @@
-﻿namespace GtKasse.Core.Models;
+namespace GtKasse.Core.Models;
 
-using GtKasse.Core.Converter;
 using GtKasse.Core.Entities;
 using System;
 
-public sealed class WikiArticleDto
+public struct WikiArticleDto : IDto
 {
     public Guid Id { get; set; }
     public string? Identifier { get; set; }
     public string? Title { get; set; }
     public Guid? UserId { get; set; }
-    public string? User { get; }
-    public string? UserEmail { get; }
-    public DateTimeOffset LastUpdate { get; }
-    public string? DescriptionMember { get; set; }
-    public string? DescriptionManagementBoard { get; set; }
-
-    public WikiArticleDto()
-    {
-    }
-
-    public WikiArticleDto(WikiArticle entity, GermanDateTimeConverter dc)
-    {
-        Id = entity.Id;
-        UserId = entity.UserId;
-        User = entity.User?.Name;
-        UserEmail = entity.User?.EmailConfirmed == true ? entity.User?.Email : null;
-        LastUpdate = entity.UpdatedOn is null ? dc.ToLocal(entity.CreatedOn) : dc.ToLocal(entity.UpdatedOn.Value);
-        Identifier = entity.Identifier;
-        Title = entity.Title;
-        DescriptionMember = entity.DescriptionMember;
-        DescriptionManagementBoard = entity.DescriptionManagementBoard;
-    }
+    public string? User { get; set; }
+    public string? UserEmail { get; set; }
+    public DateTimeOffset LastUpdate { get; set; }
+    public string? Content { get; set; }
 }

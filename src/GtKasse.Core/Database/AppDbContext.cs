@@ -244,9 +244,10 @@ public sealed class AppDbContext :
             eb.ToTable("wiki_articles");
             eb.Property(e => e.Id).HasColumnType(KeyType).ValueGeneratedNever();
             eb.Property(e => e.UserId).HasColumnType(KeyType);
-            eb.Property(e => e.CreatedOn).IsRequired();
-            eb.Property(e => e.Identifier).IsRequired().HasMaxLength(8);
+            eb.Property(e => e.Created).IsRequired();
+            eb.Property(e => e.Identifier).IsRequired().HasMaxLength(16);
             eb.Property(e => e.Title).IsRequired().HasMaxLength(256);
+            eb.Property(e => e.Content).IsRequired();
 
             eb.HasOne(e => e.User)
                 .WithMany(e => e.WikiArticles)

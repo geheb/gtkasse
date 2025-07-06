@@ -6,20 +6,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 [Node("Wiki", FromPage = typeof(Pages.IndexModel))]
-[Authorize(Roles = "administrator,chairperson")]
+[Authorize(Roles = "administrator,wikimanager")]
 public class IndexModel : PageModel
 {
-    private readonly WikiArticles _wikiArticles;
+    private readonly UnitOfWork _unitOfWork;
 
-    public WikiArticleListDto[] Items { get; set; } = Array.Empty<WikiArticleListDto>();
+    public WikiArticleDto[] Items { get; set; } = [];
 
-    public IndexModel(WikiArticles wikiArticles)
+    public IndexModel(UnitOfWork unitOfWork)
     {
-        _wikiArticles = wikiArticles;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
-        Items = await _wikiArticles.GetList(true, cancellationToken);
+        var items = await _unitOfWork.WikiArticles.GetAll(cancellationToken);
+        Items = [.. items.OrderBy(e => e.Title)];
     }
 }

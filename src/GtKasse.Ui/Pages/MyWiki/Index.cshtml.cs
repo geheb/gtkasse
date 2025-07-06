@@ -8,19 +8,18 @@ namespace GtKasse.Ui.Pages.MyWiki;
 [Authorize(Roles = "administrator,member")]
 public class IndexModel : PageModel
 {
-    private readonly WikiArticles _wikiArticles;
+    private readonly UnitOfWork _unitOfWork;
 
-    public WikiArticleListDto[] Items { get; set; } = Array.Empty<WikiArticleListDto>();
+    public WikiArticleDto[] Items { get; set; } = [];
 
-    public IndexModel(WikiArticles wikiArticles)
+    public IndexModel(UnitOfWork unitOfWork)
     {
-        _wikiArticles = wikiArticles;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
-        Items = await _wikiArticles.GetList(
-            User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Chairperson),
-            cancellationToken);
+        var items = await _unitOfWork.WikiArticles.GetAll(cancellationToken);
+        Items = [.. items.OrderBy(e => e.Title)];
     }
 }

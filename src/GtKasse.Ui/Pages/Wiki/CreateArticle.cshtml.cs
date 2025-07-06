@@ -8,21 +8,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 [Node("Artikel anlegen", FromPage = typeof(IndexModel))]
-[Authorize(Roles = "administrator,chairperson")]
+[Authorize(Roles = "administrator,wikimanager")]
 public class CreateArticleModel : PageModel
 {
-    private readonly WikiArticles _wikiArticles;
+    private readonly UnitOfWork _unitOfWork;
     private readonly IdentityRepository _identityRepository;
 
     [BindProperty]
-    public WIkiArticleInput Input { get; set; } = new();
+    public WikiInput Input { get; set; } = new();
     public SelectListItem[] Users { get; set; } = Array.Empty<SelectListItem>();
 
     public CreateArticleModel(
-        WikiArticles wikiArticles, 
+        UnitOfWork unitOfWork, 
         IdentityRepository identityRepository)
     {
-        _wikiArticles = wikiArticles;
+        _unitOfWork = unitOfWork;
         _identityRepository = identityRepository;
     }
 
@@ -35,21 +35,16 @@ public class CreateArticleModel : PageModel
     {
         if (!await UpdateView(cancellationToken)) return Page();
 
-        if (Input.IsDescriptionEmpty)
-        {
-            ModelState.AddModelError(string.Empty, "Eine Beschreibung wird benötigt.");
-            return Page();
-        }
-
-        if (await _wikiArticles.HasIdentifier(Input.Identifier!, cancellationToken))
+        if (await _unitOfWork.WikiArticles.FindIdentifier(Input.Identifier!, cancellationToken))
         {
             ModelState.AddModelError(string.Empty, "Die Kennung existiert bereits.");
             return Page();
         }
 
-        WikiArticleDto dto = Input;
+        var dto = Input.ToDto();
 
-        var result = await _wikiArticles.Create(dto, cancellationToken);
+        await _unitOfWork.WikiArticles.Create(dto, cancellationToken);
+        var result = await _unitOfWork.Save(cancellationToken) > 0;
         if (!result)
         {
             ModelState.AddModelError(string.Empty, "Fehler beim Anlegen des Artikels.");
@@ -63,13 +58,11 @@ public class CreateArticleModel : PageModel
     {
         var users = await _identityRepository.GetAll(cancellationToken);
 
-        var contactId = Guid.TryParse(Input.UserId, out var id) ? id : User.GetId();
-
         var items = new List<SelectListItem> { new() };
 
         items.AddRange(users
             .Where(u => u.Roles!.Any(r => r == Roles.Member))
-            .Select(u => new SelectListItem(u.Name, u.Id.ToString(), u.Id == contactId)));
+            .Select(u => new SelectListItem(u.Name, u.Id.ToString())));
 
         Users = items.ToArray();
 

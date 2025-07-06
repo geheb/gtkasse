@@ -10,6 +10,7 @@ public sealed class UnitOfWork
     private MailingRepository? _mailings;
     private EmailQueueRepository? _emailQueue;
     private MyMailingsRepository? _myMailings;
+    private WikiArticleRepository? _wikiArticle;
 
     public MailingRepository Mailings =>
         _mailings ??= new(_timeProvider, _dbContext.Set<Mailing>());
@@ -19,6 +20,9 @@ public sealed class UnitOfWork
 
     public MyMailingsRepository MyMailings =>
         _myMailings ??= new(_timeProvider, _dbContext.Set<MyMailing>());
+
+    public WikiArticleRepository WikiArticles =>
+        _wikiArticle ??= new(_timeProvider, _dbContext.Set<WikiArticle>());
 
     public UnitOfWork(
         TimeProvider timeProvider,

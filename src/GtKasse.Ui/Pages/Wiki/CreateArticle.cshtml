@@ -14,7 +14,7 @@
         @Html.CreateBreadcrumb()
 
         <div class="columns">
-            <div class="column is-half">
+			<div class="column is-three-quarters">
 
             @if (!ModelState.IsValid)
             {
@@ -48,20 +48,12 @@
                         <span asp-validation-for="Input.UserId"></span>
                     </div>
                     <div class="field">
-                        <label class="label" asp-for="Input.DescriptionMember"></label>
+						<label class="label" asp-for="Input.Content"></label>
                         <div class="control">
-                            <textarea class="textarea" asp-for="Input.DescriptionMember" rows="10"></textarea>
+							<textarea class="textarea" asp-for="Input.Content" rows="30"></textarea>
                         </div>
-                        <span asp-validation-for="Input.DescriptionMember"></span>
+						<span asp-validation-for="Input.Content"></span>
                     </div>
-                    <div class="field">
-                        <label class="label" asp-for="Input.DescriptionManagementBoard"></label>
-                        <div class="control">
-                            <textarea class="textarea" asp-for="Input.DescriptionManagementBoard" rows="10"></textarea>
-                        </div>
-                        <span asp-validation-for="Input.DescriptionManagementBoard"></span>
-                    </div>
-
                     <button class="button is-primary" type="submit">Anlegen</button>
                 </form>
 
@@ -77,9 +69,8 @@
 @section Scripts
 {
 <script type="text/javascript">
-$(function () {
-    $('#@Html.IdFor(m => m.Input.DescriptionMember)').trumbowyg(trumbowygConfig);
-    $('#@Html.IdFor(m => m.Input.DescriptionManagementBoard)').trumbowyg(trumbowygConfig);
-});
+  $(function () {
+	  $('#@Html.IdFor(m => m.Input.Content)').trumbowyg(trumbowygConfig);
+  });
 </script>
 }

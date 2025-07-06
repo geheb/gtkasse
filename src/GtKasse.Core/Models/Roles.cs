@@ -14,4 +14,5 @@ public static class Roles
     public const string BoatManager = "boatmanager"; // Bootswart
     public const string HouseManager = "housemanager"; // Hauswart
     public const string MailingManager = "mailingmanager"; // Mailingmanager
+    public const string WikiManager = "wikimanager"; // Wikimanager
 }

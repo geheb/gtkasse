@@ -29,24 +29,19 @@
                         <div class="list-item-title">@i.Title</div>
                         <div class="list-item-description">
                             <span class="tag is-rounded">@i.Identifier</span>
-                            <span class="tag is-rounded is-success">
-                                <span class="icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
-                                @dateConverter.ToDateTime(i.LastUpdate)
-                            </span>
-                            @if (i.UserEmail is not null)
-                            {
-                                <span class="tag is-rounded is-warning"><a href="mailto:@i.UserEmail">@i.User</a></span>
-                            }
-                            else
-                            {
-                                <span class="tag is-rounded is-warning">@i.User</span>
-                            }
+                            <span class="tag is-rounded is-success">@dateConverter.ToDateTime(i.LastUpdate)</span>
+							@if (i.User is not null)
+							{
+								<span class="tag is-rounded is-warning">
+									<a href="@(i.UserEmail is not null ? ("mailto:" + @i.UserEmail) : "#")">@i.User</a>
+								</span>
+							}
                         </div>
                     </div>
                     <div class="list-item-controls">
                         <div class="buttons">
-                            <a class="button is-dark is-inverted" href="@(Url.PageLink("ShowArticle", null, new { id = i.Id }))">
-                                <span class="icon"><i class="fas fa-info"></i></span>
+							<a class="button is-dark is-inverted" href="@(Url.PageLink("ShowArticle", null, new { id = i.Id }))">
+								<span class="icon"><i class="fas fa-magnifying-glass"></i></span>
                             </a>
                         </div>
                     </div>

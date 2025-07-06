@@ -4,21 +4,21 @@ using GtKasse.Core.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-[Node("Artikel anzeigen", FromPage = typeof(IndexModel))]
+[Node("Wikiartikel", FromPage = typeof(IndexModel))]
 [Authorize(Roles = "administrator,member")]
 public class ShowArticleModel : PageModel
 {
-    private WikiArticles _wikiArticles;
+    private UnitOfWork _unitOfWork;
 
     public WikiArticleDto? Item { get; private set; }
 
-    public ShowArticleModel(WikiArticles wikiArticles)
+    public ShowArticleModel(UnitOfWork unitOfWork)
     {
-        _wikiArticles = wikiArticles;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task OnGetAsync(Guid id, CancellationToken cancellationToken)
     {
-        Item = await _wikiArticles.Find(id, cancellationToken);
+        Item = await _unitOfWork.WikiArticles.Find(id, cancellationToken);
     }
 }

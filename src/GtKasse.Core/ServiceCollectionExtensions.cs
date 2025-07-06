@@ -22,7 +22,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<Bookings>();
         services.AddScoped<Invoices>();
         services.AddScoped<Trips>();
-        services.AddScoped<WikiArticles>();
         services.AddScoped<Vehicles>();
         services.AddScoped<Tryouts>();
         services.AddScoped<Boats>();

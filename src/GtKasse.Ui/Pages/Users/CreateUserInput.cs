@@ -19,7 +19,7 @@ public class CreateUserInput
 
     [Display(Name = "Rollen")]
     [RequiredField]
-    public bool[] Roles { get; set; } = new bool[12];
+    public bool[] Roles { get; set; } = new bool[13];
 
     [Display(Name = "Debitoren-Nr.")]
     [TextLengthField]
@@ -44,6 +44,7 @@ public class CreateUserInput
         if (Roles[9]) roles.Add(Core.Models.Roles.BoatManager);
         if (Roles[10]) roles.Add(Core.Models.Roles.HouseManager);
         if (Roles[11]) roles.Add(Core.Models.Roles.MailingManager);
+        if (Roles[12]) roles.Add(Core.Models.Roles.WikiManager);
 
         return new()
         {
