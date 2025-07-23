@@ -20,10 +20,11 @@ public class CreateModel : PageModel
 
     public CreateModel(
         IOptions<SmtpConnectionOptions> smtpOptions,
+        IOptions<AppSettings> appOptions,
         EmailValidatorService emailValidator,
         UnitOfWork unitOfWork)
     {
-        Input.ReplyAddress = smtpOptions.Value.SenderEmail;
+        Input.ReplyAddress = appOptions.Value.MailingReplyTo ?? smtpOptions.Value.SenderEmail;
         _emailValidator = emailValidator;
         _unitOfWork = unitOfWork;
     }

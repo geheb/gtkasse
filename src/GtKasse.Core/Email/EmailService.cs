@@ -3,32 +3,28 @@ using GtKasse.Core.Entities;
 using GtKasse.Core.Models;
 using GtKasse.Core.Repositories;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace GtKasse.Core.Email;
 
 public sealed class EmailService
 {
-    private readonly AccountEmailTemplateRenderer _accountEmailTemplateRenderer = new();
+    private readonly EmailTemplateRenderer _emailTemplateRenderer = new();
     private readonly TimeSpan _confirmEmailTimeout, _changeEmailPassTimeout;
-    private readonly ILogger _logger;
-    private readonly SmtpDispatcher _emailSender;
+    private readonly SmtpDispatcher _smtpDispatcher;
     private readonly UnitOfWork _unitOfWork;
     private readonly IdentityRepository _identityRepository;
 
     public EmailService(
-        ILogger<EmailService> logger,
         IOptions<ConfirmEmailDataProtectionTokenProviderOptions> confirmEmailOptions,
         IOptions<DataProtectionTokenProviderOptions> changeEmailPassOptions,
-        SmtpDispatcher emailSender,
+        SmtpDispatcher smtpDispatcher,
         UnitOfWork unitOfWork,
         IdentityRepository identityRepository)
     {
         _confirmEmailTimeout = confirmEmailOptions.Value.TokenLifespan;
         _changeEmailPassTimeout = changeEmailPassOptions.Value.TokenLifespan;
-        _logger = logger;
-        _emailSender = emailSender;
+        _smtpDispatcher = smtpDispatcher;
         _unitOfWork = unitOfWork;
         _identityRepository = identityRepository;
     }
@@ -45,9 +41,9 @@ public sealed class EmailService
             timeout = dc.Format(_confirmEmailTimeout)
         };
 
-        var template = isExtended ? AccountEmailTemplate.ConfirmRegistrationExtended : AccountEmailTemplate.ConfirmRegistration;
+        var template = isExtended ? EmailTemplate.ConfirmRegistrationExtended : EmailTemplate.ConfirmRegistration;
 
-        var htmlBody = await _accountEmailTemplateRenderer.Render(template, model);
+        var htmlBody = _emailTemplateRenderer.Render(template, model);
 
         var dto = new EmailQueueDto
         {
@@ -73,7 +69,7 @@ public sealed class EmailService
             timeout = dc.Format(_changeEmailPassTimeout)
         };
 
-        var htmlBody = await _accountEmailTemplateRenderer.Render(AccountEmailTemplate.ConfirmChangeEmail, model);
+        var htmlBody = _emailTemplateRenderer.Render(EmailTemplate.ConfirmChangeEmail, model);
 
         var dto = new EmailQueueDto
         {
@@ -99,7 +95,7 @@ public sealed class EmailService
             timeout = dc.Format(_changeEmailPassTimeout)
         };
 
-        var htmlBody = await _accountEmailTemplateRenderer.Render(AccountEmailTemplate.ConfirmPasswordForgotten, model);
+        var htmlBody = _emailTemplateRenderer.Render(EmailTemplate.ConfirmPasswordForgotten, model);
 
         var dto = new EmailQueueDto
         {
@@ -120,6 +116,14 @@ public sealed class EmailService
         {
             return false;
         }
+
+        var templateModel = new
+        {
+            title = mailing.Value.Subject,
+            body = mailing.Value.Body,
+        };
+
+        var htmlBody = _emailTemplateRenderer.Render(EmailTemplate.Mailing, templateModel);
 
         var users = (await _identityRepository.GetAll(cancellationToken))
             .Where(u => u.IsEmailConfirmed)
@@ -150,7 +154,7 @@ public sealed class EmailService
                 Recipient = email,
                 ReplyAddress = mailing.Value.ReplyAddress,
                 Subject = mailing.Value.Subject,
-                HtmlBody = mailing.Value.Body,
+                HtmlBody = htmlBody,
             };
             await _unitOfWork.EmailQueue.Create(emailQueue, cancellationToken);
 
@@ -192,10 +196,10 @@ public sealed class EmailService
             Subject = e.Subject!,
             HtmlBody = e.HtmlBody!,
             Recipient = e.Recipient!,
-            ReplyTo = e.ReplyAddress,
+            ReplyAddress = e.ReplyAddress,
         }).ToArray();
 
-        await _emailSender.Send(items, cancellationToken);
+        await _smtpDispatcher.Send(items, cancellationToken);
 
         var result = await _unitOfWork.EmailQueue.UpdateSent([.. emailQueue.Select(e => e.Id)], cancellationToken);
 

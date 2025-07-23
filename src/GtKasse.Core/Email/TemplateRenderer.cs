@@ -13,7 +13,7 @@ internal sealed class TemplateRenderer
         _assemblyResourceNames = _assembly.GetManifestResourceNames();
     }
 
-    public async Task<string> Render(string templateFile, object model)
+    public string Render(string templateFile, object model)
     {
         var name = _assemblyResourceNames.First(n => n.EndsWith(templateFile, StringComparison.OrdinalIgnoreCase));
 
@@ -25,7 +25,7 @@ internal sealed class TemplateRenderer
 
         using var reader = new StreamReader(stream);
 
-        var content = await reader.ReadToEndAsync();
+        var content = reader.ReadToEnd();
 
         var template = Scriban.Template.Parse(content);
         if (template.HasErrors)
@@ -33,6 +33,6 @@ internal sealed class TemplateRenderer
             throw new InvalidOperationException("Parse template failed : " + string.Join(",", template.Messages.Select(m => m.Message)));
         }
 
-        return await template.RenderAsync(model);
+        return template.Render(model);
     }
 }

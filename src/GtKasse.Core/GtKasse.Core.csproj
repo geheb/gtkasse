@@ -5,6 +5,7 @@
     <EmbeddedResource Include="Email\ConfirmRegistration.html" />
     <EmbeddedResource Include="Email\ConfirmPasswordForgotten.html" />
     <EmbeddedResource Include="Email\ConfirmRegistrationExtended.html" />
+    <EmbeddedResource Include="Email\Mailing.html" />
   </ItemGroup>
 
   <ItemGroup>

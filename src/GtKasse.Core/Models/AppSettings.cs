@@ -8,6 +8,8 @@ public sealed class AppSettings
     public required string HeaderTitle { get; set; }
     public required string Slogan { get; set; }
     public required string[] InvoiceSender { get; set; }
+    public string? MailingReplyTo { get; set; }
+    public string? MailingFooterImageName { get; set; }
 
     public AppSettings()
     {

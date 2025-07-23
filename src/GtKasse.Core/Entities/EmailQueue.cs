@@ -21,6 +21,8 @@ public sealed class EmailQueue : IEntity, IDtoMapper<EmailQueueDto>
 
     public bool IsPrio { get; set; }
 
+    public string? ReplyAddress { get; set; }
+
     public void FromDto(EmailQueueDto model)
     {
         Id = model.Id;
@@ -28,6 +30,7 @@ public sealed class EmailQueue : IEntity, IDtoMapper<EmailQueueDto>
         Subject = model.Subject;
         HtmlBody = model.HtmlBody;
         IsPrio = model.IsPrio;
+        ReplyAddress = model.ReplyAddress;
     }
 
     public EmailQueueDto ToDto(GermanDateTimeConverter dc) => new()
@@ -36,6 +39,7 @@ public sealed class EmailQueue : IEntity, IDtoMapper<EmailQueueDto>
         Recipient = Recipient,
         Subject = Subject,
         HtmlBody = HtmlBody,
-        IsPrio = IsPrio
+        IsPrio = IsPrio,
+        ReplyAddress = ReplyAddress
     };
 }

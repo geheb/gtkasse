@@ -18,7 +18,7 @@ public sealed class EmailQueueRepository : Repository<EmailQueue, EmailQueueDto>
             .AsNoTracking()
             .Where(e => e.Sent == null)
             .OrderBy(e => e.Created).ThenByDescending(e => e.IsPrio)
-            .Select(e => new { e.Id, e.Subject, e.Recipient, e.HtmlBody })
+            .Select(e => new { e.Id, e.Subject, e.Recipient, e.HtmlBody, e.ReplyAddress })
             .Take(count)
             .ToArrayAsync(cancellationToken);
 
@@ -26,7 +26,14 @@ public sealed class EmailQueueRepository : Repository<EmailQueue, EmailQueueDto>
 
         foreach (var e in entities)
         {
-            result.Add(new() { Id = e.Id, Subject = e.Subject, Recipient = e.Recipient, HtmlBody = e.HtmlBody });
+            result.Add(new() 
+            { 
+                Id = e.Id, 
+                Subject = e.Subject, 
+                Recipient = e.Recipient, 
+                HtmlBody = e.HtmlBody,
+                ReplyAddress = e.ReplyAddress
+            });
         }
 
         return result.ToArray();
