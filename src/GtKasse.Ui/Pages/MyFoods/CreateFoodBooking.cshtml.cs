@@ -13,7 +13,7 @@ public class CreateFoodBookingModel : PageModel
 {
     private readonly Core.Repositories.IdentityRepository _identityRepository;
     private readonly Core.Repositories.Foods _foods;
-    private readonly Core.Repositories.Bookings _bookings;
+    private readonly Core.Repositories.FoodBookings _bookings;
 
     [Display(Name = "Getränk/Speise/Spende")]
     [BindProperty, RequiredField]
@@ -34,7 +34,7 @@ public class CreateFoodBookingModel : PageModel
     public CreateFoodBookingModel(
         Core.Repositories.IdentityRepository identityRepository,
         Core.Repositories.Foods foods, 
-        Core.Repositories.Bookings bookings)
+        Core.Repositories.FoodBookings bookings)
     {
         _identityRepository = identityRepository;
         _foods = foods;

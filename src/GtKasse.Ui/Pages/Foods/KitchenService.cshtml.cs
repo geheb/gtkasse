@@ -10,7 +10,7 @@ namespace GtKasse.Ui.Pages.Foods
     [Authorize(Roles = "administrator,kitchen")]
     public class KitchenServiceModel : PageModel
     {
-        private readonly Core.Repositories.Bookings _bookings;
+        private readonly Core.Repositories.FoodBookings _bookings;
 
         [Display(Name = "Datum der Buchungen")]
         public string? BookingDate { get; set; }
@@ -21,7 +21,7 @@ namespace GtKasse.Ui.Pages.Foods
         public decimal DishesTotal { get; set; }
         public decimal Total { get; set; }
 
-        public KitchenServiceModel(Core.Repositories.Bookings bookings)
+        public KitchenServiceModel(Core.Repositories.FoodBookings bookings)
         {
             _bookings = bookings;
         }

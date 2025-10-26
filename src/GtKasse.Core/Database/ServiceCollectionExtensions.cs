@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,10 +9,8 @@ namespace GtKasse.Core.Database;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddMySqlContext(this IServiceCollection services, IConfiguration configuration)
+    public static void AddSQLiteContext(this IServiceCollection services, IConfiguration configuration)
     {
-        var assemblyName = typeof(AppDbContext).GetTypeInfo().Assembly.GetName().Name;
-
         services.AddDbContext<AppDbContext>(options =>
         {
             options.ConfigureWarnings(warn => warn.Ignore(
@@ -19,14 +18,18 @@ public static class ServiceCollectionExtensions
                 CoreEventId.RowLimitingOperationWithoutOrderByWarning,
                 CoreEventId.DistinctAfterOrderByWithoutRowLimitingOperatorWarning));
 
-            options.UseMySql(
-                configuration.GetConnectionString("MySql"),
-                MariaDbServerVersion.LatestSupportedServerVersion,
-                mysqlOptions =>
+            var sqlite = new SqliteConnectionStringBuilder(configuration.GetConnectionString("SQLite"));
+            var dir = Path.GetDirectoryName(sqlite.DataSource);
+            if (!string.IsNullOrEmpty(dir))
+            {
+                var di = new DirectoryInfo(dir);
+                if (!di.Exists)
                 {
-                    mysqlOptions.MaxBatchSize(100);
-                    mysqlOptions.MigrationsAssembly(assemblyName);
-                });
+                    di.Create();
+                }
+            }
+
+            options.UseSqlite(sqlite.ToString());
         });
     }
 }

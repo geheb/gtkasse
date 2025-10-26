@@ -3,7 +3,6 @@ using System;
 using GtKasse.Core.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -16,71 +15,70 @@ namespace GtKasse.Core.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
-
-            MySqlModelBuilderExtensions.HasCharSet(modelBuilder, "utf8mb4", DelegationModes.ApplyToDatabases);
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.6");
 
             modelBuilder.Entity("GtKasse.Core.Entities.Boat", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Identifier")
                         .IsRequired()
                         .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsLocked")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("MaxRentalDays")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("boats", (string)null);
+                    b.ToTable("boats");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.BoatRental", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("BoatId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("BoatId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("CancelledOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("CancelledOn")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("End")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("End")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Purpose")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("Start")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -88,34 +86,128 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("boat_rentals", (string)null);
+                    b.ToTable("boat_rentals");
                 });
 
-            modelBuilder.Entity("GtKasse.Core.Entities.Booking", b =>
+            modelBuilder.Entity("GtKasse.Core.Entities.ClubhouseBooking", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("BookedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("CancelledOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("End")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("clubhouse_bookings");
+                });
+
+            modelBuilder.Entity("GtKasse.Core.Entities.EmailQueue", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HtmlBody")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsPrio")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Recipient")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Sent")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Sent", "Created", "IsPrio");
+
+                    b.ToTable("email_queue");
+                });
+
+            modelBuilder.Entity("GtKasse.Core.Entities.Food", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FoodListId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FoodListId");
+
+                    b.ToTable("foods");
+                });
+
+            modelBuilder.Entity("GtKasse.Core.Entities.FoodBooking", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("BookedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CancelledOn")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Count")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    b.Property<byte[]>("FoodId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("FoodId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("InvoiceId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("InvoiceId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -125,254 +217,163 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("UserId", "BookedOn");
 
-                    b.ToTable("bookings", (string)null);
-                });
-
-            modelBuilder.Entity("GtKasse.Core.Entities.ClubhouseBooking", b =>
-                {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset>("End")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTimeOffset>("Start")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("clubhouse_bookings", (string)null);
-                });
-
-            modelBuilder.Entity("GtKasse.Core.Entities.EmailQueue", b =>
-                {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("HtmlBody")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("IsPrio")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Recipient")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset?>("Sent")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset?>("Updated")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Sent", "Created", "IsPrio");
-
-                    b.ToTable("email_queue", (string)null);
-                });
-
-            modelBuilder.Entity("GtKasse.Core.Entities.Food", b =>
-                {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
-
-                    b.Property<byte[]>("FoodListId")
-                        .HasColumnType("binary(16)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(6,2)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FoodListId");
-
-                    b.ToTable("foods", (string)null);
+                    b.ToTable("food_bookings");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.FoodList", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("ValidFrom")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ValidFrom");
-
-                    b.ToTable("food_lists", (string)null);
+                    b.ToTable("food_lists");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.IdentityRoleClaimGuid", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("RoleId")
+                    b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("binary(16)");
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("role_claims", (string)null);
+                    b.ToTable("identity_role_claims", (string)null);
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.IdentityRoleGuid", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
+                    b.HasIndex(new[] { "NormalizedName" }, "IX_identity_roles_NormalizedName")
+                        .IsUnique();
 
-                    b.ToTable("roles", (string)null);
+                    b.ToTable("identity_roles", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = new byte[] { 191, 247, 188, 251, 191, 140, 15, 68, 147, 156, 246, 118, 49, 16, 154, 160 },
+                            Id = "fbbcf7bf8cbf440f939cf67631109aa0",
                             ConcurrencyStamp = "CFAD6F62-EEAA-4ECD-B847-0762C704EC45",
                             Name = "administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = new byte[] { 118, 69, 182, 31, 144, 63, 233, 76, 140, 58, 207, 161, 63, 88, 113, 103 },
+                            Id = "1fb645763f904ce98c3acfa13f587167",
                             ConcurrencyStamp = "6EE38FDC-5CE5-42FD-A5A5-168573DB2F86",
                             Name = "treasurer",
                             NormalizedName = "TREASURER"
                         },
                         new
                         {
-                            Id = new byte[] { 224, 7, 77, 29, 174, 64, 203, 69, 164, 246, 57, 118, 114, 243, 96, 91 },
+                            Id = "1d4d07e040ae45cba4f6397672f3605b",
                             ConcurrencyStamp = "995137CB-BD7B-4747-884E-A7467F3C0A3A",
                             Name = "kitchen",
                             NormalizedName = "KITCHEN"
                         },
                         new
                         {
-                            Id = new byte[] { 165, 13, 169, 3, 240, 171, 233, 69, 155, 128, 205, 172, 121, 11, 113, 5 },
+                            Id = "03a90da5abf045e99b80cdac790b7105",
                             ConcurrencyStamp = "956824FE-2F13-4919-B2D2-0E60BECFCA12",
                             Name = "member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
-                            Id = new byte[] { 167, 240, 198, 157, 22, 113, 32, 72, 139, 118, 79, 32, 183, 48, 83, 238 },
+                            Id = "9dc6f0a7711648208b764f20b73053ee",
                             ConcurrencyStamp = "3096E774-529C-41B4-8CD3-355E0D2C930D",
                             Name = "interested",
                             NormalizedName = "INTERESTED"
                         },
                         new
                         {
-                            Id = new byte[] { 236, 155, 220, 45, 150, 235, 213, 76, 148, 180, 221, 13, 153, 161, 150, 100 },
+                            Id = "2ddc9beceb964cd594b4dd0d99a19664",
                             ConcurrencyStamp = "F3BFC39C-70B7-4E91-A70B-131925290446",
                             Name = "tripmanager",
                             NormalizedName = "TRIPMANAGER"
                         },
                         new
                         {
-                            Id = new byte[] { 22, 218, 114, 135, 188, 251, 175, 70, 165, 44, 200, 60, 144, 202, 116, 201 },
+                            Id = "8772da16fbbc46afa52cc83c90ca74c9",
                             ConcurrencyStamp = "49DD2CBF-AAC9-4015-9016-9E3ED25547DF",
                             Name = "chairperson",
                             NormalizedName = "CHAIRPERSON"
                         },
                         new
                         {
-                            Id = new byte[] { 66, 216, 128, 239, 15, 74, 19, 70, 130, 235, 72, 166, 112, 186, 194, 29 },
+                            Id = "ef80d8424a0f461382eb48a670bac21d",
                             ConcurrencyStamp = "EA00C945-985C-42AD-B149-7D6FBCE9C279",
                             Name = "usermanager",
                             NormalizedName = "USERMANAGER"
                         },
                         new
                         {
-                            Id = new byte[] { 96, 48, 73, 249, 184, 48, 243, 75, 164, 190, 116, 99, 11, 15, 164, 35 },
+                            Id = "f949306030b84bf3a4be74630b0fa423",
                             ConcurrencyStamp = "D8FEF733-1C63-433F-916F-99B8645D1487",
                             Name = "fleetmanager",
                             NormalizedName = "FLEETMANAGER"
                         },
                         new
                         {
-                            Id = new byte[] { 10, 248, 142, 102, 87, 159, 97, 73, 190, 172, 84, 10, 216, 0, 50, 65 },
+                            Id = "668ef80a9f574961beac540ad8003241",
                             ConcurrencyStamp = "4B04648D-DE82-4B0B-B014-3CE0BE5454FD",
                             Name = "boatmanager",
                             NormalizedName = "BOATMANAGER"
                         },
                         new
                         {
-                            Id = new byte[] { 117, 14, 212, 175, 254, 220, 70, 76, 157, 76, 255, 112, 31, 34, 81, 121 },
+                            Id = "afd40e75dcfe4c469d4cff701f225179",
                             ConcurrencyStamp = "4B04648D-DE82-4B0B-B014-3CE0BE5454FD",
                             Name = "housemanager",
                             NormalizedName = "HOUSEMANAGER"
                         },
                         new
                         {
-                            Id = new byte[] { 43, 68, 201, 109, 121, 50, 204, 70, 149, 192, 29, 79, 140, 61, 49, 240 },
+                            Id = "6dc9442b327946cc95c01d4f8c3d31f0",
                             ConcurrencyStamp = "4B04648D-DE82-4B0B-B014-3CE0BE5454FD",
                             Name = "mailingmanager",
                             NormalizedName = "MAILINGMANAGER"
                         },
                         new
                         {
-                            Id = new byte[] { 227, 223, 194, 2, 49, 115, 246, 69, 146, 155, 249, 131, 39, 63, 45, 116 },
+                            Id = "02c2dfe3733145f6929bf983273f2d74",
                             ConcurrencyStamp = "4B04648D-DE82-4B0B-B014-3CE0BE5454FD",
                             Name = "wikimanager",
                             NormalizedName = "WIKIMANAGER"
@@ -383,191 +384,197 @@ namespace GtKasse.Core.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("binary(16)");
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("user_claims", (string)null);
+                    b.ToTable("identity_user_claims", (string)null);
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.IdentityUserGuid", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("AddressNumber")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("AuthenticatorKey")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DebtorNumber")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset?>("LastLogin")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("LeftOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("LeftOn")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("LockoutEnd")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                    b.HasIndex(new[] { "NormalizedEmail" }, "IX_identity_users_NormalizedEmail")
+                        .IsUnique();
 
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
+                    b.HasIndex(new[] { "NormalizedUserName" }, "IX_identity_users_NormalizedUserName")
+                        .IsUnique();
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("identity_users", (string)null);
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.IdentityUserLoginGuid", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("binary(16)");
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("user_logins", (string)null);
+                    b.ToTable("identity_user_logins", (string)null);
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.IdentityUserRoleGuid", b =>
                 {
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("RoleId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("RoleId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("user_roles", (string)null);
+                    b.ToTable("identity_user_roles", (string)null);
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.IdentityUserTokenGuid", b =>
                 {
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("user_tokens", (string)null);
+                    b.ToTable("identity_user_tokens", (string)null);
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.Invoice", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("InvoicePeriodId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("InvoicePeriodId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("PaidOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("PaidOn")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<decimal>("Total")
-                        .HasColumnType("decimal(6,2)");
+                        .HasPrecision(6, 2)
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -575,89 +582,94 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("invoices", (string)null);
+                    b.ToTable("invoices");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.InvoicePeriod", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("From")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("From")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("To")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("To")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("To");
 
-                    b.ToTable("invoice_periods", (string)null);
+                    b.ToTable("invoice_periods");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.Mailing", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("CanSendToAllMembers")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("EmailCount")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("HtmlBody")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsClosed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("OtherRecipients")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ReplyAddress")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Subject")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("Updated")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("mailings", (string)null);
+                    b.ToTable("mailings");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.MyMailing", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("HasRead")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
-                    b.Property<byte[]>("MailingId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("MailingId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("Updated")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -665,46 +677,46 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("my_mailings", (string)null);
+                    b.ToTable("my_mailings");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.Trip", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("BookingEnd")
-                        .IsRequired()
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("BookingEnd")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("BookingStart")
-                        .IsRequired()
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("BookingStart")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Categories")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("End")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("End")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsPublic")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("MaxBookings")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset>("Start")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Target")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -712,32 +724,35 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("Start", "End");
 
-                    b.ToTable("trips", (string)null);
+                    b.ToTable("trips");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.TripBooking", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("BookedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("BookedOn")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("CancelledOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("CancelledOn")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("ConfirmedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("ConfirmedOn")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("TripId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("TripId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -745,27 +760,30 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("trip_bookings", (string)null);
+                    b.ToTable("trip_bookings");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.TripChat", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("TripId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("TripId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -773,71 +791,72 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("trip_chats", (string)null);
+                    b.ToTable("trip_chats");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.Tryout", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("BookingEnd")
-                        .IsRequired()
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("BookingEnd")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("BookingStart")
-                        .IsRequired()
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("BookingStart")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("Date")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("MaxBookings")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
-                        .HasDefaultValue("Anfängertraining");
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("tryouts", (string)null);
+                    b.ToTable("tryouts");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.TryoutBooking", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("BookedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("BookedOn")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("CancelledOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("CancelledOn")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("ConfirmedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("ConfirmedOn")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("TryoutId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("TryoutId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -845,27 +864,30 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("tryout_bookings", (string)null);
+                    b.ToTable("tryout_bookings");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.TryoutChat", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("TryoutId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("TryoutId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -873,62 +895,66 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("tryout_chats", (string)null);
+                    b.ToTable("tryout_chats");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.Vehicle", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Identifier")
                         .IsRequired()
                         .HasMaxLength(12)
-                        .HasColumnType("varchar(12)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsInUse")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("vehicles", (string)null);
+                    b.ToTable("vehicles");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.VehicleBooking", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("BookedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("BookedOn")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("CancelledOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("CancelledOn")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("ConfirmedOn")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("ConfirmedOn")
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("End")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("End")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Purpose")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("Start")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("VehicleId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("VehicleId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -936,36 +962,38 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("vehicle_bookings", (string)null);
+                    b.ToTable("vehicle_bookings");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.WikiArticle", b =>
                 {
-                    b.Property<byte[]>("Id")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("Id")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Identifier")
                         .IsRequired()
                         .HasMaxLength(16)
-                        .HasColumnType("varchar(16)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("Updated")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("TEXT");
 
-                    b.Property<byte[]>("UserId")
-                        .HasColumnType("binary(16)");
+                    b.Property<string>("UserId")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -974,26 +1002,7 @@ namespace GtKasse.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("wiki_articles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FriendlyName")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Xml")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("data_protection_keys", (string)null);
+                    b.ToTable("wiki_articles");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.BoatRental", b =>
@@ -1004,35 +1013,11 @@ namespace GtKasse.Core.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("BoatRentals")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Boat");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("GtKasse.Core.Entities.Booking", b =>
-                {
-                    b.HasOne("GtKasse.Core.Entities.Food", "Food")
-                        .WithMany("Bookings")
-                        .HasForeignKey("FoodId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("GtKasse.Core.Entities.Invoice", "Invoice")
-                        .WithMany("Bookings")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("Bookings")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Food");
-
-                    b.Navigation("Invoice");
 
                     b.Navigation("User");
                 });
@@ -1045,6 +1030,30 @@ namespace GtKasse.Core.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("FoodList");
+                });
+
+            modelBuilder.Entity("GtKasse.Core.Entities.FoodBooking", b =>
+                {
+                    b.HasOne("GtKasse.Core.Entities.Food", "Food")
+                        .WithMany("FoodBookings")
+                        .HasForeignKey("FoodId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("GtKasse.Core.Entities.Invoice", "Invoice")
+                        .WithMany("FoodBookings")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Food");
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.IdentityRoleClaimGuid", b =>
@@ -1110,7 +1119,7 @@ namespace GtKasse.Core.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("Invoices")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -1127,7 +1136,7 @@ namespace GtKasse.Core.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("MyMailings")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -1139,7 +1148,7 @@ namespace GtKasse.Core.Migrations
             modelBuilder.Entity("GtKasse.Core.Entities.Trip", b =>
                 {
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("Trips")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -1154,7 +1163,7 @@ namespace GtKasse.Core.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("TripBookings")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -1171,7 +1180,7 @@ namespace GtKasse.Core.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("TripChats")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -1183,7 +1192,7 @@ namespace GtKasse.Core.Migrations
             modelBuilder.Entity("GtKasse.Core.Entities.Tryout", b =>
                 {
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("Tryouts")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -1198,7 +1207,7 @@ namespace GtKasse.Core.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("TryoutBookings")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -1215,7 +1224,7 @@ namespace GtKasse.Core.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("TryoutChats")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -1227,7 +1236,7 @@ namespace GtKasse.Core.Migrations
             modelBuilder.Entity("GtKasse.Core.Entities.VehicleBooking", b =>
                 {
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("VehicleBookings")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -1244,7 +1253,7 @@ namespace GtKasse.Core.Migrations
             modelBuilder.Entity("GtKasse.Core.Entities.WikiArticle", b =>
                 {
                     b.HasOne("GtKasse.Core.Entities.IdentityUserGuid", "User")
-                        .WithMany("WikiArticles")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
@@ -1258,7 +1267,7 @@ namespace GtKasse.Core.Migrations
 
             modelBuilder.Entity("GtKasse.Core.Entities.Food", b =>
                 {
-                    b.Navigation("Bookings");
+                    b.Navigation("FoodBookings");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.FoodList", b =>
@@ -1273,36 +1282,12 @@ namespace GtKasse.Core.Migrations
 
             modelBuilder.Entity("GtKasse.Core.Entities.IdentityUserGuid", b =>
                 {
-                    b.Navigation("BoatRentals");
-
-                    b.Navigation("Bookings");
-
-                    b.Navigation("Invoices");
-
-                    b.Navigation("MyMailings");
-
-                    b.Navigation("TripBookings");
-
-                    b.Navigation("TripChats");
-
-                    b.Navigation("Trips");
-
-                    b.Navigation("TryoutBookings");
-
-                    b.Navigation("TryoutChats");
-
-                    b.Navigation("Tryouts");
-
                     b.Navigation("UserRoles");
-
-                    b.Navigation("VehicleBookings");
-
-                    b.Navigation("WikiArticles");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.Invoice", b =>
                 {
-                    b.Navigation("Bookings");
+                    b.Navigation("FoodBookings");
                 });
 
             modelBuilder.Entity("GtKasse.Core.Entities.InvoicePeriod", b =>

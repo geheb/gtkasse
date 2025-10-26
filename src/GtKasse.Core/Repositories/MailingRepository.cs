@@ -14,7 +14,7 @@ public sealed class MailingRepository : Repository<Mailing, MailingDto>
 
     public async Task<Result> UpdateClosed(Guid id, int emailCount, CancellationToken cancellationToken)
     {
-        var entity = await _dbSet.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var entity = await _dbSet.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         if (entity is null)
         {
             return NotFound;

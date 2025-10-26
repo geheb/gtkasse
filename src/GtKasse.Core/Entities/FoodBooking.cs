@@ -4,30 +4,36 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GtKasse.Core.Entities;
 
-[Table("tryout_bookings")]
-internal sealed class TryoutBooking
+[Table("food_bookings")]
+internal sealed class FoodBooking
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public Guid Id { get; set; }
-
-    public Guid? TryoutId { get; set; }
-
-    [DeleteBehavior(DeleteBehavior.NoAction)]
-    public Tryout? Tryout { get; set; }
 
     public Guid? UserId { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public IdentityUserGuid? User { get; set; }
 
-    [MaxLength(256)]
-    public string? Name { get; set; }
+    public Guid? FoodId { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public Food? Food { get; set; }
+
+    [Required]
+    public int Status { get; set; }
+
+    [Required]
+    public int Count { get; set; }
 
     [Required]
     public DateTimeOffset BookedOn { get; set; }
 
-    public DateTimeOffset? ConfirmedOn { get; set; }
-
     public DateTimeOffset? CancelledOn { get; set; }
+
+    public Guid? InvoiceId { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public Invoice? Invoice { get; set; }
 }

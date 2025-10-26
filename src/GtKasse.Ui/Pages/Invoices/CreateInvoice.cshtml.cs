@@ -14,7 +14,7 @@ namespace GtKasse.Ui.Pages.Invoices
     {
         private static readonly DateTime _fixedStartDate = new DateTime(2022, 5, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
-        private readonly Core.Repositories.Bookings _bookings;
+        private readonly Core.Repositories.FoodBookings _bookings;
         private readonly Core.Repositories.Invoices _invoices;
 
         [Display(Name = "Beschreibung")]
@@ -31,7 +31,7 @@ namespace GtKasse.Ui.Pages.Invoices
         public string? BookingDateTo { get; set; }
 
         public CreateInvoiceModel(
-            Core.Repositories.Bookings bookings,
+            Core.Repositories.FoodBookings bookings,
             Core.Repositories.Invoices invoices)
         {
             _bookings = bookings;

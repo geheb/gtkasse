@@ -10,7 +10,7 @@ namespace GtKasse.Ui.Pages.Foods
     [Authorize(Roles = "administrator,treasurer", Policy = Policies.TwoFactorAuth)]
     public class IndexModel : PageModel
     {
-        private readonly Bookings _bookings;
+        private readonly FoodBookings _bookings;
 
         public BookingFoodDto[] Bookings { get; set; } = Array.Empty<BookingFoodDto>();
         public SelectListItem[] FilterItems { get; set; } = Array.Empty<SelectListItem>();
@@ -21,7 +21,7 @@ namespace GtKasse.Ui.Pages.Foods
         public decimal DishesTotal { get; set; }
         public decimal DonationTotal { get; set; }
 
-        public IndexModel(Bookings bookings)
+        public IndexModel(FoodBookings bookings)
         {
             _bookings = bookings;
         }

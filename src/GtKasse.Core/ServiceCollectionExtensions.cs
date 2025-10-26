@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<UnitOfWork>();
         services.AddScoped<Foods>();
-        services.AddScoped<Bookings>();
+        services.AddScoped<FoodBookings>();
         services.AddScoped<Invoices>();
         services.AddScoped<Trips>();
         services.AddScoped<Vehicles>();
@@ -34,6 +34,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<UserService>();
         services.AddScoped<LoginService>();
         services.AddScoped<IdentityRepository>();
+        services.AddScoped<MySqlDbContext>();
+        services.AddScoped<MySqlMigration>();
 
         services.AddHostedService<HostedWorker>();
     }

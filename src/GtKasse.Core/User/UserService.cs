@@ -333,6 +333,21 @@ public sealed class UserService
             return Result.Fail(result.Errors.Select(e => e.Description));
         }
 
+        if (enable)
+        {
+            result = await _userManager.AddClaimAsync(user, UserClaims.TwoFactorClaim);
+        }
+        else
+        {
+            result = await _userManager.RemoveClaimAsync(user, UserClaims.TwoFactorClaim);
+        }
+
+        if (!result.Succeeded)
+        {
+            await _userManager.SetTwoFactorEnabledAsync(user, false);
+            return Result.Fail(result.Errors.Select(e => e.Description));
+        }
+
         return Result.Ok();
     }
 
@@ -346,6 +361,12 @@ public sealed class UserService
 
         user.AuthenticatorKey = null;
         var result = await _userManager.SetTwoFactorEnabledAsync(user, false);
+        if (!result.Succeeded)
+        {
+            return Result.Fail(result.Errors.Select(e => e.Description));
+        }
+
+        result = await _userManager.RemoveClaimAsync(user, UserClaims.TwoFactorClaim);
         if (!result.Succeeded)
         {
             return Result.Fail(result.Errors.Select(e => e.Description));

@@ -1,4 +1,4 @@
-﻿using GtKasse.Core.Converter;
+using GtKasse.Core.Converter;
 using GtKasse.Core.Entities;
 
 namespace GtKasse.Core.Models
@@ -33,7 +33,7 @@ namespace GtKasse.Core.Models
             ((Type != FoodType.Donation && Status == BookingStatus.Confirmed) ||
             (Type == FoodType.Donation && Status == BookingStatus.Completed));
 
-        internal BookingFoodDto(Booking entity, GermanDateTimeConverter dc)
+        internal BookingFoodDto(FoodBooking entity, GermanDateTimeConverter dc)
         {
             Id = entity.Id;
             BookedOn = dc.ToLocal(entity.BookedOn);

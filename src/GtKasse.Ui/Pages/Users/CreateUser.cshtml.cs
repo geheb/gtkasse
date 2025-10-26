@@ -1,5 +1,4 @@
 using GtKasse.Core.Email;
-using GtKasse.Core.Migrations;
 using GtKasse.Core.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

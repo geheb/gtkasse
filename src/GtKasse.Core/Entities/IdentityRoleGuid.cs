@@ -1,14 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
-namespace GtKasse.Core.Entities
+namespace GtKasse.Core.Entities;
+
+public sealed class IdentityRoleGuid : IdentityRole<Guid>
 {
-    public sealed class IdentityRoleGuid : IdentityRole<Guid>
-    {
-        public ICollection<IdentityUserRoleGuid>? UserRoles { get; set; }
-    }
+    public ICollection<IdentityUserRoleGuid>? UserRoles { get; set; }
 }

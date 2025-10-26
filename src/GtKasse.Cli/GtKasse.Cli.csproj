@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="CsvHelper" />
-  </ItemGroup>
-
-  <ItemGroup>
 	<ProjectReference Include="..\GtKasse.Core\GtKasse.Core.csproj" />
   </ItemGroup>
 

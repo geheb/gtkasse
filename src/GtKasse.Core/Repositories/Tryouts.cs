@@ -49,7 +49,10 @@ public sealed class Tryouts
 
     public async Task<TryoutDto?> FindTryout(Guid id, CancellationToken cancellationToken)
     {
-        var entity = await _dbContext.Set<Tryout>().FindAsync(new object[] { id }, cancellationToken);
+        var entity = await _dbContext.Set<Tryout>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+
         if (entity == null) return null;
 
         return new TryoutDto(entity, new GermanDateTimeConverter());
@@ -77,7 +80,12 @@ public sealed class Tryouts
             .AsNoTracking()
             .Include(e => e.User)
             .Where(e => (showExpired ? e.Date < now : e.Date > now))
-            .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count, chatMessageCount = e.TryoutChats!.Count })
+            .Select(e => new 
+            { 
+                tryout = e, 
+                bookingCount = e.TryoutBookings == null ? 0 : e.TryoutBookings.Count, 
+                chatMessageCount = e.TryoutChats == null ? 0 : e.TryoutChats.Count 
+            })
             .ToArrayAsync(cancellationToken);
 
         if (tryouts.Length == 0)
@@ -88,11 +96,17 @@ public sealed class Tryouts
         Dictionary<Guid, string[]> usersByTryoutId;
         {
             var tryoutIds = tryouts.Select(t => t.tryout.Id).Distinct().ToArray();
+
             var bookingUsers = await _dbContext.Set<TryoutBooking>()
                 .AsNoTracking()
                 .Include(e => e.User)
                 .Where(e => tryoutIds.Contains(e.TryoutId!.Value) && e.CancelledOn == null)
-                .Select(e => new { tryoutId = e.TryoutId!.Value, e.Name, User = e.User!.Name })
+                .Select(e => new 
+                { 
+                    tryoutId = e.TryoutId!.Value, 
+                    e.Name, 
+                    User = e.User!.Name 
+                })
                 .ToArrayAsync(cancellationToken);
 
             usersByTryoutId = bookingUsers
@@ -123,7 +137,7 @@ public sealed class Tryouts
 
     public async Task<bool> UpdateTryout(TryoutDto dto, CancellationToken cancellationToken)
     {
-        var entity = await _dbContext.Set<Tryout>().FindAsync(new object[] { dto.Id }, cancellationToken);
+        var entity = await _dbContext.Set<Tryout>().FindAsync([dto.Id], cancellationToken);
         if (entity == null) return false;
 
         var count = 0;
@@ -194,7 +208,12 @@ public sealed class Tryouts
             .AsNoTracking()
             .Include(e => e.User)
             .Where(e => e.Id == id)
-            .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count, chatMessageCount = e.TryoutChats!.Count })
+            .Select(e => new 
+            { 
+                tryout = e, 
+                bookingCount = e.TryoutBookings == null ? 0 : e.TryoutBookings.Count, 
+                chatMessageCount = e.TryoutChats == null ? 0 : e.TryoutChats.Count 
+            })
             .FirstOrDefaultAsync(cancellationToken);
 
         if (entity == null) return null;
@@ -212,6 +231,11 @@ public sealed class Tryouts
             .Where(e => e.UserId == userId)
             .ToArrayAsync(cancellationToken);
 
+        if (bookings.Length == 0)
+        {
+            return [];
+        }
+
         var dc = new GermanDateTimeConverter();
         var result = new List<MyTryoutListDto>();
 
@@ -223,7 +247,12 @@ public sealed class Tryouts
                 .AsNoTracking()
                 .Include(e => e.User)
                 .Where(e => ids.Contains(e.Id))
-                .Select(e => new { tryout = e, bookingCount = e.TryoutBookings!.Count, chatMessageCount = e.TryoutChats!.Count })
+                .Select(e => new 
+                { 
+                    tryout = e, 
+                    bookingCount = e.TryoutBookings == null ? 0 : e.TryoutBookings.Count, 
+                    chatMessageCount = e.TryoutChats == null ? 0 : e.TryoutChats.Count 
+                })
                 .ToArrayAsync(cancellationToken);
 
             Dictionary<Guid, string[]> usersByTryoutId;
@@ -232,7 +261,12 @@ public sealed class Tryouts
                     .AsNoTracking()
                     .Include(e => e.User)
                     .Where(e => ids.Contains(e.TryoutId!.Value) && e.CancelledOn == null)
-                    .Select(e => new { tryoutId = e.TryoutId!.Value, e.Name, User = e.User!.Name })
+                    .Select(e => new 
+                    { 
+                        tryoutId = e.TryoutId!.Value, 
+                        e.Name, 
+                        User = e.User!.Name 
+                    })
                     .ToArrayAsync(cancellationToken);
 
                 usersByTryoutId = bookingUsers
@@ -273,7 +307,11 @@ public sealed class Tryouts
             var tryout = await _dbContext.Set<Tryout>()
                 .AsNoTracking()
                 .Where(e => e.Id == id)
-                .Select(e => new { e.MaxBookings, bookingCount = e.TryoutBookings!.Count })
+                .Select(e => new 
+                { 
+                    e.MaxBookings, 
+                    bookingCount = e.TryoutBookings == null ? 0 : e.TryoutBookings.Count 
+                })
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (tryout == null || tryout.bookingCount >= tryout.MaxBookings) return TryoutBookingStatus.MaxReached;
@@ -326,12 +364,16 @@ public sealed class Tryouts
     public async Task<TryoutChatDto[]> GetChat(Guid tryoutId, Guid userId, CancellationToken cancellationToken)
     {
         var entities = await _dbContext.Set<TryoutChat>()
+            .AsNoTracking()
             .Include(e => e.User)
             .Where(e => e.TryoutId == tryoutId)
             .OrderByDescending(e => e.CreatedOn)
             .ToArrayAsync(cancellationToken);
 
-        if (entities.Length < 1) return [];
+        if (entities.Length == 0)
+        {
+            return [];
+        }
 
         var dc = new GermanDateTimeConverter();
 
@@ -340,10 +382,16 @@ public sealed class Tryouts
 
     public async Task<bool> CreateChatMessage(Guid id, Guid userId, string message, CancellationToken cancellationToken)
     {
-        var tryout = await _dbContext.Set<Tryout>().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+        var tryout = await _dbContext.Set<Tryout>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+
         if (tryout == null || tryout.IsExpired) return false;
 
-        var count = await _dbContext.Set<TryoutChat>().CountAsync(e => e.TryoutId == id, cancellationToken);
+        var count = await _dbContext.Set<TryoutChat>()
+            .AsNoTracking()
+            .CountAsync(e => e.TryoutId == id, cancellationToken);
+
         if (count >= 10_000) return false;
 
         var entity = new TryoutChat

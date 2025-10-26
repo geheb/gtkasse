@@ -400,7 +400,7 @@ FodyWeavers.xsd
 # app specific
 src/GtKasse.Ui/wwwroot/html
 src/GtKasse.Ui/wwwroot/lib
-appsettings.Development.json
-appsettings.Production.json
-logs/
-
+appsettings.*.json
+.database/
+.logs/
+.protection/

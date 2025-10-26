@@ -38,8 +38,8 @@ public class IndexModel : PageModel
         {
             1 => "Das Passwort wurde geändert.",
             2 => "Eine E-Mail wird an die neue E-Mail-Adresse versendet und muss bestätigt werden - erst dann ist die Änderung vollständig.",
-            3 => "2FA wurde aktiviert. Bitte erneut anmelden!",
-            4 => "2FA wurde deaktiviert.",
+            3 => "Die Zwei-Faktor-Authentifizierung (2FA) wurde aktiviert. Damit die Einstellungen greifen bitte abmelden und wieder anmelden!",
+            4 => "Die Zwei-Faktor-Authentifizierung (2FA) wurde deaktiviert.",
             _ => default
         };
 

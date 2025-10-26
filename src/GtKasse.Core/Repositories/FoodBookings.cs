@@ -1,4 +1,4 @@
-﻿using GtKasse.Core.Converter;
+using GtKasse.Core.Converter;
 using GtKasse.Core.Database;
 using GtKasse.Core.Entities;
 using GtKasse.Core.Models;
@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GtKasse.Core.Repositories;
 
-public sealed class Bookings
+public sealed class FoodBookings
 {
     private readonly UuidPkGenerator _pkGenerator = new();
     private readonly AppDbContext _dbContext;
 
-    public Bookings(AppDbContext dbContext)
+    public FoodBookings(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -21,7 +21,7 @@ public sealed class Bookings
         var startParam = new DateTimeOffset(start, TimeSpan.Zero);
         var endParam = new DateTimeOffset(start.Year, start.Month, DateTime.DaysInMonth(start.Year, start.Month), 23, 59, 59, 999, TimeSpan.Zero);
 
-        var dbSet = _dbContext.Set<Booking>();
+        var dbSet = _dbContext.Set<FoodBooking>();
 
         var entities = await dbSet
             .AsNoTracking()
@@ -41,7 +41,7 @@ public sealed class Bookings
     {
         var start = new DateTimeOffset(year, month, 1, 0, 0, 0, TimeSpan.Zero);
         var end = new DateTimeOffset(year, month, DateTime.DaysInMonth(year, month), 23, 59, 59, TimeSpan.Zero);
-        var dbSet = _dbContext.Set<Booking>();
+        var dbSet = _dbContext.Set<FoodBooking>();
 
         var entities = await dbSet
             .AsNoTracking()
@@ -62,11 +62,11 @@ public sealed class Bookings
         var end = new DateTimeOffset(to, TimeSpan.Zero);
 
         var statusCompleted = (int)BookingStatus.Completed;
-        var dbSet = _dbContext.Set<Booking>();
+        var dbSet = _dbContext.Set<FoodBooking>();
 
         var sumPrice = await dbSet
             .AsNoTracking()
-            .Where(e => e.BookedOn >= start && e.BookedOn <= end && e.Status == statusCompleted && !e.InvoiceId.HasValue)
+            .Where(e => e.BookedOn >= start && e.BookedOn <= end && e.Status == statusCompleted && e.InvoiceId == null)
             .SumAsync(e => e.Food!.Price * e.Count, cancellationToken);
 
         return sumPrice;
@@ -78,7 +78,7 @@ public sealed class Bookings
         var end = new DateTimeOffset(date.Year, date.Month, date.Day, 23, 59, 59, TimeSpan.Zero);
 
         var statusCancelled = (int)BookingStatus.Cancelled;
-        var dbSet = _dbContext.Set<Booking>();
+        var dbSet = _dbContext.Set<FoodBooking>();
 
         var entities = await dbSet
             .AsNoTracking()
@@ -95,7 +95,7 @@ public sealed class Bookings
 
     public async Task<BookingFoodDto[]> GetInvoiceBookings(Guid invoiceId, CancellationToken cancellationToken)
     {
-        var dbSet = _dbContext.Set<Booking>();
+        var dbSet = _dbContext.Set<FoodBooking>();
 
         var entities = await dbSet
             .AsNoTracking()
@@ -111,7 +111,7 @@ public sealed class Bookings
 
     public async Task<bool> Cancel(Guid userId, Guid bookingId, CancellationToken cancellationToken)
     {
-        var dbSet = _dbContext.Set<Booking>();
+        var dbSet = _dbContext.Set<FoodBooking>();
 
         var entity = await dbSet
             .Include(e => e.User)
@@ -133,9 +133,9 @@ public sealed class Bookings
 
     public async Task<bool> Complete(Guid bookingId, CancellationToken cancellationToken)
     {
-        var dbSet = _dbContext.Set<Booking>();
+        var dbSet = _dbContext.Set<FoodBooking>();
 
-        var entity = await dbSet.FindAsync(new object[] { bookingId }, cancellationToken);
+        var entity = await dbSet.FindAsync([bookingId], cancellationToken);
 
         if (entity == null) return false;
         if (entity.Status != (int)BookingStatus.Confirmed) return false;
@@ -153,7 +153,7 @@ public sealed class Bookings
         var food = await dbSet.FindAsync(foodId);
         if (food == null) return false;
 
-        var entity = new Booking
+        var entity = new FoodBooking
         {
             Id = _pkGenerator.Generate(),
             UserId = userId,
@@ -163,7 +163,7 @@ public sealed class Bookings
             BookedOn = DateTimeOffset.UtcNow
         };
 
-        var dbSetBooking = _dbContext.Set<Booking>();
+        var dbSetBooking = _dbContext.Set<FoodBooking>();
 
         await dbSetBooking.AddAsync(entity, cancellationToken);
 

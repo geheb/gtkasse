@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
 namespace GtKasse.Core.Database;
@@ -26,11 +27,17 @@ public static class DataProtectionExtensions
         // openssl req -x509 -newkey rsa:4096 -keyout dataprotection.key -out dataprotection.crt -days 3650 -nodes -subj "/CN=app"
         // openssl pkcs12 -export -out dataprotection.pfx -inkey dataprotection.key -in dataprotection.crt -name "app"
 
-        var protectionCert = new X509Certificate2(certFile!, certPass);
+        var cert = X509CertificateLoader.LoadPkcs12FromFile(certFile, certPass);
+
+        var dir = new DirectoryInfo(".protection");
+        if (!dir.Exists)
+        {
+            dir.Create();
+        }
 
         return builder.SetApplicationName("GT Kasse")
             .SetDefaultKeyLifetime(TimeSpan.FromDays(7))
-            .ProtectKeysWithCertificate(protectionCert)
-            .PersistKeysToDbContext<AppDbContext>();
+            .ProtectKeysWithCertificate(cert)
+            .PersistKeysToFileSystem(dir);
     }
 }

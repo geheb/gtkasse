@@ -1,4 +1,4 @@
-﻿using GtKasse.Core.Converter;
+using GtKasse.Core.Converter;
 using GtKasse.Core.Database;
 using GtKasse.Core.Entities;
 using GtKasse.Core.Models;
@@ -20,6 +20,7 @@ public sealed class Invoices
     public async Task<InvoicePeriodDto[]> GetPeriods(CancellationToken cancellationToken)
     {
         var dbSet = _dbContext.Set<InvoicePeriod>();
+
         var entities = await dbSet
             .AsNoTracking()
             .OrderByDescending(e => e.To)
@@ -85,18 +86,16 @@ public sealed class Invoices
         var startParam = new DateTimeOffset(start, TimeSpan.Zero);
         var endParam = new DateTimeOffset(end, TimeSpan.Zero);
 
-        var dbSet = _dbContext.Set<Booking>();
+        var dbSet = _dbContext.Set<FoodBooking>();
 
         var userIds = await dbSet
             .AsNoTracking()
-            .Where(e => e.BookedOn >= startParam && e.BookedOn <= endParam && e.Status == statusCompleted && !e.InvoiceId.HasValue)
+            .Where(e => e.BookedOn >= startParam && e.BookedOn <= endParam && e.Status == statusCompleted && e.InvoiceId == null)
             .Select(e => e.UserId)
             .Distinct()
             .ToArrayAsync(cancellationToken);
 
         if (!userIds.Any()) return 0;
-
-        using var trans = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         var period = new InvoicePeriod
         {
@@ -106,24 +105,22 @@ public sealed class Invoices
             To = endParam
         };
 
-        var dbSetInvoicePeriod = _dbContext.Set<InvoicePeriod>();
+        await _dbContext.Set<InvoicePeriod>()
+            .AddAsync(period, cancellationToken);
+
         var dbSetInvoice = _dbContext.Set<Invoice>();
-
-        await dbSetInvoicePeriod.AddAsync(period, cancellationToken);
-        if (await _dbContext.SaveChangesAsync(cancellationToken) < 1) return -1;
-
         var count = 0;
 
         foreach (var user in userIds)
         {
             var bookings = await dbSet
                 .Include(e => e.Food)
-                .Where(e => e.UserId == user && e.BookedOn >= startParam && e.BookedOn <= endParam && e.Status == statusCompleted && !e.InvoiceId.HasValue)
+                .Where(e => e.UserId == user && e.BookedOn >= startParam && e.BookedOn <= endParam && e.Status == statusCompleted && e.InvoiceId == null)
                 .ToArrayAsync(cancellationToken);
 
             if (!bookings.Any()) continue;
 
-            decimal total = bookings.Sum(b => b.Food!.Price * b.Count);
+            var total = bookings.Sum(b => b.Food!.Price * b.Count);
 
             var invoice = new Invoice
             {
@@ -136,18 +133,13 @@ public sealed class Invoices
             };
 
             await dbSetInvoice.AddAsync(invoice, cancellationToken);
-            if (await _dbContext.SaveChangesAsync(cancellationToken) < 1) return -1;
 
             Array.ForEach(bookings, b => b.InvoiceId = invoice.Id);
-            if (await _dbContext.SaveChangesAsync(cancellationToken) < 1) return -1;
 
             count++;
         }
 
-        if (count > 0)
-        {
-            await trans.CommitAsync(cancellationToken);
-        }
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return count;
     }
@@ -156,7 +148,7 @@ public sealed class Invoices
     {
         var dbSet = _dbContext.Set<Invoice>();
 
-        var entity = await dbSet.FindAsync(new object[] { id }, cancellationToken);
+        var entity = await dbSet.FindAsync([id], cancellationToken);
         if (entity == null) return false;
         var status = (InvoiceStatus)entity.Status;
         if (status == InvoiceStatus.Paid) return true;
@@ -169,7 +161,7 @@ public sealed class Invoices
     {
         var dbSet = _dbContext.Set<Invoice>();
 
-        var entity = await dbSet.FindAsync(new object[] { id }, cancellationToken);
+        var entity = await dbSet.FindAsync([id], cancellationToken);
         if (entity == null) return false;
         var status = (InvoiceStatus)entity.Status;
         if (status == InvoiceStatus.Open) return true;
@@ -183,13 +175,13 @@ public sealed class Invoices
         var dbSet = _dbContext.Set<Invoice>();
 
         const int statusOpen = (int)InvoiceStatus.Open;
-        var entitites = await dbSet
+        var entities = await dbSet
             .Where(e => e.InvoicePeriodId == periodId && e.Status == statusOpen)
             .ToArrayAsync(cancellationToken);
 
-        if (entitites.Length < 1) return false;
+        if (entities.Length < 1) return false;
 
-        foreach (var e in entitites)
+        foreach (var e in entities)
         {
             e.Status = (int)InvoiceStatus.Paid;
             e.PaidOn = DateTimeOffset.UtcNow;

@@ -1,17 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GtKasse.Core.Entities
+namespace GtKasse.Core.Entities;
+
+[Table("invoice_periods")]
+internal class InvoicePeriod
 {
-    internal class InvoicePeriod
-    {
-        public Guid Id { get; set; }
-        public string? Description { get; set; }
-        public DateTimeOffset From { get; set; }
-        public DateTimeOffset To { get; set; }
-        public ICollection<Invoice>? Invoices { get; set; }
-    }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public Guid Id { get; set; }
+
+    [Required]
+    public string? Description { get; set; }
+
+    [Required]
+    public DateTimeOffset From { get; set; }
+
+    [Required]
+    public DateTimeOffset To { get; set; }
+
+    public ICollection<Invoice>? Invoices { get; set; }
 }

@@ -23,7 +23,9 @@ public sealed class Clubhouse
         var dbSet = _dbContext.Set<ClubhouseBooking>();
 
         var existsBooking = await dbSet.AnyAsync(e =>
-            ((e.Start >= dto.Start && e.Start <= dto.End) || (e.End >= dto.Start && e.End <= dto.End) || (e.End >= dto.End && e.Start <= dto.Start)),
+            ((e.Start >= dto.Start && e.Start <= dto.End) || 
+            (e.End >= dto.Start && e.End <= dto.End) || 
+            (e.End >= dto.End && e.Start <= dto.Start)),
             cancellationToken);
 
         if (existsBooking)
@@ -58,7 +60,9 @@ public sealed class Clubhouse
 
         var existsBooking = await dbSet.AnyAsync(e =>
             e.Id != entity.Id &&
-            ((e.Start >= dto.Start && e.Start <= dto.End) || (e.End >= dto.Start && e.End <= dto.End) || (e.End >= dto.End && e.Start <= dto.Start)),
+            ((e.Start >= dto.Start && e.Start <= dto.End) || 
+            (e.End >= dto.Start && e.End <= dto.End) || 
+            (e.End >= dto.End && e.Start <= dto.Start)),
             cancellationToken);
 
         if (existsBooking)

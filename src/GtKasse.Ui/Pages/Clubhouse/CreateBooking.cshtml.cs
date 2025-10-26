@@ -16,6 +16,9 @@ public class CreateBookingModel : PageModel
     public CreateBookingModel(Core.Repositories.Clubhouse clubhouse)
     {
         _clubhouse = clubhouse;
+        var dc = new GermanDateTimeConverter();
+        Input.Start = dc.ToIso(dc.ToLocal(DateTimeOffset.UtcNow));
+        Input.End = dc.ToIso(dc.ToLocal(DateTimeOffset.UtcNow.AddDays(1)));
     }
 
     public async Task<IActionResult> OnPost(CancellationToken cancellationToken)

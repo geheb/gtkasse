@@ -1,19 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GtKasse.Core.Entities
+namespace GtKasse.Core.Entities;
+
+[Table("foods")]
+internal sealed class Food
 {
-    internal sealed class Food
-    {
-        public Guid Id { get; set; }
-        public string? Name { get; set; }
-        public decimal Price { get; set; }
-        public int Type { get; set; }
-        public Guid? FoodListId { get; set; }
-        public FoodList? FoodList { get; set; }
-        public ICollection<Booking>? Bookings { get; set; }
-    }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public Guid Id { get; set; }
+
+    [MaxLength(256)]
+    public string? Name { get; set; }
+
+    [Precision(6, 2)]
+    public decimal Price { get; set; }
+
+    [Required]
+    public int Type { get; set; }
+
+    public Guid? FoodListId { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public FoodList? FoodList { get; set; }
+
+    public ICollection<FoodBooking>? FoodBookings { get; set; }
 }

@@ -10,7 +10,7 @@ public class DetailsModel : PageModel
 {
     private readonly Core.Repositories.IdentityRepository _identityRepository;
     private readonly Core.Repositories.Invoices _invoices;
-    private readonly Core.Repositories.Bookings _bookings;
+    private readonly Core.Repositories.FoodBookings _bookings;
 
     public string? Recipient { get; set; } = "n.v.";
     public string? Description { get; set; } = "n.v.";
@@ -21,7 +21,7 @@ public class DetailsModel : PageModel
     public DetailsModel(
         Core.Repositories.IdentityRepository identityRepository,
         Core.Repositories.Invoices invoices,
-        Core.Repositories.Bookings bookings)
+        Core.Repositories.FoodBookings bookings)
     {
         _identityRepository = identityRepository;
         _invoices = invoices;

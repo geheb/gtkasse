@@ -1,4 +1,4 @@
-﻿namespace GtKasse.Core.Repositories;
+namespace GtKasse.Core.Repositories;
 
 using GtKasse.Core.Converter;
 using GtKasse.Core.Database;
@@ -40,14 +40,14 @@ public sealed class Vehicles
 
     public async Task<VehicleDto[]> GetAllVehicles(CancellationToken cancellationToken)
     {
-        var dbSet = _dbContext.Set<Vehicle>();
+        var dbSet = _dbContext.Set<Vehicle>().AsNoTracking();
         var entities = await dbSet.OrderBy(e => e.Name).ToArrayAsync(cancellationToken);
         return entities.Select(e => new VehicleDto(e)).ToArray();
     }
 
     public async Task<VehicleDto[]> GetVehiclesInUseOnly(CancellationToken cancellationToken)
     {
-        var dbSet = _dbContext.Set<Vehicle>();
+        var dbSet = _dbContext.Set<Vehicle>().AsNoTracking();
         var entities = await dbSet.Where(e => e.IsInUse).OrderBy(e => e.Name).ToArrayAsync(cancellationToken);
         return entities.Select(e => new VehicleDto(e)).ToArray();
     }
@@ -63,7 +63,9 @@ public sealed class Vehicles
             var existsBooking = await dbSet.AnyAsync(e => 
                 e.VehicleId == dto.VehicleId && 
                 e.CancelledOn == null && 
-                ((e.Start >= dto.Start && e.Start <= dto.End) || (e.End >= dto.Start && e.End <= dto.End) || (e.End >= dto.End && e.Start <= dto.Start)),
+                ((e.Start >= dto.Start && e.Start <= dto.End) || 
+                (e.End >= dto.Start && e.End <= dto.End) || 
+                (e.End >= dto.End && e.Start <= dto.Start)),
                 cancellationToken);
 
             if (existsBooking)
@@ -150,6 +152,11 @@ public sealed class Vehicles
                 .ToArrayAsync(cancellationToken);
         }
 
+        if (entities.Length == 0)
+        {
+            return [];
+        }
+
         var dc = new GermanDateTimeConverter();
 
         var result = entities.Select(e => new VehicleBookingDto(e, dc)).ToArray();
@@ -194,7 +201,9 @@ public sealed class Vehicles
             e.VehicleId == currentVehicleId &&
             e.CancelledOn == null &&
             e.Id != currentId &&
-            ((e.Start >= currentStart && e.Start <= currentEnd) || (e.End >= currentStart && e.End <= currentEnd) || (e.End >= currentEnd && e.Start <= currentStart)),
+            ((e.Start >= currentStart && e.Start <= currentEnd) || 
+            (e.End >= currentStart && e.End <= currentEnd) || 
+            (e.End >= currentEnd && e.Start <= currentStart)),
             cancellationToken);
 
         if (existsBooking)

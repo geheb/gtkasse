@@ -12,7 +12,7 @@ namespace GtKasse.Ui.Pages.MyFoods;
 [Authorize(Roles = "administrator,member")]
 public class IndexModel : PageModel
 {
-    private readonly Core.Repositories.Bookings _bookings;
+    private readonly Core.Repositories.FoodBookings _bookings;
 
     public BookingFoodDto[] Bookings { get; set; } = Array.Empty<BookingFoodDto>();
     public decimal Total { get; set; }
@@ -23,7 +23,7 @@ public class IndexModel : PageModel
 
     public SelectListItem[] FilterItems { get; set; } = Array.Empty<SelectListItem>();
 
-    public IndexModel(Core.Repositories.Bookings bookings)
+    public IndexModel(Core.Repositories.FoodBookings bookings)
     {
         _bookings = bookings;
     }

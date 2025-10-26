@@ -1,22 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GtKasse.Core.Entities
+namespace GtKasse.Core.Entities;
+
+[Table("invoices")]
+internal sealed class Invoice
 {
-    internal sealed class Invoice
-    {
-        public Guid Id { get; set; }
-        public Guid? UserId { get; set; }
-        public IdentityUserGuid? User { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public decimal Total { get; set; }
-        public int Status { get; set; }
-        public DateTimeOffset? PaidOn { get; set; }
-        public ICollection<Booking>? Bookings { get; set; }
-        public Guid? InvoicePeriodId { get; set; }
-        public InvoicePeriod? InvoicePeriod { get; set; }
-    }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public Guid Id { get; set; }
+
+    public Guid? UserId { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public IdentityUserGuid? User { get; set; }
+
+    [Required]
+    public DateTimeOffset CreatedOn { get; set; }
+
+    [Required]
+    [Precision(6, 2)]
+    public decimal Total { get; set; }
+
+    [Required]
+    public int Status { get; set; }
+
+    public DateTimeOffset? PaidOn { get; set; }
+
+    public Guid? InvoicePeriodId { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public InvoicePeriod? InvoicePeriod { get; set; }
+
+    public ICollection<FoodBooking>? FoodBookings { get; set; }
 }

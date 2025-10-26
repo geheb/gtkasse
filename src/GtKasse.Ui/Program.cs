@@ -25,7 +25,7 @@ void ConfigureApp(WebApplicationBuilder builder)
     var config = builder.Configuration;
     var services = builder.Services;
 
-    services.AddMySqlContext(config);
+    services.AddSQLiteContext(config);
     services.AddMemoryCache();
 
     services
@@ -172,7 +172,7 @@ void ConfigurePipeline(WebApplication app)
 }
 
 try
-{ 
+{
     Log.Logger = new LoggerConfiguration()
         .Enrich.FromLogContext()
         .WriteTo.Console()
