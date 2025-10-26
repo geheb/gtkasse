@@ -33,6 +33,9 @@ public class EditUserInput
     [TextLengthField]
     public string? AddressNumber { get; set; }
 
+    [Display(Name = "Jugend")]
+    public bool IsMailingYoungPeople { get; set; }
+
     public void From(IdentityDto dto)
     {
         Name = dto.Name;
@@ -57,6 +60,7 @@ public class EditUserInput
         }
         DebtorNumber = dto.DebtorNumber;
         AddressNumber = dto.AddressNumber;
+        IsMailingYoungPeople = dto.Mailings?.Any(m => m == UserMailings.YoungPeople) ?? false;
     }
 
     public IdentityDto ToDto(Guid id)
@@ -84,7 +88,8 @@ public class EditUserInput
             PhoneNumber = PhoneNumber,
             Roles = roles.ToArray(),
             DebtorNumber = DebtorNumber,
-            AddressNumber = AddressNumber
+            AddressNumber = AddressNumber,
+            Mailings = IsMailingYoungPeople ? [UserMailings.YoungPeople] : [],
         };
     }
 }

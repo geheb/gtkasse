@@ -6,7 +6,8 @@ public struct MailingDto : IDto
 {
     public Guid Id { get; set; }
     public DateTimeOffset LastUpdate { get; set; }
-    public bool CanSendToAllMembers{ get; set; }
+    public bool IsMemberOnly { get; set; }
+    public bool IsYoungPeople { get; set; }
     public string[]? OtherRecipients { get; set; }
     public string? ReplyAddress { get; set; }
     public string? Subject { get; set; }

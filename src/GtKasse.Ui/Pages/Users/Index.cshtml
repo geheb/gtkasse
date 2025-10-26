@@ -38,6 +38,13 @@
                             <a href="@Url.PageLink(string.Empty, null, new { filter = 1 })" class="dropdown-item">
                                 Interessenten anzeigen
                             </a>
+                            <a href="@Url.PageLink(string.Empty, null, new { filter = 2 })" class="dropdown-item">
+                                Mitglieder mit Rollen anzeigen
+                            </a>
+                            <hr class="dropdown-divider" />
+                            <a href="@Url.PageLink(string.Empty, null, new { filter = 3 })" class="dropdown-item">
+                                Anmeldung für Jugend-Mailings anzeigen
+                            </a>
                             <hr class="dropdown-divider" />
                             <a href="@Url.PageLink("CreateUser")" class="dropdown-item">
                                 Benutzer anlegen
@@ -82,4 +89,3 @@
 </section>
 
 @await Html.PartialAsync("_Footer")
-

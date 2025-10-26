@@ -34,11 +34,12 @@
 						<span asp-validation-for="Input.ReplyAddress"></span>
 					</div>
 					<div class="field">
+						<label class="label">Empfänger</label>
+					</div>
+					<div class="field">
 						<div class="control">
-							<label class="checkbox">
-							  <input type="checkbox" asp-for="Input.CanSendToAllMembers" /> 
-							  @Html.DisplayNameFor(m => m.Input.CanSendToAllMembers)
-							</label>
+							<label class="checkbox"><input type="checkbox" asp-for="Input.IsYoungPeople" /> @Html.DisplayNameFor(e => e.Input.IsYoungPeople)</label>
+							<label class="checkbox"><input type="checkbox" asp-for="Input.IsMemberOnly" /> @Html.DisplayNameFor(e => e.Input.IsMemberOnly)</label>
 						</div>
 					</div>
 					<div class="field">

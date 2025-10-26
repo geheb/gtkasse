@@ -10,10 +10,13 @@ public sealed class MailingInput
     [EmailField, EmailLengthField]
     public string? ReplyAddress { get; set; }
 
-    [Display(Name = "An alle Mitglieder")]
-    public bool CanSendToAllMembers { get; set; }
+    [Display(Name = "Nur Mitglieder")]
+    public bool IsMemberOnly { get; set; }
 
-    [Display(Name = "Weitere Empfänger E-Mail-Adressen (Komma getrennt)")]
+    [Display(Name = "Jugend")]
+    public bool IsYoungPeople { get; set; }
+
+    [Display(Name = "Individuelle E-Mail-Adressen (Komma getrennt)")]
     [TextLengthField(MinimumLength = 6)]
     public string? OtherRecipients { get; set; }
 
@@ -28,7 +31,8 @@ public sealed class MailingInput
     internal void From(MailingDto dto)
     {
         ReplyAddress = dto.ReplyAddress;
-        CanSendToAllMembers = dto.CanSendToAllMembers;
+        IsMemberOnly = dto.IsMemberOnly;
+        IsYoungPeople = dto.IsYoungPeople;
         OtherRecipients = dto.OtherRecipients is not null ? string.Join(',', dto.OtherRecipients) : null;
         Subject = dto.Subject;
         Body = dto.Body;
@@ -38,7 +42,8 @@ public sealed class MailingInput
     {
         Id = id,
         ReplyAddress = ReplyAddress,
-        CanSendToAllMembers = CanSendToAllMembers,
+        IsMemberOnly = IsMemberOnly,
+        IsYoungPeople = IsYoungPeople,
         OtherRecipients = OtherRecipients?.Split(',', StringSplitOptions.RemoveEmptyEntries),
         Subject = Subject,
         Body = Body
@@ -63,7 +68,7 @@ public sealed class MailingInput
             }
         }
 
-        if (string.IsNullOrWhiteSpace(OtherRecipients) && !CanSendToAllMembers)
+        if (string.IsNullOrWhiteSpace(OtherRecipients) && !IsMemberOnly && !IsYoungPeople)
         {
             result.Add("Keine Empfänger angegeben.");
         }

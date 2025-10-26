@@ -1,3 +1,4 @@
+using GtKasse.Core.Entities;
 using GtKasse.Ui.Annotations;
 using System.ComponentModel.DataAnnotations;
 
@@ -29,6 +30,9 @@ public class CreateUserInput
     [TextLengthField]
     public string? AddressNumber { get; set; }
 
+    [Display(Name = "Jugend")]
+    public bool IsMailingYoungPeople { get; set; }
+
     public IdentityDto ToDto()
     {
         var roles = new List<string>();
@@ -53,7 +57,8 @@ public class CreateUserInput
             PhoneNumber = PhoneNumber,
             Roles = roles.ToArray(),
             DebtorNumber = DebtorNumber,
-            AddressNumber = AddressNumber
+            AddressNumber = AddressNumber,
+            Mailings = IsMailingYoungPeople ? [UserMailings.YoungPeople] : [],
         };
     }
 }

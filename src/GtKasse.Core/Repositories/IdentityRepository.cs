@@ -5,8 +5,6 @@ using GtKasse.Core.Entities;
 using GtKasse.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-using System.Threading;
 
 namespace GtKasse.Core.Repositories;
 
@@ -40,7 +38,8 @@ public sealed class IdentityRepository
             Email = dto.Email,
             PhoneNumber = dto.PhoneNumber,
             DebtorNumber = dto.DebtorNumber,
-            AddressNumber = dto.AddressNumber
+            AddressNumber = dto.AddressNumber,
+            Mailings = dto.Mailings?.Length > 0 ? string.Join(',', dto.Mailings) : null
         };
 
         var result = await _userManager.CreateAsync(user);
@@ -145,6 +144,13 @@ public sealed class IdentityRepository
             count++;
         }
 
+        var mailings = dto.Mailings?.Length > 0 ? string.Join(',', dto.Mailings) : null;
+        if (!string.Equals(mailings, entity.Mailings))
+        {
+            entity.Mailings = mailings;
+            count++;
+        }
+
         if (count > 0)
         {
             var result = await _userManager.UpdateAsync(entity);
@@ -211,6 +217,7 @@ public sealed class IdentityRepository
         entity.AddressNumber = null;
         entity.LeftOn = _timeProvider.GetUtcNow();
         entity.Name = new string(entity.Name?.Split(' ', '-').Select(u => u[0]).ToArray()) + "*";
+        entity.Mailings = null;
 
         result = await _userManager.UpdateAsync(entity);
         if (!result.Succeeded)

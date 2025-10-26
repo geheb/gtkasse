@@ -130,11 +130,18 @@ public sealed class EmailService
             .ToArray();
 
         var recipients = new Dictionary<string, IdentityDto?>(StringComparer.OrdinalIgnoreCase);
-        if (mailing.Value.CanSendToAllMembers)
+        if (mailing.Value.IsMemberOnly)
         {
             foreach (var u in users.Where(u => u.Roles!.Any(r => r == Roles.Member)))
             {
                 recipients.Add(u.Email!, u);
+            }
+        }
+        if (mailing.Value.IsYoungPeople)
+        {
+            foreach (var u in users.Where(u => u.Mailings?.Any(m => m == UserMailings.YoungPeople) == true))
+            {
+                recipients.TryAdd(u.Email!, u);
             }
         }
 

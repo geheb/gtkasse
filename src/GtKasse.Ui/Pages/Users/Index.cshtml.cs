@@ -26,6 +26,14 @@ public class IndexModel : PageModel
         {
             Users = [.. users.Where(u => u.Roles!.Contains(Roles.Interested))];
         }
+        else if (filter == 2)
+        {
+            Users = [.. users.Where(u => Roles.IsMemberWithRole(u.Roles!))];
+        }
+        else if (filter == 3)
+        {
+            Users = [.. users.Where(u => u.Mailings?.Any(m => m == UserMailings.YoungPeople) ?? false)];
+        }
         else
         {
             Users = users;

@@ -16,4 +16,5 @@ public struct IdentityDto
     public bool IsLocked { get; set; }
     public bool IsEnabledForBookings =>
         !(string.IsNullOrWhiteSpace(DebtorNumber) && string.IsNullOrWhiteSpace(AddressNumber));
+    public string[]? Mailings { get; set; }
 }

@@ -15,4 +15,8 @@ public static class Roles
     public const string HouseManager = "housemanager"; // Hauswart
     public const string MailingManager = "mailingmanager"; // Mailingmanager
     public const string WikiManager = "wikimanager"; // Wikimanager
+
+    public static bool IsMemberWithRole(string[] roles) =>
+        roles.Any(r => r == Member) &&
+        roles.Where(r => r != Member && r != Interested).Any();
 }

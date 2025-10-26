@@ -130,6 +130,14 @@
                             </div>
                             <span asp-validation-for="Input.AddressNumber"></span>
                         </div>
+                        <div class="field">
+                            <label class="label">Anmeldung für Mailings</label>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <label class="checkbox"><input type="checkbox" asp-for="Input.IsMailingYoungPeople" /> @Html.DisplayNameFor(e => e.Input.IsMailingYoungPeople)</label>
+                            </div>
+                        </div>
                         <button class="button is-primary" type="submit">Speichern</button>
                     </fieldset>
                 </form>

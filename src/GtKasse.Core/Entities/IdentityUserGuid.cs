@@ -12,6 +12,7 @@ namespace GtKasse.Core.Entities
         public string? DebtorNumber { get; set; }
         public string? AddressNumber { get; set; }
         public string? AuthenticatorKey { get; set; }
+        public string? Mailings { get; set; }
 
         internal ICollection<IdentityUserRoleGuid>? UserRoles { get; set; }
         internal ICollection<Booking>? Bookings { get; set; }
@@ -33,8 +34,8 @@ namespace GtKasse.Core.Entities
             var index = name.IndexOf(' ');
             var surname = index > 0 ? name[(index + 1)..].TrimStart() : name;
             var firstName = index > 0 ? name[..index] : name;
-        
-            return new ()
+
+            return new()
             {
                 Id = Id,
                 Name = Name,
@@ -47,7 +48,8 @@ namespace GtKasse.Core.Entities
                 Roles = UserRoles?.Where(e => e.Role?.Name != null).Select(e => e.Role!.Name!).ToArray(),
                 DebtorNumber = DebtorNumber,
                 AddressNumber = AddressNumber,
-                IsLocked = LockoutEnabled && LockoutEnd.HasValue && LockoutEnd.Value > DateTimeOffset.UtcNow
+                IsLocked = LockoutEnabled && LockoutEnd.HasValue && LockoutEnd.Value > DateTimeOffset.UtcNow,
+                Mailings = Mailings?.Split(','),
             };
         }
     }

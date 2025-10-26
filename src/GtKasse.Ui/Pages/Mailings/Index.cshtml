@@ -56,9 +56,17 @@
 						<div class="list-item-title">@i.Subject</div>
 						<div class="list-item-description">
 							<span class="tag is-rounded">@(dateTimeConverter.ToDateTime(i.LastUpdate))</span>
-							@if (i.CanSendToAllMembers)
+							@if (i.IsMemberOnly)
 							{
 								<span class="tag is-rounded is-danger">Alle Mitglieder</span>
+							}
+							@if (i.IsYoungPeople)
+							{
+								<span class="tag is-rounded is-info">Jugend</span>
+							}
+							@if (i.OtherRecipients?.Length > 0)
+							{
+								<span class="tag is-rounded is-info">Individuelle Empfänger</span>
 							}
 							@if (i.IsClosed)
 							{
