@@ -15,4 +15,12 @@ public struct EmailQueueDto : IDto
     public string? HtmlBody { get; set; }
 
     public bool IsPrio { get; set; }
+
+    public EmailItem ToEmailItem() => new()
+    {
+        Subject = Subject!,
+        HtmlBody = HtmlBody!,
+        Recipient = Recipient!,
+        ReplyAddress = ReplyAddress,
+    };
 }

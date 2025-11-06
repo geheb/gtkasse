@@ -102,7 +102,7 @@ public sealed class AppDbContext :
             eb.Property(e => e.Subject).IsRequired();
             eb.Property(e => e.HtmlBody).IsRequired();
 
-            eb.HasIndex(e => new { e.Sent, e.Created, e.IsPrio });
+            eb.HasIndex(e => new { e.NextSchedule, e.Sent, e.IsPrio, e.Created });
         });
 
         modelBuilder.Entity<Food>(eb =>

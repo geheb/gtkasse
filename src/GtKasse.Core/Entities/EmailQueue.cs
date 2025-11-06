@@ -13,6 +13,8 @@ public sealed class EmailQueue : IEntity, IDtoMapper<EmailQueueDto>
 
     public DateTimeOffset? Sent { get; set; }
 
+    public DateTimeOffset? NextSchedule { get; set; }
+
     public string? Recipient { get; set; }
 
     public string? Subject { get; set; }
@@ -22,6 +24,8 @@ public sealed class EmailQueue : IEntity, IDtoMapper<EmailQueueDto>
     public bool IsPrio { get; set; }
 
     public string? ReplyAddress { get; set; }
+
+    public string? LastError { get; set; }
 
     public void FromDto(EmailQueueDto model)
     {
@@ -40,6 +44,6 @@ public sealed class EmailQueue : IEntity, IDtoMapper<EmailQueueDto>
         Subject = Subject,
         HtmlBody = HtmlBody,
         IsPrio = IsPrio,
-        ReplyAddress = ReplyAddress
+        ReplyAddress = ReplyAddress,
     };
 }

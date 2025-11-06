@@ -4,6 +4,7 @@ using GtKasse.Core.Models;
 using GtKasse.Core.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using System.Net.Mail;
 
 namespace GtKasse.Core.Email;
 
@@ -198,20 +199,37 @@ public sealed class EmailService
             return;
         }
 
-        var items = emailQueue.Select(e => new EmailItem
+        var items = emailQueue.Select(e => e.ToEmailItem()).ToArray();
+
+        try
         {
-            Subject = e.Subject!,
-            HtmlBody = e.HtmlBody!,
-            Recipient = e.Recipient!,
-            ReplyAddress = e.ReplyAddress,
-        }).ToArray();
+            await _smtpDispatcher.Send(items, cancellationToken);
 
-        await _smtpDispatcher.Send(items, cancellationToken);
-
-        var result = await _unitOfWork.EmailQueue.UpdateSent([.. emailQueue.Select(e => e.Id)], cancellationToken);
-
-        if (result.IsSuccess)
+            await _unitOfWork.EmailQueue.UpdateSent([.. emailQueue.Select(e => e.Id)], cancellationToken);
+            await _unitOfWork.Save(cancellationToken);
+        }
+        catch (SmtpException)
         {
+            await ScheduleEmails(emailQueue, cancellationToken);
+        }
+    }
+
+    private async Task ScheduleEmails(EmailQueueDto[] queue, CancellationToken cancellationToken)
+    {
+        foreach (var q in queue)
+        {
+            var item = q.ToEmailItem();
+
+            try
+            {
+                await _smtpDispatcher.Send([item], cancellationToken);
+                await _unitOfWork.EmailQueue.UpdateSent([q.Id], cancellationToken);
+            }
+            catch (SmtpException ex)
+            {
+                await _unitOfWork.EmailQueue.UpdateNextSchedule(q.Id, ex.InnerException?.Message ?? ex.Message, cancellationToken);
+            }
+
             await _unitOfWork.Save(cancellationToken);
         }
     }
